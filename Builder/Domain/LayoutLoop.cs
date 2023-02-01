@@ -11,8 +11,7 @@ namespace Kennis.Builder.Domain
       public string BlogPostLast3 { get; set; }
       public string BlogPosts { get; set; }
       public string BlogTags { get; set; }
+      public string Menu { get; set; }
       public string SocialMedia { get; set; }
-      public IEnumerable<TemplateMenuHtmlFile> Menus { get; set; }
-
    }
 }

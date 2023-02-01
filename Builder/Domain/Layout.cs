@@ -8,7 +8,6 @@ namespace Kennis.Builder.Domain
     public class Layout
    {
       private static string FilePath { get; set; }
-      private Template Configuration { get; set; }
       public string Index { get; set; }
       public IEnumerable<LayoutPreprocessedTemplate> IndexPreprocessedTemplates { get; set; }
       public string Blog { get; set; }
@@ -16,20 +15,17 @@ namespace Kennis.Builder.Domain
 
       public LayoutLoop Loops;
 
-      public Layout Get(string templateName)
+      public void Get(string templateName)
       {
          FilePath = Path.Combine(AppContext.BaseDirectory, LocalEnvironment.Folder.Templates, templateName);
 
          var filename = Path.Combine(FilePath, LocalEnvironment.File.Template);
-         var template = new Layout
-         {
-            Configuration = Template.Read(filename)
-         };
 
-         template.Index = LoadFromFiles(template.Configuration.Index, IndexPreprocessedTemplates);
-         template.Loops = LoadLoopFromFiles(template.Configuration.Loops);
+         var template = Template.Read(filename);
 
-         return template;
+         Index = LoadFromFiles(template.Index, IndexPreprocessedTemplates);
+
+         Loops = LoadLoopFromFiles(template.Loops);
       }
 
       private static LayoutLoop LoadLoopFromFiles(TemplateLoopHtmlFile loops)
@@ -45,11 +41,9 @@ namespace Kennis.Builder.Domain
                BlogPostLast3 = LoadFromFile(loops.BlogPostLast3),
                BlogPosts = LoadFromFile(loops.BlogPosts),
                BlogTags = LoadFromFile(loops.BlogTags),
+               Menu = LoadFromFile(loops.Menu),
                SocialMedia = LoadFromFile(loops.SocialMedia)
             };
-
-            //todo implement menus
-            //loops.Menus = LoadLoopFromFile(Configuration.Loops.);
          }
          return null;
       }
