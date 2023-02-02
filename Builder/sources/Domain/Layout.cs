@@ -1,18 +1,29 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Configuration;
+using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Myce.Extensions;
 
 namespace Kennis.Builder.Domain
 {
-   public class Layout
+   public interface ILayout {
+      void Get(string templateName);
+   }
+
+   public class Layout : ILayout
    {
+      private readonly IFileWrapper _file;
       private static string FilePath { get; set; }
       public LayoutTemplate Index { get; set; }
       public LayoutTemplate Blog { get; set; }
       public LayoutTemplate Post { get; set; }
 
       public LayoutLoop Loops;
+
+      public Layout(IFileWrapper file)
+      {
+         _file= file;
+      }
 
       public void Get(string templateName)
       {
@@ -97,12 +108,12 @@ namespace Kennis.Builder.Domain
          }
       }
 
-      private static string LoadFromFile(string filename)
+      private string LoadFromFile(string filename)
       {
          if (!string.IsNullOrEmpty(filename))
          {
             filename = Path.Combine(FilePath, filename);
-            return File.ReadAllText(filename);
+            return _file.ReadAllText(filename);
          }
 
          return null;
