@@ -1,6 +1,6 @@
 ﻿namespace Builder.Domain
 {
-   public class LayoutPreprocessedTemplate
+   public class LayoutTemplatePreprocessed
    {
       public Guid Id { get; set; }
       public string Template { get; set; }

@@ -5,13 +5,12 @@ using Myce.Extensions;
 
 namespace Kennis.Builder.Domain
 {
-    public class Layout
+   public class Layout
    {
       private static string FilePath { get; set; }
-      public string Index { get; set; }
-      public IEnumerable<LayoutPreprocessedTemplate> IndexPreprocessedTemplates { get; set; }
-      public string Blog { get; set; }
-      public string Post { get; set; }
+      public LayoutTemplate Index { get; set; }
+      public LayoutTemplate Blog { get; set; }
+      public LayoutTemplate Post { get; set; }
 
       public LayoutLoop Loops;
 
@@ -23,16 +22,67 @@ namespace Kennis.Builder.Domain
 
          var template = Template.Read(filename);
 
-         Index = LoadFromFiles(template.Index, IndexPreprocessedTemplates);
+         LoadMainTemplates(template);
 
-         Loops = LoadLoopFromFiles(template.Loops);
+         LoadLoopTemplates(template.Loops);
       }
 
-      private static LayoutLoop LoadLoopFromFiles(TemplateLoopHtmlFile loops)
+      private void LoadMainTemplates(Template template)
+      {
+         if (template.Index.HasData())
+         {
+            Index = new LayoutTemplate();
+            LoadFromFiles(template.Index, Index);
+         };
+
+         if (template.Blog.HasData())
+         {
+            Index = new LayoutTemplate();
+            LoadFromFiles(template.Blog, Blog);
+         };
+
+         if (template.Post.HasData())
+         {
+            Index = new LayoutTemplate();
+            LoadFromFiles(template.Post, Post);
+         };
+      }
+
+      private void LoadFromFiles(IEnumerable<TemplateHtmlFile> files, LayoutTemplate layoutTemplate)
+      {
+         if (files.IsNotNull())
+         {
+            layoutTemplate.TemplatesPreprocessed = files.Any(x => x.ProcessOnlyOnce) ? new List<LayoutTemplatePreprocessed>() : null;
+
+            foreach (var file in files.OrderBy(x => x.Order))
+            {
+               var filename = Path.Combine(FilePath, file.FileName);
+
+               var templatePart = LoadFromFile(filename);
+
+               if (file.ProcessOnlyOnce)
+               {
+                  var preprocessed = new LayoutTemplatePreprocessed
+                  {
+                     Id = Guid.NewGuid(),
+                     Template = templatePart
+                  };
+
+                  layoutTemplate.TemplatesPreprocessed.Add(preprocessed);
+
+                  templatePart = string.Concat("{@", preprocessed.Id, "}");
+               }
+
+               layoutTemplate.Template += templatePart;
+            }
+         }
+      }
+
+      private void LoadLoopTemplates(TemplateLoopHtmlFile loops)
       {
          if (loops.IsNotNull())
          {
-            return new LayoutLoop
+            Loops = new LayoutLoop
             {
                BlogArchive = LoadFromFile(loops.BlogArchive),
                BlogCategories = LoadFromFile(loops.BlogCategories),
@@ -45,7 +95,6 @@ namespace Kennis.Builder.Domain
                SocialMedia = LoadFromFile(loops.SocialMedia)
             };
          }
-         return null;
       }
 
       private static string LoadFromFile(string filename)
@@ -54,40 +103,6 @@ namespace Kennis.Builder.Domain
          {
             filename = Path.Combine(FilePath, filename);
             return File.ReadAllText(filename);
-         }
-
-         return null;
-      }
-
-      private static string LoadFromFiles(IEnumerable<TemplateHtmlFile> files, 
-         IEnumerable<LayoutPreprocessedTemplate> layoutPreprocessedTemplate)
-      {
-         if (files.IsNotNull())
-         {
-            var preprocessedTemplates = files.Any(x => x.ProcessOnlyOnce) ? new List<LayoutPreprocessedTemplate>() : null;
-            string template = string.Empty;
-            foreach (var file in files.OrderBy(x => x.Order))
-            {
-               var filename = Path.Combine(FilePath, file.FileName);
-
-               var templatePart = LoadFromFile(filename);
-
-               if (file.ProcessOnlyOnce)
-               {
-                  var preprocessed = new LayoutPreprocessedTemplate
-                  {
-                     Id = Guid.NewGuid(),
-                     Template = templatePart
-                  };
-
-                  preprocessedTemplates.Add(preprocessed);
-
-                  templatePart = string.Concat("{@", preprocessed.Id, "}");
-               }
-               
-               template += templatePart;
-            }
-            return template;
          }
 
          return null;
