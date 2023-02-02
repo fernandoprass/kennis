@@ -3,39 +3,61 @@ using Builder.Domain.Configuration;
 using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Myce.Extensions;
+using System.Text.Json;
 
 namespace Kennis.Builder.Domain
 {
-   public interface ILayout {
+   public interface ILayout
+   {
+      IEnumerable<string> Languages { get; set; }
+      LayoutTemplate Index { get; set; }
+      LayoutTemplate Blog { get; set; }
+      LayoutTemplate Post { get; set; }
+      LayoutLoop Loops { get; set; }
       void Get(string templateName);
    }
 
    public class Layout : ILayout
    {
       private readonly IFileWrapper _file;
+
       private static string FilePath { get; set; }
+      public IEnumerable<string> Languages { get; set; }
       public LayoutTemplate Index { get; set; }
       public LayoutTemplate Blog { get; set; }
       public LayoutTemplate Post { get; set; }
-
-      public LayoutLoop Loops;
+      public LayoutLoop Loops { get; set; }
 
       public Layout(IFileWrapper file)
       {
-         _file= file;
+         _file = file;
       }
 
       public void Get(string templateName)
       {
          FilePath = Path.Combine(AppContext.BaseDirectory, LocalEnvironment.Folder.Templates, templateName);
 
-         var filename = Path.Combine(FilePath, LocalEnvironment.File.Template);
+         var templateFilename = Path.Combine(FilePath, LocalEnvironment.File.Template);
 
-         var template = Template.Read(filename);
+         var template = ReadTemplate(templateFilename);
+
+         Languages = template.Languages;
 
          LoadMainTemplates(template);
 
          LoadLoopTemplates(template.Loops);
+      }
+
+      private Template ReadTemplate(string fileName)
+      {
+         if (_file.Exists(fileName))
+         {
+            string jsonString = _file.ReadAllText(fileName);
+            var templateConfig = JsonSerializer.Deserialize<Template>(jsonString)!;
+            return templateConfig;
+         }
+
+         return null;
       }
 
       private void LoadMainTemplates(Template template)
@@ -48,13 +70,13 @@ namespace Kennis.Builder.Domain
 
          if (template.Blog.HasData())
          {
-            Index = new LayoutTemplate();
+            Blog = new LayoutTemplate();
             LoadFromFiles(template.Blog, Blog);
          };
 
          if (template.Post.HasData())
          {
-            Index = new LayoutTemplate();
+            Post = new LayoutTemplate();
             LoadFromFiles(template.Post, Post);
          };
       }
