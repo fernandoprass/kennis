@@ -1,29 +1,27 @@
-﻿using Builder.Domain.Configuration;
+﻿using Builder.Domain;
+using Builder.Domain.Configuration;
 using Builder.Domain.Layouts;
-using Builder.Domain.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
 
-public class KennisBuilder
+namespace Builder
 {
-   static void Main(string[] args)
+   public class KennisBuilder
    {
-      var serviceProvider = ConfiguraDependecyInjection();
+      static void Main(string[] args)
+      {
+         var projectName = "KennisDemo";
 
-      var projectName = "KennisDemo";
+         var serviceProvider = IoC.Configure(projectName);
 
-      var project = Project.Get(projectName);
+         var project = Project.Get(projectName);
 
-      var layoutBase = serviceProvider.GetService<ILayoutBase>();
+         var layoutBase = serviceProvider.GetService<ILayoutBase>();
+         var build = serviceProvider.GetService<IBuild>();
 
-      layoutBase.Get(project.Template);
-   }
+         layoutBase.Get(project.Template);
 
-   private static ServiceProvider ConfiguraDependecyInjection()
-   {
-      //setup our DI
-      return new ServiceCollection()
-          .AddSingleton<IFileWrapper, FileWrapper>()
-          .AddScoped<ILayoutBase, LayoutBase>()
-          .BuildServiceProvider();
+         build.Builder(project, layoutBase);
+      }
+
    }
 }
