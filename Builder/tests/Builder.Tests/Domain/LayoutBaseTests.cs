@@ -1,18 +1,16 @@
-﻿using Builder.Domain.Wrappers;
-using Kennis.Builder.Constants;
-using Kennis.Builder.Domain;
-using System.Linq;
+﻿using Builder.Domain.Layouts;
+using Builder.Domain.Wrappers;
 
 namespace Builder.Tests.Domain
 {
-   public class LayoutTests
+	public class LayoutBaseTests
    {
       private readonly Mock<IFileWrapper> _fileMock;
-		private readonly ILayout _layout;
+		private readonly ILayoutBase _layoutBase;
 
 		private readonly string _JsonExtension = ".json";
       private readonly string _HtmlExtension = ".html";
-      private readonly string _template = "HTML Code";
+      private readonly string _templateHtmlFile = "HTML Code";
       private readonly string _templateJsonFile = @"{
 				""Languages"": [ ""en"", ""pt-br"" ],
 				""Index"": [
@@ -39,7 +37,14 @@ namespace Builder.Tests.Domain
 						""ProcessOnlyOnce"": true
 					}
 				],
-				""Post"": null,
+				""Page"": null,
+				""Post"": [
+					{
+						""Order"": 1,
+						""FileName"": ""index.html"",
+						""ProcessOnlyOnce"": false
+					}
+				],
 				""Loops"": {
 					""BlogArchive"": ""loop.blog.archive.html"",
 					""BlogCategories"": ""loop.blog.categories.html"",
@@ -53,9 +58,9 @@ namespace Builder.Tests.Domain
 				}
 			}";
 
-      public LayoutTests() { 
+      public LayoutBaseTests() { 
          _fileMock= new Mock<IFileWrapper>();
-         _layout = new Layout(_fileMock.Object);
+         _layoutBase = new LayoutBase(_fileMock.Object);
       }
 
       [Fact]
@@ -63,11 +68,11 @@ namespace Builder.Tests.Domain
 		{
 			MockDeserializeJsonFile();
 
-         _layout.Get(_JsonExtension);
+         _layoutBase.Get(_JsonExtension);
 
-         Assert.Equal(2, _layout.Languages.Count());
-			Assert.Equal("en", _layout.Languages.First());
-			Assert.Equal("pt-br", _layout.Languages.Last());
+         Assert.Equal(2, _layoutBase.Languages.Count());
+			Assert.Equal("en", _layoutBase.Languages.First());
+			Assert.Equal("pt-br", _layoutBase.Languages.Last());
 		}
 
       [Fact]
@@ -76,10 +81,10 @@ namespace Builder.Tests.Domain
          MockDeserializeJsonFile();
 			MockLoadFromFile();
 
-         _layout.Get(_JsonExtension);
+         _layoutBase.Get(_JsonExtension);
 
-         Assert.NotNull(_layout.Index.Template);
-         Assert.Null(_layout.Index.TemplatesPreprocessed);
+         Assert.NotNull(_layoutBase.Index.Template);
+         Assert.Null(_layoutBase.Index.TemplatesPreprocessed);
       }
 
       [Fact]
@@ -88,10 +93,35 @@ namespace Builder.Tests.Domain
          MockDeserializeJsonFile();
          MockLoadFromFile();
 
-         _layout.Get(_JsonExtension);
+         _layoutBase.Get(_JsonExtension);
 
-         Assert.Equal(1, _layout.Blog.TemplatesPreprocessed.Count());
-         Assert.Contains(_layout.Blog.TemplatesPreprocessed.First().Id.ToString(), _layout.Blog.Template);
+         Assert.Single(_layoutBase.Blog.TemplatesPreprocessed);
+         Assert.Contains(_layoutBase.Blog.TemplatesPreprocessed.First().Id.ToString(), _layoutBase.Blog.Template);
+      }
+
+      [Fact]
+      public void Get_ReceiveJsonFileWithEmptyLayoutTemplateAttribuite_ShouldReturnNullForThisAttribute()
+      {
+         MockDeserializeJsonFile();
+         MockLoadFromFile();
+
+         _layoutBase.Get(_JsonExtension);
+
+			Assert.Null(_layoutBase.Page);
+		}
+
+
+      [Fact]
+      public void Get_ReceiveJsonFileWithLayoutTemplateAttribuiteWithOnlyOneFile_ShouldPaserItRight()
+      {
+         MockDeserializeJsonFile();
+         MockLoadFromFile();
+
+         _layoutBase.Get(_JsonExtension);
+
+         Assert.NotNull(_layoutBase.Post);
+         Assert.Null(_layoutBase.Post.TemplatesPreprocessed);
+         Assert.Equal(_templateHtmlFile, _layoutBase.Post.Template);
       }
 
       private void MockDeserializeJsonFile()
@@ -103,7 +133,7 @@ namespace Builder.Tests.Domain
       private void MockLoadFromFile()
       {
          _fileMock.Setup(x => x.Exists(It.Is<string>(s => s.Contains(_HtmlExtension)))).Returns(true);
-         _fileMock.Setup(x => x.ReadAllText(It.Is<string>(s => s.Contains(_HtmlExtension)))).Returns(_template);
+         _fileMock.Setup(x => x.ReadAllText(It.Is<string>(s => s.Contains(_HtmlExtension)))).Returns(_templateHtmlFile);
       }
    }
 }

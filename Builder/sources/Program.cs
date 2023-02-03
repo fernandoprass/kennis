@@ -1,6 +1,6 @@
 ﻿using Builder.Domain.Configuration;
+using Builder.Domain.Layouts;
 using Builder.Domain.Wrappers;
-using Kennis.Builder.Domain;
 using Microsoft.Extensions.DependencyInjection;
 
 public class KennisBuilder
@@ -13,9 +13,9 @@ public class KennisBuilder
 
       var project = Project.Get(projectName);
 
-      var layout = serviceProvider.GetService<ILayout>();
+      var layoutBase = serviceProvider.GetService<ILayoutBase>();
 
-      layout.Get(project.Template);
+      layoutBase.Get(project.Template);
    }
 
    private static ServiceProvider ConfiguraDependecyInjection()
@@ -23,7 +23,7 @@ public class KennisBuilder
       //setup our DI
       return new ServiceCollection()
           .AddSingleton<IFileWrapper, FileWrapper>()
-          .AddScoped<ILayout, Layout>()
+          .AddScoped<ILayoutBase, LayoutBase>()
           .BuildServiceProvider();
    }
 }
