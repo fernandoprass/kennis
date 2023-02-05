@@ -13,38 +13,13 @@ namespace Builder.Tests.Domain
       private readonly string _templateHtmlFile = "HTML Code";
       private readonly string _templateJsonFile = @"{
 				""Languages"": [ ""en"", ""pt-br"" ],
-				""Index"": [
-					{
-						""Order"": 1,
-						""FileName"": ""index.html"",
-						""ProcessOnlyOnce"": false
-					},
-					{
-						""Order"": 2,
-						""FileName"": ""index.footer.html"",
-						""ProcessOnlyOnce"": false
-					}
-				],
-				""Blog"": [
-					{
-						""Order"": 1,
-						""FileName"": ""blog.html"",
-						""ProcessOnlyOnce"": false
-					},
-					{
-						""Order"": 2,
-						""FileName"": ""blog.footer.html"",
-						""ProcessOnlyOnce"": true
-					}
-				],
+				""Index"": ""index.html"",
 				""Page"": null,
-				""Post"": [
-					{
-						""Order"": 1,
-						""FileName"": ""index.html"",
-						""ProcessOnlyOnce"": false
-					}
-				],
+				""Blog"": null,
+				""BlogArchive"": null,
+				""BlogCategories"": null,
+				""BlogPost"": null,
+				""BlogTags"": null,
 				""Loops"": {
 					""BlogArchive"": ""loop.blog.archive.html"",
 					""BlogCategories"": ""loop.blog.categories.html"",
@@ -76,31 +51,7 @@ namespace Builder.Tests.Domain
 		}
 
       [Fact]
-      public void Get_ReceiveJsonFileWithoutLayoutTemplatePreprocessed_ShouldNotReturnLayoutTemplatePreprocessedList()
-      {
-         MockDeserializeJsonFile();
-			MockLoadFromFile();
-
-         _layoutBase.Get(_JsonExtension);
-
-         Assert.NotNull(_layoutBase.Index.Template);
-         Assert.Null(_layoutBase.Index.TemplatesPreprocessed);
-      }
-
-      [Fact]
-      public void Get_ReceiveJsonFileWithLayoutTemplatePreprocessed_ShouldReturnLayoutTemplatePreprocessedList()
-      {
-         MockDeserializeJsonFile();
-         MockLoadFromFile();
-
-         _layoutBase.Get(_JsonExtension);
-
-         Assert.Single(_layoutBase.Blog.TemplatesPreprocessed);
-         Assert.Contains(_layoutBase.Blog.TemplatesPreprocessed.First().Id.ToString(), _layoutBase.Blog.Template);
-      }
-
-      [Fact]
-      public void Get_ReceiveJsonFileWithEmptyLayoutTemplateAttribuite_ShouldReturnNullForThisAttribute()
+      public void Get_ReceiveJsonFileWithEmptyTemplateAttribuite_ShouldReturnNullForThisAttribute()
       {
          MockDeserializeJsonFile();
          MockLoadFromFile();
@@ -110,18 +61,40 @@ namespace Builder.Tests.Domain
 			Assert.Null(_layoutBase.Page);
 		}
 
-
       [Fact]
-      public void Get_ReceiveJsonFileWithLayoutTemplateAttribuiteWithOnlyOneFile_ShouldPaserItRight()
+      public void Get_ReceiveJsonFileWithTemplateAttribuite_ShouldReturnThisAttribute()
       {
          MockDeserializeJsonFile();
          MockLoadFromFile();
 
          _layoutBase.Get(_JsonExtension);
 
-         Assert.NotNull(_layoutBase.Post);
-         Assert.Null(_layoutBase.Post.TemplatesPreprocessed);
-         Assert.Equal(_templateHtmlFile, _layoutBase.Post.Template);
+         Assert.NotNull(_layoutBase.Index);
+         Assert.Equal(_templateHtmlFile, _layoutBase.Index);
+      }
+
+      [Fact]
+      public void Get_ReceiveJsonFileWithEmptyLoopAttribuite_ShouldReturnNullForThisAttribute()
+      {
+         MockDeserializeJsonFile();
+         MockLoadFromFile();
+
+         _layoutBase.Get(_JsonExtension);
+
+         Assert.NotNull(_layoutBase.Loops.BlogArchive);
+         Assert.Equal(_templateHtmlFile, _layoutBase.Loops.BlogArchive);
+      }
+
+      [Fact]
+      public void Get_ReceiveJsonFileWithLoopAttribuite_ShouldReturnThisAttribute()
+      {
+         MockDeserializeJsonFile();
+         MockLoadFromFile();
+
+         _layoutBase.Get(_JsonExtension);
+
+         Assert.NotNull(_layoutBase.Loops);
+         Assert.Equal(_templateHtmlFile, _layoutBase.Index);
       }
 
       private void MockDeserializeJsonFile()
