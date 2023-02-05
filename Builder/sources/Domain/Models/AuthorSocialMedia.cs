@@ -1,4 +1,4 @@
-﻿namespace Builder.Domain.Configuration
+﻿namespace Builder.Domain.Models
 {
     public class AuthorSocialMedia
     {
