@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Kennis.Builder.Constants;
 
-namespace Builder.Domain.Configuration
+namespace Builder.Domain.Models
 {
     public class Project
     {

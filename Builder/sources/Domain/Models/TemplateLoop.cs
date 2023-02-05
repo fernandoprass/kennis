@@ -1,6 +1,6 @@
-﻿namespace Builder.Domain.Layouts
+﻿namespace Builder.Domain.Models
 {
-   public class LayoutLoop
+    public class TemplateLoop
     {
         public string BlogArchive { get; set; }
         public string BlogCategories { get; set; }

@@ -1,4 +1,4 @@
-﻿using Builder.Domain.Configuration;
+﻿using Builder.Domain.Models;
 
 namespace Kennis.Builder.Domain
 {
