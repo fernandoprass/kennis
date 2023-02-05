@@ -1,16 +1,15 @@
-﻿using Builder.Domain.Layouts;
-using Builder.Domain.Wrappers;
+﻿using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
-using Myce.Extensions;
 using System.Text.Json;
 
 namespace Builder.Domain.Internationalization
 {
    public interface ITranslate
    {
-      Layout To(string language, ILayoutBase layoutBase);
+      string To(string language, string templatePath, string layout);
    }
+
    public class Translate : ITranslate
    {
       private readonly IFileWrapper _file;
@@ -22,43 +21,25 @@ namespace Builder.Domain.Internationalization
          _logger = logger;
       }
 
-      public Layout To(string language, ILayoutBase layoutBase)
+      public string To(string language, string templatePath, string layoutBase)
       {
-         var i18nData = LoadI18nData(language, layoutBase.FilePath);
+          var i18nData = LoadI18nData(language, templatePath);
 
-         var layout = new Layout();
-
-         layout.Index = TranslateLayoutTemplate(layoutBase.Index, i18nData);
-         layout.Blog = TranslateLayoutTemplate(layoutBase.Blog, i18nData);
-         layout.Post = TranslateLayoutTemplate(layoutBase.Post, i18nData);
-         layout.Page = TranslateLayoutTemplate(layoutBase.Page, i18nData);
-
-         return layout;
+         return TranslateLayoutTemplate(layoutBase, i18nData);
       }
 
-      private static LayoutTemplate TranslateLayoutTemplate(LayoutTemplate layoutTemplate, Dictionary<string, string> i18nData)
+      private string TranslateLayoutTemplate(string layoutTemplate, Dictionary<string, string> i18nData)
       {
-         if (layoutTemplate.IsNull())
+         if (string.IsNullOrEmpty(layoutTemplate))
          {
             return null;
          }
 
-         var layout = new LayoutTemplate();
-         layout.Template = layoutTemplate.Template;
+         var layout = layoutTemplate;
+
          foreach (var i18m in i18nData)
          {
-            layout.Template = layout.Template.Replace($"{{:{i18m.Key}}}", i18m.Value);
-         }
-
-         if (layoutTemplate.TemplatesPreprocessed.HasData())
-         {
-            foreach (var templatePreprocessed in layoutTemplate.TemplatesPreprocessed)
-            {
-               foreach (var i18m in i18nData)
-               {
-                  templatePreprocessed.Template = templatePreprocessed.Template.Replace($"{{:{i18m.Key}}}", i18m.Value);
-               }
-            }
+            layout = layout.Replace($"{{:{i18m.Key}}}", i18m.Value);
          }
 
          return layout;
@@ -66,13 +47,18 @@ namespace Builder.Domain.Internationalization
 
       private Dictionary<string, string> LoadI18nData(string language, string templatePath)
       {
+         _logger.LogInformation($"Loading i18n data for '{language}' on {templatePath}");
          var filename = Path.Combine(templatePath, LocalEnvironment.Folder.I18n, language + LocalEnvironment.Extensions.I18n);
 
          if (_file.Exists(filename))
          {
             string jsonString = _file.ReadAllText(filename);
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString)!;
+            var i18nData = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString)!;
+            _logger.LogInformation($"I18n data for '{language}' loaded successfully");
+            return i18nData;
          }
+
+         _logger.LogWarning($"I18n data for '{language}' not found");
 
          return null;
       }

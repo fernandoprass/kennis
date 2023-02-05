@@ -1,11 +1,11 @@
-﻿using Builder.Domain.Configuration;
-using Builder.Domain.Internationalization;
+﻿using Builder.Domain.Internationalization;
 using Builder.Domain.Layouts;
+using Builder.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Builder.Domain
 {
-   public interface IBuild
+    public interface IBuild
    {
       void Builder(Project project, ILayoutBase layoutBase);
    }
@@ -25,7 +25,7 @@ namespace Builder.Domain
          foreach(var language in project.Languages)
          {
             _logger.LogWarning(language.Code);
-            _translate.To(language.Code, layoutBase);
+            var layout = _translate.To(language.Code, layoutBase.FilePath, layoutBase.Index);
          }      
       }
 
