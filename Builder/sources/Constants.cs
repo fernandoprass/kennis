@@ -2,6 +2,11 @@
 {
    public static class LocalEnvironment
    {
+      public static class Extensions
+      {
+         public const string I18n = ".json";
+      }
+
       public static class File
       {
          public const string Project = "project.json";
@@ -10,6 +15,7 @@
 
       public static class Folder
       {
+         public const string I18n = @"i18n\";
          public const string Templates = @"templates\";
          public const string Projects = @"projects\";
          public const string Sites = @"sites\";

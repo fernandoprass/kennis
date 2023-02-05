@@ -1,4 +1,5 @@
 ﻿using Builder.Domain;
+using Builder.Domain.Internationalization;
 using Builder.Domain.Layouts;
 using Builder.Domain.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,7 @@ namespace Builder
          return services.AddSingleton<IFileWrapper, FileWrapper>()
                         .AddScoped<ILayoutBase, LayoutBase>()
                         .AddScoped<IBuild, Build>()
+                        .AddScoped<ITranslate, Translate>()
                         .BuildServiceProvider();
       }
    }

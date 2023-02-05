@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="templates\black-and-white-template\i18n\en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\black-and-white-template\i18n\pt-br.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="templates\black-and-white-template\template.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

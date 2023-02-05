@@ -13,7 +13,7 @@ namespace Builder.Validation
          //todo validate Template
          /*
           * Template files exist (for all files, including loops)
-          * the template has the same languages of the project
+          * the template has the same languages of the project, if doesn't have should have the default language
           */
       }
    }
