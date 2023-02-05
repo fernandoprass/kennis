@@ -1,8 +1,6 @@
-﻿using Builder.Domain.Configuration;
-
-namespace Builder.Domain.Layouts
+﻿namespace Builder.Domain.Layouts
 {
-    public class LayoutLoop
+   public class LayoutLoop
     {
         public string BlogArchive { get; set; }
         public string BlogCategories { get; set; }

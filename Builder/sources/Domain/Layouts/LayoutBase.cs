@@ -1,4 +1,4 @@
-﻿using Builder.Domain.Configuration;
+﻿using Builder.Domain.Models;
 using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Myce.Extensions;
@@ -6,14 +6,17 @@ using System.Text.Json;
 
 namespace Builder.Domain.Layouts
 {
-   public interface ILayoutBase
+    public interface ILayoutBase
    {
       string FilePath { get; }
       IEnumerable<string> Languages { get; set; }
-      LayoutTemplate Index { get; set; }
-      LayoutTemplate Blog { get; set; }
-      LayoutTemplate Page { get; set; }
-      LayoutTemplate Post { get; set; }
+      string Index { get; set; }
+      string Page { get; set; }
+      string Blog { get; set; }
+      string BlogArchive { get; set; }
+      string BlogCategories { get; set; }
+      string BlogPost { get; set; }
+      string BlogTags { get; set; }
       LayoutLoop Loops { get; set; }
       void Get(string templateName);
    }
@@ -23,10 +26,13 @@ namespace Builder.Domain.Layouts
       private readonly IFileWrapper _file;
       public string FilePath { get; private set; }
       public IEnumerable<string> Languages { get; set; }
-      public LayoutTemplate Index { get; set; }
-      public LayoutTemplate Blog { get; set; }
-      public LayoutTemplate Page { get; set; }
-      public LayoutTemplate Post { get; set; }
+      public string Index { get; set; }
+      public string Page { get; set; }
+      public string Blog { get; set; }
+      public string BlogArchive { get; set; }
+      public string BlogCategories { get; set; }
+      public string BlogPost { get; set; }
+      public string BlogTags { get; set; }
       public LayoutLoop Loops { get; set; }
 
       public LayoutBase(IFileWrapper file)
@@ -63,56 +69,16 @@ namespace Builder.Domain.Layouts
 
       private void LoadMainTemplates(Template template)
       {
-         if (template.Index.HasData())
-         {
-            Index = new LayoutTemplate();
-            LoadFromFiles(template.Index, Index);
-         };
-
-         if (template.Blog.HasData())
-         {
-            Blog = new LayoutTemplate();
-            LoadFromFiles(template.Blog, Blog);
-         };
-
-         if (template.Post.HasData())
-         {
-            Post = new LayoutTemplate();
-            LoadFromFiles(template.Post, Post);
-         };
+         Index = LoadFromFile(template.Index);
+         Page = LoadFromFile(template.Page);
+         Blog = LoadFromFile(template.Blog);
+         BlogArchive = LoadFromFile(template.BlogArchive);
+         BlogCategories = LoadFromFile(template.BlogCategories);
+         BlogPost = LoadFromFile(template.BlogPost);
+         BlogTags = LoadFromFile(template.BlogTags);
       }
 
-      private void LoadFromFiles(IEnumerable<TemplateHtmlFile> files, LayoutTemplate layoutTemplate)
-      {
-         if (files.IsNotNull())
-         {
-            layoutTemplate.TemplatesPreprocessed = files.Any(x => x.ProcessOnlyOnce) ? new List<LayoutTemplatePreprocessed>() : null;
-
-            foreach (var file in files.OrderBy(x => x.Order))
-            {
-               var filename = Path.Combine(FilePath, file.FileName);
-
-               var templatePart = LoadFromFile(filename);
-
-               if (file.ProcessOnlyOnce)
-               {
-                  var preprocessed = new LayoutTemplatePreprocessed
-                  {
-                     Id = Guid.NewGuid(),
-                     Template = templatePart
-                  };
-
-                  layoutTemplate.TemplatesPreprocessed.Add(preprocessed);
-
-                  templatePart = string.Concat("{@", preprocessed.Id, "}");
-               }
-
-               layoutTemplate.Template += templatePart;
-            }
-         }
-      }
-
-      private void LoadLoopTemplates(TemplateLoopHtmlFile loops)
+      private void LoadLoopTemplates(TemplateLoop loops)
       {
          if (loops.IsNotNull())
          {

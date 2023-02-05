@@ -2,19 +2,25 @@
 {
    public interface ILayout
    {
-      LayoutTemplate Index { get; set; }
-      LayoutTemplate Blog { get; set; }
-      LayoutTemplate Page { get; set; }
-      LayoutTemplate Post { get; set; }
+      string Index { get; set; }
+      string Page { get; set; }
+      string Blog { get; set; }
+      string BlogArchive { get; set; }
+      string BlogCategories { get; set; }
+      string BlogPost { get; set; }
+      string BlogTags { get; set; }
       LayoutLoop Loops { get; set; }
    }
 
    public class Layout : ILayout
    {
-      public LayoutTemplate Index { get; set; }
-      public LayoutTemplate Blog { get; set; }
-      public LayoutTemplate Page { get; set; }
-      public LayoutTemplate Post { get; set; }
+      public string Index { get; set; }
+      public string Page { get; set; }
+      public string Blog { get; set; }
+      public string BlogArchive { get; set; }
+      public string BlogCategories { get; set; }
+      public string BlogPost { get; set; }
+      public string BlogTags { get; set; }
       public LayoutLoop Loops { get; set; }
    }
 }
