@@ -36,7 +36,8 @@ namespace Builder
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
          return services.AddSingleton<IFileWrapper, FileWrapper>()
-                        .AddScoped<ILayoutBase, LayoutBase>()
+                        .AddSingleton<ILayoutBase, LayoutBase>()
+                        .AddSingleton<ILoad, Load>()
                         .AddScoped<IBuild, Build>()
                         .AddScoped<ITranslate, Translate>()
                         .BuildServiceProvider();
