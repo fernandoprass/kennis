@@ -13,16 +13,13 @@ namespace Builder
 
          var serviceProvider = IoC.Configure(projectName);
 
-         //todo create a service to read project and layoutBase
-         var project = Project.Get(projectName);
-
-         var layoutBase = serviceProvider.GetService<ILayoutBase>();
-
          var build = serviceProvider.GetService<IBuild>();
 
-         layoutBase.Get(project.Template);
+         var s = new Site();
 
-         build.Builder(project, layoutBase);
+         s.Load();
+
+         build.Builder(projectName);
       }
 
    }
