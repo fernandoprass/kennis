@@ -1,9 +1,10 @@
 ﻿using Builder.Domain.Contents;
-using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Builder.Domain
 {
@@ -26,8 +27,8 @@ namespace Builder.Domain
          var files = Directory.GetFiles(folder, criteria, SearchOption.AllDirectories);
 
          var pipeline = new MarkdownPipelineBuilder()
-          .UseYamlFrontMatter()
-          .Build();
+            .UseYamlFrontMatter()
+            .Build();
 
          Pages = new List<Content>();
          foreach(var filename in files)
@@ -36,6 +37,18 @@ namespace Builder.Domain
             var document = Markdown.Parse(file, pipeline);
             var yamlBlock = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
             var yaml = yamlBlock.Lines.ToString();
+
+            var deserializer = new DeserializerBuilder()
+               .WithNamingConvention(LowerCaseNamingConvention.Instance)
+               .Build();
+
+            var myConfig = deserializer.Deserialize<PostHeader>(yaml);
+
+            var serializer = new SerializerBuilder()
+            .WithNamingConvention(LowerCaseNamingConvention.Instance)
+            .Build();
+
+            var yamlFinal = serializer.Serialize(myConfig);
          }
       }
    }
