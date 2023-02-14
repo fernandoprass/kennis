@@ -3,6 +3,7 @@ using Kennis.Builder.Constants;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
+using Myce.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -42,14 +43,23 @@ namespace Builder.Domain
                .WithNamingConvention(LowerCaseNamingConvention.Instance)
                .Build();
 
-            var myConfig = deserializer.Deserialize<PostHeader>(yaml);
+            var post = deserializer.Deserialize<PostHeader>(yaml);
+
+            post.Slug = GetSlug(post.Title);
 
             var serializer = new SerializerBuilder()
             .WithNamingConvention(LowerCaseNamingConvention.Instance)
             .Build();
 
-            var yamlFinal = serializer.Serialize(myConfig);
+            var yamlFinal = serializer.Serialize(post);
          }
+      }
+
+      private string GetSlug(string title)
+      {
+         var slug = title.ToLower().Replace(" ", "-");
+         slug = slug.RemoveAccents();
+         return slug;
       }
    }
 }
