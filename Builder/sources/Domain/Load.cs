@@ -2,7 +2,14 @@
 using Builder.Domain.Models;
 using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
+using Markdig.Extensions.Yaml;
+using Markdig;
+using Microsoft.Extensions.Logging;
+using Myce.Extensions;
 using System.Text.Json;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+using Markdig.Syntax;
 
 namespace Builder.Domain
 {
@@ -10,33 +17,37 @@ namespace Builder.Domain
    {
       Project Project(string projectName);
       ILayoutBase LayoutBase(string templateFolder);
+      ContentHeader ContentHeader(string yaml);
+      List<Content> ContentList(string path, string type);
+      string YamlHeader(string filename);
    }
 
    public class Load : ILoad
    {
       private readonly IFileWrapper _file;
       private readonly ILayoutBase _layoutBase;
+      private readonly ILogger<Build> _logger;
 
-      public Load(IFileWrapper fileWrapper, ILayoutBase layoutBase)
+      public Load(IFileWrapper fileWrapper,
+         ILayoutBase layoutBase,
+         ILogger<Build> logger)
       {
          _file = fileWrapper;
          _layoutBase = layoutBase;
+         _logger = logger;
       }
 
       public Project Project(string projectName)
       {
-         var projectPaths = CreateProjectFolders(projectName);
+         var projectPath = GetProjectPath(projectName);
 
-         var fileName = Path.Combine(projectPaths.Project, LocalEnvironment.File.Project);
+         var fileName = Path.Combine(projectPath, LocalEnvironment.File.Project);
 
-         if (File.Exists(fileName))
+         var project = ReadJson<Project>(fileName);
+
+         if (project.IsNotNull())
          {
-            string jsonString = _file.ReadAllText(fileName);
-            var project = JsonSerializer.Deserialize<Project>(jsonString)!;
-
-            project.Folders = projectPaths;
-
-            UpdateProjectFolders(project);
+            project.Folders = GetProjectFolders(projectName, project.Template);
 
             return project;
          }
@@ -44,42 +55,95 @@ namespace Builder.Domain
          return null;
       }
 
-      private static ProjectFolder CreateProjectFolders(string projectName)
+      private static string GetProjectPath(string projectName)
       {
          var applicationPath = AppContext.BaseDirectory;
 
-         var paths = new ProjectFolder
-         {
-            Application = applicationPath,
-            Project = Path.Combine(applicationPath, LocalEnvironment.Folder.Projects, projectName)
-         };
-         return paths;
+         return Path.Combine(applicationPath, LocalEnvironment.Folder.Projects, projectName);
       }
 
-      private static void UpdateProjectFolders(Project project)
+      private static ProjectFolder GetProjectFolders(string projectName, string templateName)
       {
-         project.Folders.Template = Path.Combine(project.Folders.Application, LocalEnvironment.Folder.Templates, project.Template);
-         project.Folders.TemplateTranslations = Path.Combine(project.Folders.Template, LocalEnvironment.Folder.TemplatesTranslations);
-         project.Folders.Destination = Path.Combine(project.Folders.Application, LocalEnvironment.Folder.Sites, project.Name);
+         var applicationPath = AppContext.BaseDirectory;
+
+         string projectPath = GetProjectPath(projectName);
+         string template = Path.Combine(applicationPath, LocalEnvironment.Folder.Templates, templateName);
+
+         return new ProjectFolder
+         {
+            Application = applicationPath,
+            Project = projectPath,
+            Template = template,
+            TemplateTranslations = Path.Combine(template, LocalEnvironment.Folder.TemplatesTranslations),
+            Destination = Path.Combine(applicationPath, LocalEnvironment.Folder.Sites, projectName)
+         };
       }
 
       public ILayoutBase LayoutBase(string templateFolder)
       {
          var filename = Path.Combine(templateFolder, LocalEnvironment.File.Template);
-         var template = ReadTemplate(filename);
+         var template = ReadJson<Template>(filename);
          _layoutBase.Get(templateFolder, template);
          return _layoutBase;
       }
 
-      private Template ReadTemplate(string fileName)
+      private T ReadJson<T>(string filename)
       {
-         if (_file.Exists(fileName))
+         if (_file.Exists(filename))
          {
-            string jsonString = _file.ReadAllText(fileName);
-            return JsonSerializer.Deserialize<Template>(jsonString)!;
+            string jsonString = _file.ReadAllText(filename);
+            return JsonSerializer.Deserialize<T>(jsonString)!;
          }
 
-         return null;
+         return default(T);
+      }
+
+      public ContentHeader ContentHeader(string yaml)
+      {
+         try
+         {
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(LowerCaseNamingConvention.Instance)
+                .Build();
+
+            return deserializer.Deserialize<ContentHeader>(yaml);
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);
+            return null;
+         }
+      }
+
+      public string YamlHeader(string filename)
+      {
+         try
+         {
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseYamlFrontMatter()
+                .Build();
+
+            var mdFile = File.ReadAllText(filename);
+            var document = Markdown.Parse(mdFile, pipeline);
+            var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
+            var yaml = yamlHeader.Lines.ToString();
+            return yaml;
+
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError(ex, "Falling when try to read file {0}", filename);
+            return null;
+         }
+
+      }
+
+      public List<Content> ContentList(string path, string file)
+      {
+         var filename = Path.Combine(path, file);
+         var list = ReadJson<List<Content>>(filename);
+
+         return list.IsNotNull() ? list : new List<Content>();
       }
    }
 }

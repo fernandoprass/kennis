@@ -15,26 +15,34 @@ namespace Builder.Domain
       private readonly ILoad _load;
       private readonly ILogger<Build> _logger;
       private readonly ITranslate _translate;
-      
-      private Project _project;
-      private ILayoutBase _layoutBase;
+      private readonly ISite _site;
 
-      public Build(ILoad load, ILogger<Build> logger, ITranslate translate)
+
+      private Project project;
+      private ILayoutBase layoutBase;
+
+      public Build(ILoad load, 
+         ILogger<Build> logger, 
+         ISite site,
+         ITranslate translate)
       {
          _load = load;
          _logger = logger;
+         _site = site;
          _translate = translate;
       }
 
       public void Builder(string projectName) {
-         _project = _load.Project(projectName);
-         _layoutBase = _load.LayoutBase(_project.Folders.Template);
+         project = _load.Project(projectName);
+         layoutBase = _load.LayoutBase(project.Folders.Template);
 
 
-         foreach (var language in _project.Languages)
+         foreach (var language in project.Languages)
          {
+            _site.Load(project.Folders, language.Code);
+
             _logger.LogWarning(language.Code);
-            var layout = _translate.To(language.Code, _project.Folders.Template, _layoutBase.Index);
+            var layout = _translate.To(language.Code, project.Folders.Template, layoutBase.Index);
          }      
       }
 

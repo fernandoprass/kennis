@@ -12,6 +12,8 @@
       {
          public const string Project = "project.json";
          public const string Template = "template.json";
+         public const string Pages = "pages.json";
+         public const string Posts = "posts.json";
       }
 
       public static class Folder
