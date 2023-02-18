@@ -1,9 +1,7 @@
 ﻿using Builder.Domain.Mappers;
 using Builder.Domain.Models;
 using Kennis.Builder.Constants;
-using Markdig;
-using Markdig.Extensions.Yaml;
-using Markdig.Syntax;
+using Markdig.Helpers;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
@@ -58,6 +56,9 @@ namespace Builder.Domain
 
          DeleteNonExistentContent();
 
+         UpdateContentField(Pages);
+         UpdateContentField(Posts);
+
          SaveContentLists();
       }
 
@@ -74,11 +75,50 @@ namespace Builder.Domain
          Posts.RemoveAll(x => x.Delete);
       }
 
-      private void SaveContentLists(string projectPath, string languageCode)
+      private void UpdateContentField(List<Content> contentList)
       {
-         ContentBasePath = Path.Combine(projectPath, languageCode);
-         ContentPagesPath = Path.Combine(ContentBasePath, LocalEnvironment.Folder.Pages);
-         ContentPostsPath = Path.Combine(ContentBasePath, LocalEnvironment.Folder.Posts);
+         foreach(var content in contentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
+         {
+            content.Keywords = GetKeywords(content.Categories, content.Tags);
+            content.Url = GetUrl(content.Title, content.Categories.First(), content.Created.Year);
+         }
+      }
+
+      private string GetKeywords(IEnumerable<string> categories, IEnumerable<string> tags)
+      {
+         var keywords = categories.HasData() ? categories : new List<string>();
+
+         if (tags.HasData()) { 
+            keywords = keywords.Union(tags);
+         }
+         
+         return string.Join(",", keywords);
+      }
+
+
+      private string GetSlug(string title)
+      {
+         var slug = title.ToLower().Replace(" ", "-");
+         slug = slug.RemoveAccents();
+         return slug;
+      }
+
+      private string GetUrl(string title, string category, int year)
+      {
+         var slug = GetSlug(title);
+         var baseUrl = "en/blog/posts/{category}/";
+         baseUrl = baseUrl.Replace("{category}", category);
+         baseUrl = baseUrl.Replace("{year}", year.ToString());
+         return baseUrl + slug + ".html";
+      }
+
+      private void SaveContentLists()
+      {
+         var filename = Path.Combine(ContentBasePath, LocalEnvironment.File.Pages);
+         _load.SaveContentListToJson(Pages, filename);
+
+         filename = Path.Combine(ContentBasePath, LocalEnvironment.File.Posts);
+         _load.SaveContentListToJson(Posts, filename);
       }
 
       private (string, ContentType) GetFilenameAndContentType(string file)
@@ -137,13 +177,6 @@ namespace Builder.Domain
          var criteria = "*" + LocalEnvironment.Extension.Content;
          var files = Directory.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
          return files;
-      }
-
-      private string GetSlug(string title)
-      {
-         var slug = title.ToLower().Replace(" ", "-");
-         slug = slug.RemoveAccents();
-         return slug;
       }
    }
 }

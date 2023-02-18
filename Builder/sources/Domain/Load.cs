@@ -10,6 +10,7 @@ using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Markdig.Syntax;
+using System.IO;
 
 namespace Builder.Domain
 {
@@ -20,6 +21,8 @@ namespace Builder.Domain
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path, string type);
       string YamlHeader(string filename);
+
+      void SaveContentListToJson(List<Content> contentList, string filename);
    }
 
    public class Load : ILoad
@@ -96,6 +99,14 @@ namespace Builder.Domain
          }
 
          return default(T);
+      }
+
+      public void SaveContentListToJson(List<Content> contentList, string filename)
+      {
+         var options = new JsonSerializerOptions { WriteIndented = true };
+         var json = JsonSerializer.Serialize(contentList, options)!;
+
+         File.WriteAllText(filename, json);
       }
 
       public ContentHeader ContentHeader(string yaml)
