@@ -1,6 +1,6 @@
 ﻿namespace Kennis.Builder.Constants
 {
-   public static class LocalEnvironment
+   public static class Const
    {
       public static class Extension
       {
@@ -11,9 +11,8 @@
       public static class File
       {
          public const string Project = "project.json";
+         public const string ContentList = "content.json";
          public const string Template = "template.json";
-         public const string Pages = "pages.json";
-         public const string Posts = "posts.json";
       }
 
       public static class Folder

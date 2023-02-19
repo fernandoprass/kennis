@@ -37,9 +37,10 @@ namespace Builder.Domain
          layoutBase = _load.LayoutBase(project.Folders.Template);
 
 
-         foreach (var language in project.Languages)
+;        foreach (var language in project.Languages)
          {
-            _site.Load(project.Folders, language.Code);
+            var folders = project.Sites.FirstOrDefault(s => s.Language == language.Code)?.Folders;
+            _site.Load(project.Folders, language.Code, folders.Pages, folders.BlogPosts);
 
             _logger.LogWarning(language.Code);
             var layout = _translate.To(language.Code, project.Folders.Template, layoutBase.Index);

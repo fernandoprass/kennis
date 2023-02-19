@@ -19,10 +19,10 @@ namespace Builder.Domain
       Project Project(string projectName);
       ILayoutBase LayoutBase(string templateFolder);
       ContentHeader ContentHeader(string yaml);
-      List<Content> ContentList(string path, string type);
+      List<Content> ContentList(string path);
       string YamlHeader(string filename);
 
-      void SaveContentListToJson(List<Content> contentList, string filename);
+      void SaveContentListToJson(List<Content> contentList, string contentPath);
    }
 
    public class Load : ILoad
@@ -44,7 +44,7 @@ namespace Builder.Domain
       {
          var projectPath = GetProjectPath(projectName);
 
-         var fileName = Path.Combine(projectPath, LocalEnvironment.File.Project);
+         var fileName = Path.Combine(projectPath, Const.File.Project);
 
          var project = ReadJson<Project>(fileName);
 
@@ -62,7 +62,7 @@ namespace Builder.Domain
       {
          var applicationPath = AppContext.BaseDirectory;
 
-         return Path.Combine(applicationPath, LocalEnvironment.Folder.Projects, projectName);
+         return Path.Combine(applicationPath, Const.Folder.Projects, projectName);
       }
 
       private static ProjectFolder GetProjectFolders(string projectName, string templateName)
@@ -70,21 +70,21 @@ namespace Builder.Domain
          var applicationPath = AppContext.BaseDirectory;
 
          string projectPath = GetProjectPath(projectName);
-         string template = Path.Combine(applicationPath, LocalEnvironment.Folder.Templates, templateName);
+         string template = Path.Combine(applicationPath, Const.Folder.Templates, templateName);
 
          return new ProjectFolder
          {
             Application = applicationPath,
             Project = projectPath,
             Template = template,
-            TemplateTranslations = Path.Combine(template, LocalEnvironment.Folder.TemplatesTranslations),
-            Destination = Path.Combine(applicationPath, LocalEnvironment.Folder.Sites, projectName)
+            TemplateTranslations = Path.Combine(template, Const.Folder.TemplatesTranslations),
+            Destination = Path.Combine(applicationPath, Const.Folder.Sites, projectName)
          };
       }
 
       public ILayoutBase LayoutBase(string templateFolder)
       {
-         var filename = Path.Combine(templateFolder, LocalEnvironment.File.Template);
+         var filename = Path.Combine(templateFolder, Const.File.Template);
          var template = ReadJson<Template>(filename);
          _layoutBase.Get(templateFolder, template);
          return _layoutBase;
@@ -102,8 +102,9 @@ namespace Builder.Domain
       }
 
       //todo move to a server specific to sava data
-      public void SaveContentListToJson(List<Content> contentList, string filename)
+      public void SaveContentListToJson(List<Content> contentList, string contentPath)
       {
+         var filename = Path.Combine(contentPath, Const.File.ContentList);
          var options = new JsonSerializerOptions { WriteIndented = true };
          var json = JsonSerializer.Serialize(contentList, options)!;
 
@@ -150,9 +151,9 @@ namespace Builder.Domain
 
       }
 
-      public List<Content> ContentList(string path, string file)
+      public List<Content> ContentList(string path)
       {
-         var filename = Path.Combine(path, file);
+         var filename = Path.Combine(path, Const.File.ContentList);
          var list = ReadJson<List<Content>>(filename);
 
          return list.IsNotNull() ? list : new List<Content>();

@@ -1,7 +1,6 @@
 ﻿using Builder.Domain.Mappers;
 using Builder.Domain.Models;
 using Kennis.Builder.Constants;
-using Markdig.Helpers;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
@@ -9,19 +8,19 @@ namespace Builder.Domain
 {
    public interface ISite
    {
-      void Load(ProjectFolder projectFolders, string languageCode);
+      void Load(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
    }
    public class Site : ISite
    {
       private readonly ILoad _load;
       private readonly ILogger<Build> _logger;
-      private string Language { get; set; }
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
       private string ContentPostsPath { get; set; }
-      private List<Content> Pages { get; set; }
-      private List<Content> Posts { get; set; }
+      private string HtmlPagesPath { get; set; }
+      private string HtmlPostsPath { get; set; }
+      private List<Content> ContentList { get; set; }
 
       public Site(ILoad load, ILogger<Build> logger)
       {
@@ -29,13 +28,13 @@ namespace Builder.Domain
          _logger = logger;
       }
 
-      public void Load(ProjectFolder projectFolders, string languageCode)
+      public void Load(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
-         InitializeContentPaths(projectFolders.Project, languageCode);
+         InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
          var files = GetFiles();
 
-         InitializeContentLists();
+         InitializeContentList();
 
          foreach (var file in files)
          {
@@ -54,33 +53,28 @@ namespace Builder.Domain
             }
          }
 
-         DeleteNonExistentContent();
+         UpdateContentField();
 
-         UpdateContentField(Pages);
-         UpdateContentField(Posts);
+         SortContentList();
 
-         SaveContentLists();
+         SaveContentList();
       }
 
-      private void InitializeContentPaths(string projectPath, string languageCode)
+      private void InitializeContentPaths(string projectPath, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          ContentBasePath = Path.Combine(projectPath, languageCode);
-         ContentPagesPath = Path.Combine(ContentBasePath, LocalEnvironment.Folder.Pages);
-         ContentPostsPath = Path.Combine(ContentBasePath, LocalEnvironment.Folder.Posts);
+         ContentPagesPath = Path.Combine(ContentBasePath, Const.Folder.Pages);
+         ContentPostsPath = Path.Combine(ContentBasePath, Const.Folder.Posts);
+         HtmlPagesPath = htmlPagePath;
+         HtmlPostsPath = htmlPostPath;
       }
 
-      private void DeleteNonExistentContent()
+      private void UpdateContentField()
       {
-         Pages.RemoveAll(x => x.Delete);
-         Posts.RemoveAll(x => x.Delete);
-      }
-
-      private void UpdateContentField(List<Content> contentList)
-      {
-         foreach(var content in contentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
+         foreach(var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
          {
             content.Keywords = GetKeywords(content.Categories, content.Tags);
-            content.Url = GetUrl(content.Title, content.Categories.First(), content.Created.Year);
+            content.Url = GetUrl(content.Type, content.Title, content.Categories.FirstOrDefault(), content.Created.Year);
          }
       }
 
@@ -103,27 +97,28 @@ namespace Builder.Domain
          return slug;
       }
 
-      private string GetUrl(string title, string category, int year)
+      private string GetUrl(ContentType type, string title, string category, int year)
       {
          var slug = GetSlug(title);
-         var baseUrl = "en/blog/posts/{category}/";
-         baseUrl = baseUrl.Replace("{category}", category);
+         var baseUrl = type == ContentType.Page ? HtmlPagesPath : HtmlPostsPath;
+         baseUrl = baseUrl.Replace("{category}", GetSlug(category));
          baseUrl = baseUrl.Replace("{year}", year.ToString());
          return baseUrl + slug + ".html";
       }
 
-      private void SaveContentLists()
+      private void SortContentList()
       {
-         var filename = Path.Combine(ContentBasePath, LocalEnvironment.File.Pages);
-         _load.SaveContentListToJson(Pages, filename);
+         ContentList.OrderBy(x => x.Type).OrderBy(x => x.Created);
+      }
 
-         filename = Path.Combine(ContentBasePath, LocalEnvironment.File.Posts);
-         _load.SaveContentListToJson(Posts, filename);
+      private void SaveContentList()
+      {
+         _load.SaveContentListToJson(ContentList, ContentBasePath);
       }
 
       private (string, ContentType) GetFilenameAndContentType(string file)
       {
-         var contentType = file.Contains(ContentPagesPath) ? ContentType.Page : ContentType.BlogPost;
+         var contentType = file.Contains(ContentPagesPath) ? ContentType.Page : ContentType.Post;
 
          var filename = contentType == ContentType.Page
             ? file.Replace(ContentPagesPath, string.Empty)
@@ -134,26 +129,15 @@ namespace Builder.Domain
 
       private void AddToContentList(ContentType contentType, string filename, ContentHeader contentHeader)
       {
-         if (contentType == ContentType.Page)
-         {
-            AddToContentList(Pages, filename, contentHeader);
-         }
-         else
-         {
-            AddToContentList(Posts, filename, contentHeader);
-         }
-      }
-
-      private void AddToContentList(List<Content> contentList, string filename, ContentHeader contentHeader)
-      {
-         var content = contentList.SingleOrDefault(x => x.Filename == filename);
+         var content = ContentList.SingleOrDefault(x => x.Filename == filename && x.Type == contentType);
 
          if (content.IsNull())
          {
             content = contentHeader.ToContent();
+            content.Type= contentType;
             content.Filename = filename;
 
-            contentList.Add(content);
+            ContentList.Add(content);
          }
          else
          {
@@ -162,19 +146,15 @@ namespace Builder.Domain
          }
       }
 
-
-      private void InitializeContentLists()
+      private void InitializeContentList()
       {
-         Pages = _load.ContentList(ContentBasePath, LocalEnvironment.File.Pages);
-         Pages.ForEach(page => { page.Delete = true; });
-
-         Posts = _load.ContentList(ContentBasePath, LocalEnvironment.File.Posts);
-         Posts.ForEach(page => { page.Delete = true; });
+         ContentList = _load.ContentList(ContentBasePath);
+         ContentList.ForEach(page => { page.Delete = true; });
       }
 
       private string[] GetFiles()
       {
-         var criteria = "*" + LocalEnvironment.Extension.Content;
+         var criteria = "*" + Const.Extension.Content;
          var files = Directory.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
          return files;
       }

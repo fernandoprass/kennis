@@ -48,7 +48,7 @@ namespace Builder.Domain.Internationalization
       private Dictionary<string, string> LoadI18nData(string language, string templatePath)
       {
          _logger.LogInformation($"Loading i18n data for '{language}' on {templatePath}");
-         var filename = Path.Combine(templatePath, LocalEnvironment.Folder.TemplatesTranslations, language + LocalEnvironment.Extension.I18n);
+         var filename = Path.Combine(templatePath, Const.Folder.TemplatesTranslations, language + Const.Extension.I18n);
 
          if (_file.Exists(filename))
          {
