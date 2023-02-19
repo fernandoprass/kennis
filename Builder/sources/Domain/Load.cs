@@ -101,6 +101,7 @@ namespace Builder.Domain
          return default(T);
       }
 
+      //todo move to a server specific to sava data
       public void SaveContentListToJson(List<Content> contentList, string filename)
       {
          var options = new JsonSerializerOptions { WriteIndented = true };
