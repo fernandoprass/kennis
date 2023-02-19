@@ -11,6 +11,9 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Markdig.Syntax;
 using System.IO;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace Builder.Domain
 {
@@ -105,7 +108,12 @@ namespace Builder.Domain
       public void SaveContentListToJson(List<Content> contentList, string contentPath)
       {
          var filename = Path.Combine(contentPath, Const.File.ContentList);
-         var options = new JsonSerializerOptions { WriteIndented = true };
+         var options = new JsonSerializerOptions
+         {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+         }; 
+
          var json = JsonSerializer.Serialize(contentList, options)!;
 
          File.WriteAllText(filename, json);
