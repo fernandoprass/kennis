@@ -7,7 +7,7 @@ using Serilog;
 
 namespace Builder
 {
-   public static class IoC
+   public static class Service
    {
       public static ServiceProvider Configure(string projectName)
       {
@@ -36,8 +36,10 @@ namespace Builder
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
          return services.AddSingleton<IFileWrapper, FileWrapper>()
-                        .AddScoped<ILayoutBase, LayoutBase>()
+                        .AddSingleton<ILayoutBase, LayoutBase>()
+                        .AddSingleton<ILoad, Load>()
                         .AddScoped<IBuild, Build>()
+                        .AddScoped<ISite, Site>()
                         .AddScoped<ITranslate, Translate>()
                         .BuildServiceProvider();
       }

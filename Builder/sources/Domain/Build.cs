@@ -5,27 +5,44 @@ using Microsoft.Extensions.Logging;
 
 namespace Builder.Domain
 {
-    public interface IBuild
+   public interface IBuild
    {
-      void Builder(Project project, ILayoutBase layoutBase);
+      void Builder(string projectName);
    }
 
    public class Build : IBuild
    {
+      private readonly ILoad _load;
       private readonly ILogger<Build> _logger;
       private readonly ITranslate _translate;
+      private readonly ISite _site;
 
-      public Build(ILogger<Build> logger, ITranslate translate)
+
+      private Project project;
+      private ILayoutBase layoutBase;
+
+      public Build(ILoad load, 
+         ILogger<Build> logger, 
+         ISite site,
+         ITranslate translate)
       {
+         _load = load;
          _logger = logger;
+         _site = site;
          _translate = translate;
       }
 
-      public void Builder(Project project, ILayoutBase layoutBase) { 
-         foreach(var language in project.Languages)
+      public void Builder(string projectName) {
+         project = _load.Project(projectName);
+         layoutBase = _load.LayoutBase(project.Folders.Template);
+
+
+         foreach (var language in project.Languages)
          {
+            _site.Load(project.Folders, language.Code);
+
             _logger.LogWarning(language.Code);
-            var layout = _translate.To(language.Code, layoutBase.FilePath, layoutBase.Index);
+            var layout = _translate.To(language.Code, project.Folders.Template, layoutBase.Index);
          }      
       }
 

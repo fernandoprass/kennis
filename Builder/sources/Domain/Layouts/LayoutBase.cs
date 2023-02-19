@@ -1,14 +1,11 @@
 ﻿using Builder.Domain.Models;
 using Builder.Domain.Wrappers;
-using Kennis.Builder.Constants;
 using Myce.Extensions;
-using System.Text.Json;
 
 namespace Builder.Domain.Layouts
 {
-    public interface ILayoutBase
+   public interface ILayoutBase
    {
-      string FilePath { get; }
       IEnumerable<string> Languages { get; set; }
       string Index { get; set; }
       string Page { get; set; }
@@ -18,13 +15,14 @@ namespace Builder.Domain.Layouts
       string BlogPost { get; set; }
       string BlogTags { get; set; }
       LayoutLoop Loops { get; set; }
-      void Get(string templateName);
+      void Get(string templateFolder, Template template);
    }
 
    public class LayoutBase : ILayoutBase
    {
       private readonly IFileWrapper _file;
-      public string FilePath { get; private set; }
+
+      private string TemplateFolder { get; set; }
       public IEnumerable<string> Languages { get; set; }
       public string Index { get; set; }
       public string Page { get; set; }
@@ -40,31 +38,15 @@ namespace Builder.Domain.Layouts
          _file = file;
       }
 
-      public void Get(string templateName)
+      public void Get(string templateFolder, Template template)
       {
-         FilePath = Path.Combine(AppContext.BaseDirectory, LocalEnvironment.Folder.Templates, templateName);
-
-         var templateFilename = Path.Combine(FilePath, LocalEnvironment.File.Template);
-
-         var template = ReadTemplate(templateFilename);
-
          Languages = template.Languages;
+
+         TemplateFolder = templateFolder;
 
          LoadMainTemplates(template);
 
          LoadLoopTemplates(template.Loops);
-      }
-
-      private Template ReadTemplate(string fileName)
-      {
-         if (_file.Exists(fileName))
-         {
-            string jsonString = _file.ReadAllText(fileName);
-            var templateConfig = JsonSerializer.Deserialize<Template>(jsonString)!;
-            return templateConfig;
-         }
-
-         return null;
       }
 
       private void LoadMainTemplates(Template template)
@@ -101,7 +83,7 @@ namespace Builder.Domain.Layouts
       {
          if (!string.IsNullOrEmpty(filename))
          {
-            filename = Path.Combine(FilePath, filename);
+            filename = Path.Combine(TemplateFolder, filename);
             return _file.ReadAllText(filename);
          }
 

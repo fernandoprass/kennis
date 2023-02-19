@@ -2,23 +2,28 @@
 {
    public static class LocalEnvironment
    {
-      public static class Extensions
+      public static class Extension
       {
          public const string I18n = ".json";
+         public const string Content = ".md";
       }
 
       public static class File
       {
          public const string Project = "project.json";
          public const string Template = "template.json";
+         public const string Pages = "pages.json";
+         public const string Posts = "posts.json";
       }
 
       public static class Folder
       {
-         public const string I18n = @"i18n\";
          public const string Templates = @"templates\";
+         public const string TemplatesTranslations = @"i18n\";
          public const string Projects = @"projects\";
          public const string Sites = @"sites\";
+         public const string Pages = @"pages\";
+         public const string Posts = @"posts\";
       }
    }
 
@@ -34,6 +39,7 @@
          public const string Language = "{@site.language}";
          public const string GoogleAnalyticTrackingId = "{@site.googleAnalyticTrackingId}";
          public const string Modified = "{@site.modified}";
+         public const string Index = "{@site.index}";
       }
 
       public static class Author
