@@ -19,22 +19,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="projects\KennisDemo\en\pages.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="projects\KennisDemo\en\pages\2023-01-09-first-page.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="projects\KennisDemo\en\pages\2023-01-21-second-page.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="projects\KennisDemo\en\posts.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="projects\KennisDemo\en\posts\2023-01-09-hello-world.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="projects\KennisDemo\en\posts\2023-01-21-second-post.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projects\KennisDemo\en\posts\subfolder\2023-02-11-post-into-a-folder.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projects\KennisDemo\pt-br\pages\2023-01-09-primeira-pagina.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projects\KennisDemo\pt-br\pages\2023-01-21-segunda-pagina.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projects\KennisDemo\pt-br\posts\2023-01-09-ola-mundo.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projects\KennisDemo\pt-br\posts\2023-01-21-segundo-post.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="templates\black-and-white-template\i18n\en.json">
@@ -46,10 +55,6 @@
     <None Update="templates\black-and-white-template\template.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\Contents\" />
   </ItemGroup>
 
 </Project>
