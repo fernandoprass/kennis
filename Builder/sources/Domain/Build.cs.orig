@@ -40,9 +40,16 @@ namespace Builder.Domain
       {
          project = _load.Project(projectName);
 
+<<<<<<< Updated upstream
+
+         foreach (var language in project.Languages)
+         {
+            _site.Load(project.Folders, language.Code);
+=======
          if (project.IsNotNull())
          {
             //todo add validate here
+>>>>>>> Stashed changes
 
             layoutBase = _load.LayoutBase(project.Folders.Template);
 
