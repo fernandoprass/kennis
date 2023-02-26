@@ -2,18 +2,15 @@
 using Builder.Domain.Models;
 using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
-using Markdig.Extensions.Yaml;
 using Markdig;
+using Markdig.Extensions.Yaml;
+using Markdig.Syntax;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using Markdig.Syntax;
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 
 namespace Builder.Domain
 {
@@ -24,8 +21,6 @@ namespace Builder.Domain
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       string YamlHeader(string filename);
-
-      void SaveContentListToJson(List<Content> contentList, string contentPath);
    }
 
    public class Load : ILoad
@@ -102,21 +97,6 @@ namespace Builder.Domain
          }
 
          return default(T);
-      }
-
-      //todo move to a server specific to sava data
-      public void SaveContentListToJson(List<Content> contentList, string contentPath)
-      {
-         var filename = Path.Combine(contentPath, Const.File.ContentList);
-         var options = new JsonSerializerOptions
-         {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
-         }; 
-
-         var json = JsonSerializer.Serialize(contentList, options)!;
-
-         File.WriteAllText(filename, json);
       }
 
       public ContentHeader ContentHeader(string yaml)

@@ -6,14 +6,15 @@ using Myce.Extensions;
 
 namespace Builder.Domain
 {
-   public interface ISite
+   public interface IData
    {
-      void Load(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+      List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
    }
-   public class Site : ISite
+   public class Data : IData
    {
       private readonly ILoad _load;
+      private readonly ISave _save;
       private readonly ILogger<Build> _logger;
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
@@ -22,13 +23,14 @@ namespace Builder.Domain
       private string HtmlPostsPath { get; set; }
       private List<Content> ContentList { get; set; }
 
-      public Site(ILoad load, ILogger<Build> logger)
+      public Data(ILoad load, ISave save, ILogger<Build> logger)
       {
          _load = load;
+         _save =  save;
          _logger = logger;
       }
 
-      public void Load(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
+      public List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
@@ -38,6 +40,8 @@ namespace Builder.Domain
 
          foreach (var file in files)
          {
+            _logger.LogInformation("Reading {0}", file);
+
             string yaml = _load.YamlHeader(file);
 
             if (yaml.IsNotNull())
@@ -57,7 +61,9 @@ namespace Builder.Domain
 
          SortContentList();
 
-         SaveContentList();
+         _save.ContentListToJson(ContentList, ContentBasePath);
+
+         return ContentList;
       }
 
       private void InitializeContentPaths(string projectPath, string languageCode, string htmlPagePath, string htmlPostPath)
@@ -89,7 +95,6 @@ namespace Builder.Domain
          return string.Join(",", keywords);
       }
 
-
       private string GetSlug(string title)
       {
          var slug = title.ToLower().Replace(" ", "-");
@@ -109,11 +114,6 @@ namespace Builder.Domain
       private void SortContentList()
       {
          ContentList.OrderBy(x => x.Type).OrderBy(x => x.Created);
-      }
-
-      private void SaveContentList()
-      {
-         _load.SaveContentListToJson(ContentList, ContentBasePath);
       }
 
       private (string, ContentType) GetFilenameAndContentType(string file)
