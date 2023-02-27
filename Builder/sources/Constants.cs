@@ -39,6 +39,19 @@
             public const string GoogleAnalyticTrackingId = "{@site.googleAnalyticTrackingId}";
             public const string Modified = "{@site.modified}";
             public const string Index = "{@site.index}";
+            public static class Loop
+            {
+               public const string BlogArchive = "{@loop.blog.archive}";
+               public const string BlogCategories = "{@loop.blog.categories}";
+               public const string BlogPostLast10 = "{@loop.blog.posts.last10}";
+               public const string BlogPostLast5 = "{@loop.blog.posts.last5}";
+               public const string BlogPostLast3 = "{@loop.blog.posts.last3}";
+               public const string BlogPosts = "{@loop.blog.posts}";
+               public const string BlogTags = "{@loop.blog.tags}";
+               public const string Languages = "{@loop.languages}";
+               public const string Menu = "{@loop.menu}";
+               public const string SocialMedia = "{@loop.socialMedia}";
+            }
          }
 
          public static class Author

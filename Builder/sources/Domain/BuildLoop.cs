@@ -1,4 +1,5 @@
-﻿using Builder.Domain.Mappers;
+﻿using Builder.Domain.Layouts;
+using Builder.Domain.Mappers;
 using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,11 @@ namespace Builder.Domain
    public interface IBuildLoop
    {
       string Languages(IEnumerable<ProjectLanguage> languages, string defaultLanguage, string layoutBase);
+
+      string Menu(IEnumerable<Content> menu, string layoutBase);
+
+      string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string layoutBase);
+
    }
    public class BuildLoop : IBuildLoop
    {
@@ -23,9 +29,21 @@ namespace Builder.Domain
       {
          var loopItems = languages.ToLoop(defaultLanguage);
 
-         string layout = ParseLoop(layoutBase, loopItems);
+         return ParseLoop(layoutBase, loopItems);
+      }
 
-         return layout;
+      public string Menu(IEnumerable<Content> menu, string layoutBase)
+      {
+         var loopItems = menu.ToLoop();
+
+         return ParseLoop(layoutBase, loopItems);
+      }
+
+      public string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string layoutBase)
+      {
+         var loopItems = socialMedia.ToLoop();
+
+         return ParseLoop(layoutBase, loopItems);
       }
 
       private static string ParseLoop(string layoutBase, IEnumerable<Loop> loopItems)

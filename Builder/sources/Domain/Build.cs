@@ -1,7 +1,7 @@
-﻿using Builder.Domain.Builder;
-using Builder.Domain.Internationalization;
+﻿using Builder.Domain.Internationalization;
 using Builder.Domain.Layouts;
 using Builder.Domain.Models;
+using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
@@ -50,18 +50,35 @@ namespace Builder.Domain
             {
                _logger.LogInformation("Starting create site in {0}", language.Label);
 
-               var folders = project.Sites.First(s => s.Language == language.Code).Folders;
+               var site = project.Sites.First(s => s.Language == language.Code);
 
-               var contentList = _site.GetContentList(project.Folders, language.Code, folders.Pages, folders.BlogPosts);
+               var contentList = _site.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
-               var loopLanguages = _loop.Languages(project.Languages, project.DefaultLanguage, layoutBase.Loops.Languages);
+               string layout = ParseLoops(site, contentList);
 
-               var layout = _translate.To(language.Code, project.Folders.Template, layoutBase.Index);
+               layout = _translate.To(language.Code, project.Folders.Template, layout);
 
                _logger.LogInformation("Ending create site in {0}", language.Label);
             }
          }
       }
 
+      private string ParseLoops(ProjectSite site, List<Content> contentList)
+      {
+         var loopLanguages = _loop.Languages(project.Languages, project.DefaultLanguage, layoutBase.Loops.Languages);
+
+         var loopSocialMedia = _loop.SocialMedia(site.Author.SocialMedia, layoutBase.Loops.SocialMedia);
+
+         var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
+         var loopMenu = _loop.Menu(menuList, layoutBase.Loops.Menu);
+
+         var layout = layoutBase.Index;
+
+         layout = layout.Replace(Const.Tag.Site.Loop.Languages, loopLanguages);
+         layout = layout.Replace(Const.Tag.Site.Loop.Menu, loopMenu);
+         layout = layout.Replace(Const.Tag.Site.Loop.SocialMedia, loopSocialMedia);
+
+         return layout;
+      }
    }
 }
