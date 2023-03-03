@@ -18,7 +18,8 @@ namespace Builder.Domain
       private readonly IBuildLoop _loop;
       private readonly ILogger<Build> _logger;
       private readonly ITranslate _translate;
-      private readonly IData _site;
+      private readonly IData _data;
+      private readonly ISave _save;
 
       private Project project;
       private ILayoutBase layoutBase;
@@ -26,13 +27,15 @@ namespace Builder.Domain
       public Build(ILoad load,
          IBuildLoop loop,
          ILogger<Build> logger,
-         IData site,
+         IData data,
+         ISave save,
          ITranslate translate)
       {
          _load = load;
          _loop = loop;
          _logger = logger;
-         _site = site;
+         _data = data;
+         _save = save;
          _translate = translate;
       }
 
@@ -52,11 +55,13 @@ namespace Builder.Domain
 
                var site = project.Sites.First(s => s.Language == language.Code);
 
-               var contentList = _site.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
+               var contentList = _data.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
                string layout = ParseLoops(site, contentList);
 
                layout = _translate.To(language.Code, project.Folders.Template, layout);
+
+               _save.WebPage("test.html", layout);
 
                _logger.LogInformation("Ending create site in {0}", language.Label);
             }
@@ -65,6 +70,7 @@ namespace Builder.Domain
 
       private string ParseLoops(ProjectSite site, List<Content> contentList)
       {
+         //this methods should be async
          var loopLanguages = _loop.Languages(project.Languages, project.DefaultLanguage, layoutBase.Loops.Languages);
 
          var loopSocialMedia = _loop.SocialMedia(site.Author.SocialMedia, layoutBase.Loops.SocialMedia);
@@ -72,11 +78,19 @@ namespace Builder.Domain
          var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
          var loopMenu = _loop.Menu(menuList, layoutBase.Loops.Menu);
 
+         var posts = contentList.Where(content => content.Type == ContentType.Post);
+         var blogPostsLast10 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast10, 10);
+         var blogPostsLast5 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast5, 5);
+         var blogPostsLast3 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast3, 3);
+
          var layout = layoutBase.Index;
 
          layout = layout.Replace(Const.Tag.Site.Loop.Languages, loopLanguages);
          layout = layout.Replace(Const.Tag.Site.Loop.Menu, loopMenu);
          layout = layout.Replace(Const.Tag.Site.Loop.SocialMedia, loopSocialMedia);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast10, blogPostsLast10);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast5, blogPostsLast5);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast3, blogPostsLast3);
 
          return layout;
       }

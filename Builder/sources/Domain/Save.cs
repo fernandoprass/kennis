@@ -10,6 +10,7 @@ namespace Builder.Domain
    public interface ISave
    {
       void ContentListToJson(List<Content> contentList, string contentPath);
+      void WebPage(string filename, string webPage);
    }
 
    public class Save : ISave
@@ -39,11 +40,25 @@ namespace Builder.Domain
 
             File.WriteAllText(filename, json);
 
-            _logger.LogInformation("Content list save: {0}", filename);
+            _logger.LogInformation("Content list saved: {0}", filename);
          }
          catch(Exception ex)
          { 
             _logger.LogError(ex, "Error when try to save content list at {0}", contentPath);
+         }
+      }
+
+      public void WebPage(string filename, string webPage)
+      {
+         try
+         {
+            File.WriteAllText(filename, webPage);
+
+            _logger.LogInformation("WebPage saved: {0}", filename);
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError(ex, "Error when try to save file {0}", filename);
          }
       }
    }
