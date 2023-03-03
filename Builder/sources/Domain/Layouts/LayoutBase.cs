@@ -73,6 +73,7 @@ namespace Builder.Domain.Layouts
                BlogPostLast3 = LoadFromFile(loops.BlogPostLast3),
                BlogPosts = LoadFromFile(loops.BlogPosts),
                BlogTags = LoadFromFile(loops.BlogTags),
+               Languages = LoadFromFile(loops.Languages),
                Menu = LoadFromFile(loops.Menu),
                SocialMedia = LoadFromFile(loops.SocialMedia)
             };
