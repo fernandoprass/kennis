@@ -52,15 +52,15 @@
                public const string Menu = "{@loop.menu}";
                public const string SocialMedia = "{@loop.socialMedia}";
             }
-         }
 
-         public static class Author
-         {
-            public const string Name = "{@author.name}";
-            public const string Avatar = "{@author.avatar}";
-            public const string Bio = "{@author.bio}";
-            public const string Location = "{@author.location}";
-            public const string Email = "{@author.email}";
+            public static class Author
+            {
+               public const string Name = "{@author.name}";
+               public const string Avatar = "{@author.avatar}";
+               public const string Bio = "{@author.bio}";
+               public const string Location = "{@author.location}";
+               public const string Email = "{@author.email}";
+            }
          }
 
          public static class Loop
@@ -73,8 +73,6 @@
 
          public static class Content
          {
-            public const string Language = "{@content.language}";
-            public const string Author = "{@content.author}";
             public const string Description = "{@content.description}";
             public const string Title = "{@content.title}";
             public const string Slug = "{@content.slug}";
@@ -82,8 +80,8 @@
             public const string Text = "{@content.content}";
             public const string Categories = "{@content.categories}";
             public const string Tags = "{@content.tags}";
-            public const string PublicationDate = "{@content.publicationDate}";
-            public const string UpdateDate = "{@content.updateDate}";
+            public const string Created = "{@content.created}";
+            public const string Updated = "{@content.updated}";
          }
       }
    }

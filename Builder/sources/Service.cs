@@ -38,9 +38,10 @@ namespace Builder
          return services.AddSingleton<IFileWrapper, FileWrapper>()
                         .AddSingleton<ILayoutBase, LayoutBase>()
                         .AddSingleton<ILoad, Load>()
-                        .AddSingleton<IBuildLoop, BuildLoop>()
                         .AddSingleton<ISave, Save>()
                         .AddScoped<IBuild, Build>()
+                        .AddScoped<IBuildLoop, BuildLoop>()
+                        .AddScoped<IBuildTag, BuildTag>()
                         .AddScoped<IData, Data>()
                         .AddScoped<ITranslate, Translate>()
                         .BuildServiceProvider();
