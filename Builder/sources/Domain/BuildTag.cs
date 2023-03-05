@@ -63,10 +63,10 @@ namespace Builder.Domain
             { Const.Tag.Site.Keywords, site.Keywords },
             { Const.Tag.Site.Language, site.Language },
             { Const.Tag.Site.Modified, site.Modified.ToString(site.DateTimeFormat) },
-            { Const.Tag.Site.GoogleAnalyticTrackingId, site.GoogleAnalyticTrackingId},
-
-            //todo missing tags
-            //_tags.Add(Const.Tag.Site.Index, site.);            
+            { Const.Tag.Site.GoogleAnalyticTrackingId, site.GoogleAnalyticTrackingId },
+           
+            //todo missing tags    
+            // { Const.Tag.Site.Index, site.Index },
             //_tags.Add(Const.Tag.Site.BaseUrl, site.);
 
             { Const.Tag.Site.Author.Name, site.Author.Name },

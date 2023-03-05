@@ -21,9 +21,7 @@ namespace Builder.Domain.Mappers
             {
                Icon = language.Icon,
                Title = language.Label,
-               Link = defaultLanguage == language.Code 
-                      ? string.Concat("index", Const.Extension.WebPages)
-                      : string.Concat("index", "-", language.Code, Const.Extension.WebPages)
+               Link = ProjectSite.GetIndex(defaultLanguage, language.Code)
             };
 
             loopItems.Add(item);

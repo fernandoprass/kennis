@@ -58,11 +58,13 @@ namespace Builder.Domain
 
                var site = project.Sites.First(s => s.Language == language.Code);
 
+               site.SetIndex(project.DefaultLanguage);
+
                var contentList = _data.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
-               site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
-
                string layout = ParseLoops(site, contentList);
+
+               site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
                layout = _translate.To(language.Code, project.Folders.Template, layout);
 
