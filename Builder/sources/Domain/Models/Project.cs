@@ -7,7 +7,6 @@
       public string DefaultLanguage { get; set; }
       public byte Pagination { get; set; }
       public string Template { get; set; }
-      public string GoogleAnalyticTrackingId { get; set; }
       public IEnumerable<ProjectLanguage> Languages { get; set; }
       public IEnumerable<ProjectSite> Sites { get; set; }
       public ProjectFolder Folders { get; set; }

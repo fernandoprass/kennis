@@ -16,6 +16,7 @@ namespace Builder.Domain
    {
       private readonly ILoad _load;
       private readonly IBuildLoop _loop;
+      private readonly IBuildTag _tag;
       private readonly ILogger<Build> _logger;
       private readonly ITranslate _translate;
       private readonly IData _data;
@@ -26,6 +27,7 @@ namespace Builder.Domain
 
       public Build(ILoad load,
          IBuildLoop loop,
+         IBuildTag tag,
          ILogger<Build> logger,
          IData data,
          ISave save,
@@ -33,6 +35,7 @@ namespace Builder.Domain
       {
          _load = load;
          _loop = loop;
+         _tag = tag;
          _logger = logger;
          _data = data;
          _save = save;
@@ -55,11 +58,17 @@ namespace Builder.Domain
 
                var site = project.Sites.First(s => s.Language == language.Code);
 
+               site.SetIndex(project.DefaultLanguage);
+
                var contentList = _data.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
                string layout = ParseLoops(site, contentList);
 
+               site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+
                layout = _translate.To(language.Code, project.Folders.Template, layout);
+
+               layout = _tag.Index(layout, site);
 
                _save.WebPage("test.html", layout);
 
@@ -70,7 +79,7 @@ namespace Builder.Domain
 
       private string ParseLoops(ProjectSite site, List<Content> contentList)
       {
-         //this methods should be async
+         //todo => this methods should be async
          var loopLanguages = _loop.Languages(project.Languages, project.DefaultLanguage, layoutBase.Loops.Languages);
 
          var loopSocialMedia = _loop.SocialMedia(site.Author.SocialMedia, layoutBase.Loops.SocialMedia);
