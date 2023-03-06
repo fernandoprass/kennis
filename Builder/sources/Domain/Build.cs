@@ -1,5 +1,4 @@
 ﻿using Builder.Domain.Internationalization;
-using Builder.Domain.Layouts;
 using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using Myce.Extensions;
 
 namespace Builder.Domain
 {
-   public interface IBuild
+    public interface IBuild
    {
       void Builder(string projectName);
    }
@@ -23,7 +22,7 @@ namespace Builder.Domain
       private readonly ISave _save;
 
       private Project project;
-      private ILayoutBase layoutBase;
+      private Layout layoutBase;
 
       public Build(ILoad load,
          IBuildLoop loop,
@@ -50,7 +49,7 @@ namespace Builder.Domain
          {
             //todo add validate here
 
-            layoutBase = _load.LayoutBase(project.Folders.Template);
+            layoutBase = _load.Layout(project.Folders.Template);
 
             foreach (var language in project.Languages)
             {
