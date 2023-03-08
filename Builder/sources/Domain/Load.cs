@@ -18,7 +18,7 @@ namespace Builder.Domain
       List<Content> ContentList(string path);
       Layout Layout(string templateFolder);
       Project Project(string projectName);
-      string YamlHeader(string filename);
+      string YamlContentHeader(string filename);
    }
 
    public class Load : ILoad
@@ -153,7 +153,7 @@ namespace Builder.Domain
       }
       #endregion
 
-      public string YamlHeader(string filename)
+      public string YamlContentHeader(string filename)
       {
          try
          {

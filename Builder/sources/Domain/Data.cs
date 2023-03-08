@@ -42,7 +42,7 @@ namespace Builder.Domain
          {
             _logger.LogInformation("Reading {0}", file);
 
-            string yaml = _load.YamlHeader(file);
+            string yaml = _load.YamlContentHeader(file);
 
             if (yaml.IsNotNull())
             {

@@ -128,7 +128,7 @@ namespace Builder.Tests.Domain
       public void YamlHeader_ReceiveMdFileWithValidYamlHeader_ShouldParse()
       {
          MockLoadTextFile(_mdExtension, LoadTestsMockData.MdFileWithYamlHeader());
-         var yamlFile = _load.YamlHeader(_mdExtension);
+         var yamlFile = _load.YamlContentHeader(_mdExtension);
 
          Assert.Equal("field: value", yamlFile);
       }
