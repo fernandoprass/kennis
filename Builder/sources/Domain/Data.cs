@@ -48,7 +48,8 @@ namespace Builder.Domain
             {
                var header = _load.ContentHeader(yaml);
 
-               if (header.IsNotNull())
+               //Draft contents should not be added
+               if (header.IsNotNull() && !header.Draft)
                {
                   var (filename, contentType) = GetFilenameAndContentType(file);
 

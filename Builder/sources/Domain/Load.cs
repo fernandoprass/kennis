@@ -6,14 +6,13 @@ using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Builder.Domain
 {
-    public interface ILoad
+   public interface ILoad
    {
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
@@ -38,17 +37,14 @@ namespace Builder.Domain
       {
          try
          {
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(LowerCaseNamingConvention.Instance)
-                .Build();
-
-            return deserializer.Deserialize<ContentHeader>(yaml);
+            return ReadYamlFile<ContentHeader>(yaml);
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);
-            return null;
+            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);          
          }
+
+         return null;
       }
 
       public List<Content> ContentList(string path)
@@ -79,13 +75,13 @@ namespace Builder.Domain
 
       private void LoadLayoutMainTemplates(Layout layout, Template template, string folder)
       {
-         layout.Index = ReadHtmlFile(folder, template.Index);
-         layout.Page = ReadHtmlFile(folder, template.Page);
-         layout.Blog = ReadHtmlFile(folder, template.Blog);
-         layout.BlogArchive = ReadHtmlFile(folder, template.BlogArchive);
-         layout.BlogCategories = ReadHtmlFile(folder, template.BlogCategories);
-         layout.BlogPost = ReadHtmlFile(folder, template.BlogPost);
-         layout.BlogTags = ReadHtmlFile(folder, template.BlogTags);
+         layout.Index = ReadTextFile(folder, template.Index);
+         layout.Page = ReadTextFile(folder, template.Page);
+         layout.Blog = ReadTextFile(folder, template.Blog);
+         layout.BlogArchive = ReadTextFile(folder, template.BlogArchive);
+         layout.BlogCategories = ReadTextFile(folder, template.BlogCategories);
+         layout.BlogPost = ReadTextFile(folder, template.BlogPost);
+         layout.BlogTags = ReadTextFile(folder, template.BlogTags);
       }
 
       private LayoutLoop LoadLayoutLoopTemplates(TemplateLoop loops, string folder)
@@ -94,19 +90,21 @@ namespace Builder.Domain
          {
             return null;
          }
+
          var layoutLoop = new LayoutLoop
          {
-            BlogArchive = ReadHtmlFile(folder, loops.BlogArchive),
-            BlogCategories = ReadHtmlFile(folder, loops.BlogCategories),
-            BlogPostLast10 = ReadHtmlFile(folder, loops.BlogPostLast10),
-            BlogPostLast5 = ReadHtmlFile(folder, loops.BlogPostLast5),
-            BlogPostLast3 = ReadHtmlFile(folder, loops.BlogPostLast3),
-            BlogPosts = ReadHtmlFile(folder, loops.BlogPosts),
-            BlogTags = ReadHtmlFile(folder, loops.BlogTags),
-            Languages = ReadHtmlFile(folder, loops.Languages),
-            Menu = ReadHtmlFile(folder, loops.Menu),
-            SocialMedia = ReadHtmlFile(folder, loops.SocialMedia)
+            BlogArchive = ReadTextFile(folder, loops.BlogArchive),
+            BlogCategories = ReadTextFile(folder, loops.BlogCategories),
+            BlogPostLast10 = ReadTextFile(folder, loops.BlogPostLast10),
+            BlogPostLast5 = ReadTextFile(folder, loops.BlogPostLast5),
+            BlogPostLast3 = ReadTextFile(folder, loops.BlogPostLast3),
+            BlogPosts = ReadTextFile(folder, loops.BlogPosts),
+            BlogTags = ReadTextFile(folder, loops.BlogTags),
+            Languages = ReadTextFile(folder, loops.Languages),
+            Menu = ReadTextFile(folder, loops.Menu),
+            SocialMedia = ReadTextFile(folder, loops.SocialMedia)
          };
+
          return layoutLoop;
       }
       #endregion
@@ -163,7 +161,7 @@ namespace Builder.Domain
                 .UseYamlFrontMatter()
                 .Build();
 
-            var mdFile = File.ReadAllText(filename);
+            var mdFile = ReadTextFile(string.Empty, filename);
             var document = Markdown.Parse(mdFile, pipeline);
             var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
             var yaml = yamlHeader.Lines.ToString();
@@ -179,12 +177,19 @@ namespace Builder.Domain
       }
 
       #region File Read
-      private string ReadHtmlFile(string folder, string filename)
+      private string ReadTextFile(string folder, string filename)
       {
          if (!string.IsNullOrEmpty(filename))
          {
-            filename = Path.Combine(folder, filename);
-            return _file.ReadAllText(filename);
+            try
+            {
+               filename = Path.Combine(folder, filename);
+               return _file.ReadAllText(filename);
+            }
+            catch (Exception ex)
+            {
+               _logger.LogError(ex, "Falling when try read file {0} ad {1}", filename, folder);
+            }
          }
 
          return null;
@@ -194,8 +199,38 @@ namespace Builder.Domain
       {
          if (_file.Exists(filename))
          {
-            string jsonString = _file.ReadAllText(filename);
-            return JsonSerializer.Deserialize<T>(jsonString)!;
+            string jsonString = string.Empty;
+            try
+            {
+               jsonString = ReadTextFile(string.Empty, filename);
+
+               return JsonSerializer.Deserialize<T>(jsonString)!;
+            }
+            catch (Exception ex)
+            {
+               _logger.LogError(ex, "Falling when try deserialize JSON file. Json content {0}", jsonString);
+            }
+         }
+
+         return default(T);
+      }
+
+      private T ReadYamlFile<T>(string yaml)
+      {
+         if (yaml.IsNotNull())
+         {
+            try
+            {
+               var deserializer = new DeserializerBuilder()
+                                      .WithNamingConvention(LowerCaseNamingConvention.Instance)
+                                      .Build();
+
+               return deserializer.Deserialize<T>(yaml);
+            }
+            catch (Exception ex)
+            {
+               _logger.LogError(ex, "Falling when try deserialize YAML file. Yaml content {0}", yaml);
+            }
          }
 
          return default(T);
