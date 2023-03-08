@@ -70,7 +70,7 @@
          return @"
             title: content title
             description: content description 
-            created: 2023-01-02 15:05:00 +0100
+            created: 2023-01-02 15:05:00
             updated:
             categories: [kennis]
             tags : [kennis, demo]

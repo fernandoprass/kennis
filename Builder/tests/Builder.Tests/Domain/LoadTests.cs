@@ -109,15 +109,18 @@ namespace Builder.Tests.Domain
       public void ContentHeader_ReceivePathForExistingJsonFile_ShouldReturnListOfContent()
       {
          var contentHeader = _load.ContentHeader(LoadTestsMockData.ContentHeaderYamlFile());
+
          Assert.Equal("content title", contentHeader.Title);
          Assert.Equal("content description", contentHeader.Description);
+         Assert.Equal("2023-01-02 15:05:00", contentHeader.Created.ToString("yyyy-MM-dd HH:mm:ss"));
+         Assert.Equal("hello-world", contentHeader.Reference);
+         Assert.False(contentHeader.Draft);
          Assert.Single(contentHeader.Categories);
          Assert.Equal(2, contentHeader.Tags.Count());
-
+         Assert.Null(contentHeader.Updated);
          Assert.Null(contentHeader.Icon);
       }
       #endregion
-
 
       private void MockLoadTextFile(string extension, string jsonFile)
       {
