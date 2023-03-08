@@ -11,7 +11,8 @@ namespace Builder.Tests.Domain
       private readonly Mock<ILogger<Build>> _loggerMock;
       private readonly ILoad _load;
 
-		private readonly string _jsonExtension = ".json";
+		private readonly string _mdExtension = ".md";
+      private readonly string _jsonExtension = ".json";
       private readonly string _htmlExtension = ".html";
       private readonly string _templateHtmlFile = "HTML Code";
 
@@ -106,7 +107,7 @@ namespace Builder.Tests.Domain
 
       #region ContentHeader Load
       [Fact]
-      public void ContentHeader_ReceivePathForExistingJsonFile_ShouldReturnListOfContent()
+      public void ContentHeader_ReceiveValidYamlFile_ShouldParse()
       {
          var contentHeader = _load.ContentHeader(LoadTestsMockData.ContentHeaderYamlFile());
 
@@ -122,11 +123,22 @@ namespace Builder.Tests.Domain
       }
       #endregion
 
-      private void MockLoadTextFile(string extension, string jsonFile)
+      #region YamlHeader Load
+      [Fact]
+      public void YamlHeader_ReceiveMdFileWithValidYamlHeader_ShouldParse()
       {
-         //Mock Deserialize Template JsonFile
+         MockLoadTextFile(_mdExtension, LoadTestsMockData.MdFileWithYamlHeader());
+         var yamlFile = _load.YamlHeader(_mdExtension);
+
+         Assert.Equal("field: value", yamlFile);
+      }
+      #endregion
+
+      private void MockLoadTextFile(string extension, string textFile)
+      {
+         //Mock read text file
          _fileMock.Setup(x => x.Exists(It.Is<string>(s => s.Contains(extension)))).Returns(true);
-         _fileMock.Setup(x => x.ReadAllText(It.Is<string>(s => s.Contains(extension)))).Returns(jsonFile);
+         _fileMock.Setup(x => x.ReadAllText(It.Is<string>(s => s.Contains(extension)))).Returns(textFile);
       }
    }
 }

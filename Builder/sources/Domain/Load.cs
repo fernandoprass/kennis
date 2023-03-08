@@ -173,7 +173,6 @@ namespace Builder.Domain
             _logger.LogError(ex, "Falling when try to read file {0}", filename);
             return null;
          }
-
       }
 
       #region File Read

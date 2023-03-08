@@ -80,6 +80,11 @@
            ";
       }
 
+      public static string MdFileWithYamlHeader()
+      {
+         return "---\nfield: value\n---\n# MD Command";
+      }
+
       public static string TemplateJsonFile()
       {
          return @"{
