@@ -35,6 +35,7 @@ namespace Builder
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
          return services.AddSingleton<IFileWrapper, FileWrapper>()
+                        .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
                         .AddScoped<IBuild, Build>()

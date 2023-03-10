@@ -1,0 +1,131 @@
+﻿using Builder.Domain;
+using Builder.Domain.Models;
+using Builder.Domain.Wrappers;
+using Microsoft.Extensions.Logging;
+using static Kennis.Builder.Constants.Const;
+
+namespace Builder.Tests.Domain
+{
+   public class DataTests
+   {
+      private readonly Mock<IDirectoryWrapper> _directoryWrapper;
+      private readonly Mock<ILogger<Build>> _loggerMock;
+      private readonly Mock<ILoad> _loadMock;
+      private readonly Mock<ISave> _saveMock;
+
+      private readonly IData _data;
+
+      private readonly string _jsonExtension = ".json";
+
+      public DataTests() {
+         _directoryWrapper = new Mock<IDirectoryWrapper>();
+         _loggerMock= new Mock<ILogger<Build>>();
+         _loadMock = new Mock<ILoad>();
+         _saveMock = new Mock<ISave>();
+
+         _data = new Data(_directoryWrapper.Object, _loadMock.Object, _saveMock.Object, _loggerMock.Object);
+      }
+
+
+      #region GetContentList Tests
+      [Fact]
+      public void GetContentList_ReceiveTwoNewFilesAndEmptyList_ShouldAddBoth()
+      {
+         var projectFolder = new ProjectFolder
+         {
+            Project = "project",
+         };
+
+         MockDataForContentListTests(new List<Content>());
+
+         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+
+         Assert.Single(result.Where(x => x.Type == ContentType.Page));
+         Assert.Single(result.Where(x => x.Type == ContentType.Post));
+      }
+
+      [Fact]
+      public void GetContentList_ReceiveTwoNewFilesAndListThatContainsOneOfThen_ShouldAddOneAndUpdateAnother()
+      {
+         var projectFolder = new ProjectFolder
+         {
+            Project = "project",
+         };
+
+         MockDataForContentListTests(CreateContentList());
+
+         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+
+         Assert.Equal(3, result.Count());
+      }
+
+      private void MockDataForContentListTests(List<Content> contentList)
+      {
+         var files = new string[] { @"c:\project\en\pages\page.md", @"c:\project\en\posts\post.md", @"c:\posts\draft.md" };
+         var yamlPage = "page content header";
+         var yamlPost = "post content header";
+         var yamlDraft = "draft content header";
+
+         var pageContentHeader = new ContentHeader
+         {
+            Title = "My Page",
+            Draft = false,
+         };
+
+         var postContentHeader = new ContentHeader
+         {
+            Title = "My Post",
+            Draft = false,
+         };
+
+         var draftContentHeader = new ContentHeader
+         {
+            Title = "My Draft Post",
+            Draft = true,
+         };
+
+         _loadMock.Setup(x => x.ContentList(It.IsAny<string>())).Returns(contentList);
+
+         _loadMock.Setup(x => x.YamlContentHeader(files[0])).Returns(yamlPage);
+         _loadMock.Setup(x => x.YamlContentHeader(files[1])).Returns(yamlPost);
+         _loadMock.Setup(x => x.YamlContentHeader(files[2])).Returns(yamlDraft);
+
+         _loadMock.Setup(x => x.ContentHeader(yamlPage)).Returns(pageContentHeader);
+         _loadMock.Setup(x => x.ContentHeader(yamlPost)).Returns(postContentHeader);
+         _loadMock.Setup(x => x.ContentHeader(yamlDraft)).Returns(draftContentHeader);
+
+         _directoryWrapper.Setup(x => x.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SearchOption>())).Returns(files);
+      }
+
+      #endregion
+
+      #region SaveContentList Tests
+      [Fact]
+      public void SaveContentList_ReceiveListOfContent_ShouldSave()
+		{
+         var contentList = CreateContentList();
+
+         _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList)).Verifiable();
+
+         _data.SaveContentList(@"c:\data\", contentList);
+
+         _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList), Times.Once);
+		}
+      #endregion
+
+      #region Private Methods
+      private static List<Content> CreateContentList()
+      {
+         return new List<Content> {
+            new Content
+            {
+               Title = "Test",
+               Filename = "page.md",
+               Type = ContentType.Page,
+               Created = DateTime.Now,
+            }
+         };
+      }
+      #endregion
+   }
+}
