@@ -1,6 +1,4 @@
-﻿using Builder.Domain.Models;
-using Builder.Domain.Wrappers;
-using Kennis.Builder.Constants;
+﻿using Builder.Domain.Wrappers;
 using Microsoft.Extensions.Logging;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -9,8 +7,8 @@ namespace Builder.Domain
 {
    public interface ISave
    {
-      void ContentListToJson(List<Content> contentList, string contentPath);
-      void WebPage(string filename, string webPage);
+      void ToJsonFile<T>(string filename, T contentList);
+      void ToHtmlFile(string filename, string webPage);
    }
 
    public class Save : ISave
@@ -25,11 +23,10 @@ namespace Builder.Domain
          _logger = logger;
       }
 
-      public void ContentListToJson(List<Content> contentList, string contentPath)
+      public void ToJsonFile<T>(string filename, T contentList)
       {
          try
          {
-            var filename = Path.Combine(contentPath, Const.File.ContentList);
             var options = new JsonSerializerOptions
             {
                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -38,23 +35,28 @@ namespace Builder.Domain
 
             var json = JsonSerializer.Serialize(contentList, options)!;
 
-            File.WriteAllText(filename, json);
+            ToHtmlFile(filename, json);
 
-            _logger.LogInformation("Content list saved: {0}", filename);
+            _logger.LogInformation("Json file serialized: {0}", filename);
          }
          catch(Exception ex)
          { 
-            _logger.LogError(ex, "Error when try to save content list at {0}", contentPath);
+            _logger.LogError(ex, "Error when try to serialize to Json {0}", filename);
          }
       }
 
-      public void WebPage(string filename, string webPage)
+      public void ToHtmlFile(string filename, string webPage)
+      {
+         ToTxtFile(filename, webPage);
+      }
+
+      private void ToTxtFile(string filename, string content)
       {
          try
          {
-            File.WriteAllText(filename, webPage);
+            _file.WriteAllText(filename, content);
 
-            _logger.LogInformation("WebPage saved: {0}", filename);
+            _logger.LogInformation("File saved: {0}", filename);
          }
          catch (Exception ex)
          {

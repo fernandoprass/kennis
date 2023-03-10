@@ -10,7 +10,9 @@ namespace Builder.Domain
    {
       List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
+      void SaveContentList(string contentPath, List<Content> contentList);
    }
+
    public class Data : IData
    {
       private readonly ILoad _load;
@@ -30,6 +32,7 @@ namespace Builder.Domain
          _logger = logger;
       }
 
+      #region Public methods
       public List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
@@ -62,11 +65,18 @@ namespace Builder.Domain
 
          SortContentList();
 
-         _save.ContentListToJson(ContentList, ContentBasePath);
-
          return ContentList;
       }
 
+      public void SaveContentList(string contentPath, List<Content> contentList)
+      {
+         var filename = Path.Combine(contentPath, Const.File.ContentList);
+         _save.ToJsonFile(filename, contentList);
+      }
+
+      #endregion
+
+      #region Private methods
       private void InitializeContentPaths(string projectPath, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          ContentBasePath = Path.Combine(projectPath, languageCode);
@@ -159,5 +169,6 @@ namespace Builder.Domain
          var files = Directory.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
          return files;
       }
+      #endregion
    }
 }

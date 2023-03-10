@@ -69,8 +69,9 @@ namespace Builder.Domain
 
                layout = _tag.Index(layout, site);
 
-               _save.ContentListToJson(contentList, Path.Combine(project.Folders.Project, site.Language));
-               _save.WebPage("test.html", layout);
+               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language), contentList);
+
+               _save.ToHtmlFile("test.html", layout);
 
                _logger.LogInformation("Ending create site in {0}", language.Label);
             }
