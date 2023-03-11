@@ -29,11 +29,11 @@ namespace Builder.Tests.Domain
 
       #region GetContentList Tests
       [Fact]
-      public void GetContentList_ReceiveTwoNewFilesAndEmptyList_ShouldAddBoth()
+      public void GetContentList_ReceiveTwoNewContentsAndEmptyList_ShouldAddBoth()
       {
          var projectFolder = new ProjectFolder
          {
-            Project = "project",
+            Project = @"c:\project"
          };
 
          MockDataForContentListTests(new List<Content>());
@@ -45,20 +45,60 @@ namespace Builder.Tests.Domain
       }
 
       [Fact]
-      public void GetContentList_ReceiveTwoNewFilesAndListThatContainsOneOfThen_ShouldAddOneAndUpdateAnother()
+      public void GetContentList_ReceiveTwoNewContentsOneContentInDraftAndEmptyList_ShouldIgnoreTheDraftContent()
       {
          var projectFolder = new ProjectFolder
          {
-            Project = "project",
+            Project = @"c:\project"
          };
 
-         MockDataForContentListTests(CreateContentList());
+         MockDataForContentListTests(new List<Content>());
 
          var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         Assert.Equal(3, result.Count());
+         Assert.Equal(2, result.Count());
+         Assert.Empty(result.Where(x => x. Draft));
       }
 
+      [Fact]
+      public void GetContentList_ReceiveTwoNewContentsAndListThatContainsOneOfTheContent_ShouldAddOneAndUpdateAnother()
+      {
+         var projectFolder = new ProjectFolder
+         {
+            Project = @"c:\project"
+         };
+
+         var contentList = CreateContentList();
+
+         MockDataForContentListTests(contentList);
+
+         string oldPageTitle = contentList.Single(x => x.Type == ContentType.Page).Title;
+
+         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+
+         string newPageTitle = result.Single(x => x.Type == ContentType.Page).Title;
+
+         Assert.Equal(2, result.Count());
+         Assert.NotEqual(newPageTitle, oldPageTitle);
+         Assert.Null(result.First().Categories);
+      }
+      #endregion
+
+      #region SaveContentList Tests
+      [Fact]
+      public void SaveContentList_ReceiveListOfContent_ShouldSave()
+		{
+         var contentList = CreateContentList();
+
+         _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList)).Verifiable();
+
+         _data.SaveContentList(@"c:\data\", contentList);
+
+         _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList), Times.Once);
+		}
+      #endregion
+
+      #region Private Methods
       private void MockDataForContentListTests(List<Content> contentList)
       {
          var files = new string[] { @"c:\project\en\pages\page.md", @"c:\project\en\posts\post.md", @"c:\posts\draft.md" };
@@ -97,29 +137,13 @@ namespace Builder.Tests.Domain
          _directoryWrapper.Setup(x => x.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SearchOption>())).Returns(files);
       }
 
-      #endregion
-
-      #region SaveContentList Tests
-      [Fact]
-      public void SaveContentList_ReceiveListOfContent_ShouldSave()
-		{
-         var contentList = CreateContentList();
-
-         _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList)).Verifiable();
-
-         _data.SaveContentList(@"c:\data\", contentList);
-
-         _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList), Times.Once);
-		}
-      #endregion
-
-      #region Private Methods
       private static List<Content> CreateContentList()
       {
          return new List<Content> {
             new Content
             {
-               Title = "Test",
+               Title = "Mock Content",
+               Categories = new string[] { "cat1", "cat2"},
                Filename = "page.md",
                Type = ContentType.Page,
                Created = DateTime.Now,
