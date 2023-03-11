@@ -1,5 +1,6 @@
 ﻿using Builder.Domain.Mappers;
 using Builder.Domain.Models;
+using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
@@ -10,9 +11,12 @@ namespace Builder.Domain
    {
       List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
+      void SaveContentList(string contentPath, List<Content> contentList);
    }
+
    public class Data : IData
    {
+      private readonly IDirectoryWrapper _directoryWrapper;
       private readonly ILoad _load;
       private readonly ISave _save;
       private readonly ILogger<Build> _logger;
@@ -23,13 +27,18 @@ namespace Builder.Domain
       private string HtmlPostsPath { get; set; }
       private List<Content> ContentList { get; set; }
 
-      public Data(ILoad load, ISave save, ILogger<Build> logger)
+      public Data(IDirectoryWrapper directoryWrapper,
+         ILoad load, 
+         ISave save, 
+         ILogger<Build> logger)
       {
+         _directoryWrapper = directoryWrapper;
          _load = load;
          _save =  save;
          _logger = logger;
       }
 
+      #region Public methods
       public List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
@@ -42,13 +51,14 @@ namespace Builder.Domain
          {
             _logger.LogInformation("Reading {0}", file);
 
-            string yaml = _load.YamlHeader(file);
+            string yaml = _load.YamlContentHeader(file);
 
             if (yaml.IsNotNull())
             {
                var header = _load.ContentHeader(yaml);
 
-               if (header.IsNotNull())
+               //Draft contents should not be added
+               if (header.IsNotNull() && !header.Draft)
                {
                   var (filename, contentType) = GetFilenameAndContentType(file);
 
@@ -61,11 +71,18 @@ namespace Builder.Domain
 
          SortContentList();
 
-         _save.ContentListToJson(ContentList, ContentBasePath);
-
          return ContentList;
       }
 
+      public void SaveContentList(string contentPath, List<Content> contentList)
+      {
+         var filename = Path.Combine(contentPath, Const.File.ContentList);
+         _save.ToJsonFile(filename, contentList);
+      }
+
+      #endregion
+
+      #region Private methods
       private void InitializeContentPaths(string projectPath, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          ContentBasePath = Path.Combine(projectPath, languageCode);
@@ -79,8 +96,9 @@ namespace Builder.Domain
       {
          foreach(var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
          {
+            var category = content.Categories?.FirstOrDefault();
             content.Keywords = GetKeywords(content.Categories, content.Tags);
-            content.Url = GetUrl(content.Type, content.Title, content.Categories.FirstOrDefault(), content.Created.Year);
+            content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
          }
       }
 
@@ -97,6 +115,10 @@ namespace Builder.Domain
 
       private string GetSlug(string title)
       {
+         if (title.IsNull())
+         {
+            return string.Empty;
+         }
          var slug = title.ToLower().Replace(" ", "-");
          slug = slug.RemoveAccents();
          return slug;
@@ -155,8 +177,9 @@ namespace Builder.Domain
       private string[] GetFiles()
       {
          var criteria = "*" + Const.Extension.Content;
-         var files = Directory.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
+         var files = _directoryWrapper.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
          return files;
       }
+      #endregion
    }
 }

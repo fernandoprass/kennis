@@ -1,6 +1,5 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Internationalization;
-using Builder.Domain.Layouts;
 using Builder.Domain.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -36,7 +35,7 @@ namespace Builder
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
          return services.AddSingleton<IFileWrapper, FileWrapper>()
-                        .AddSingleton<ILayoutBase, LayoutBase>()
+                        .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
                         .AddScoped<IBuild, Build>()
