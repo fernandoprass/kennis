@@ -45,6 +45,27 @@ namespace Builder.Tests.Domain
       }
 
       [Fact]
+      public void GetContentList_ReceiveContentWithCategoriesAndTags_ShouldImport()
+      {
+         var projectFolder = new ProjectFolder
+         {
+            Project = @"c:\project"
+         };
+
+         MockDataForContentListTests(new List<Content>());
+
+         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+
+         var post = result.Single(x => x.Type == ContentType.Post);
+
+         Assert.Single(post.Categories);
+         Assert.Equal(2, post.Tags.Count());
+         Assert.Contains(post.Categories.First(), post.Keywords);
+         Assert.Contains(post.Tags.First(), post.Keywords);
+         Assert.Contains(post.Tags.Last(), post.Keywords);
+      }
+
+      [Fact]
       public void GetContentList_ReceiveTwoNewContentsOneContentInDraftAndEmptyList_ShouldIgnoreTheDraftContent()
       {
          var projectFolder = new ProjectFolder
@@ -115,6 +136,8 @@ namespace Builder.Tests.Domain
          var postContentHeader = new ContentHeader
          {
             Title = "My Post",
+            Categories = new string[] { "cat1" },
+            Tags = new string[] { "tag1", "tag2" },
             Draft = false,
          };
 
@@ -143,7 +166,8 @@ namespace Builder.Tests.Domain
             new Content
             {
                Title = "Mock Content",
-               Categories = new string[] { "cat1", "cat2"},
+               Categories = new string[] { "cat1"},
+               Tags = new string[] { "tag1", "tag2"},
                Filename = "page.md",
                Type = ContentType.Page,
                Created = DateTime.Now,
