@@ -24,6 +24,15 @@ namespace Builder.Domain
       private Project project;
       private Layout layoutBase;
 
+      private string LoopLanguagesParsed { get; set; }
+      private string LoopSocialMediaParsed { get; set; }
+      private string LoopMenuParsed { get; set; }
+      private string BlogPostsLast10Parsed { get; set; }
+      private string BlogPostsLast5Parsed { get; set; }
+      private string BlogPostsLast3Parsed { get; set; }
+
+
+
       public Build(ILoad load,
          IBuildLoop loop,
          IBuildTag tag,
@@ -51,56 +60,64 @@ namespace Builder.Domain
 
             layoutBase = _load.Layout(project.Folders.Template);
 
-            foreach (var language in project.Languages)
+            foreach (var site in project.Sites)
             {
-               _logger.LogInformation("Starting create site in {0}", language.Label);
+               _logger.LogInformation("Starting create site in {0}", site.Language.Label);
 
-               var site = project.Sites.First(s => s.Language == language.Code);
+               site.SetIndexFileName(project.DefaultLanguageCode);
 
-               site.SetIndex(project.DefaultLanguage);
+               var contentList = _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
-               var contentList = _data.GetContentList(project.Folders, language.Code, site.Folders.Pages, site.Folders.BlogPosts);
-
-               string layout = ParseLoops(site, contentList);
+               ParseLoopLayouts(site, contentList);
 
                site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
-               layout = _translate.To(language.Code, project.Folders.Template, layout);
+               ParseIndexFile(site, contentList);
 
-               layout = _tag.Index(layout, site);
-
-               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language), contentList);
-
-               _save.ToHtmlFile("test.html", layout);
-
-               _logger.LogInformation("Ending create site in {0}", language.Label);
+               _logger.LogInformation("Ending create site in {0}", site.Language.Label);
             }
          }
       }
 
-      private string ParseLoops(ProjectSite site, List<Content> contentList)
+      private void ParseIndexFile(ProjectSite site, List<Content> contentList)
+      {
+         var layout = ParseHtmlFile(layoutBase.Index);
+
+         layout = _translate.To(site.Language.Code, project.Folders.Template, layout);
+
+         layout = _tag.Index(layout, site);
+
+         _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
+
+         _save.ToHtmlFile(site.IndexFileName, layout);
+      }
+
+      private void ParseLoopLayouts(ProjectSite site, List<Content> contentList)
       {
          //todo => this methods should be async
-         var loopLanguages = _loop.Languages(project.Languages, project.DefaultLanguage, layoutBase.Loops.Languages);
+         var languages = project.Sites.Select(x => x.Language);
 
-         var loopSocialMedia = _loop.SocialMedia(site.Author.SocialMedia, layoutBase.Loops.SocialMedia);
+         LoopLanguagesParsed = _loop.Languages(languages, project.DefaultLanguageCode, layoutBase.Loops.Languages);
+
+         LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, layoutBase.Loops.SocialMedia);
 
          var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
-         var loopMenu = _loop.Menu(menuList, layoutBase.Loops.Menu);
+         LoopMenuParsed = _loop.Menu(menuList, layoutBase.Loops.Menu);
 
          var posts = contentList.Where(content => content.Type == ContentType.Post);
-         var blogPostsLast10 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast10, 10);
-         var blogPostsLast5 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast5, 5);
-         var blogPostsLast3 = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast3, 3);
+         BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast10, 10);
+         BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast5, 5);
+         BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, layoutBase.Loops.BlogPostLast3, 3);
+      }
 
-         var layout = layoutBase.Index;
-
-         layout = layout.Replace(Const.Tag.Site.Loop.Languages, loopLanguages);
-         layout = layout.Replace(Const.Tag.Site.Loop.Menu, loopMenu);
-         layout = layout.Replace(Const.Tag.Site.Loop.SocialMedia, loopSocialMedia);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast10, blogPostsLast10);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast5, blogPostsLast5);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast3, blogPostsLast3);
+      private string ParseHtmlFile(string layout)
+      {
+         layout = layout.Replace(Const.Tag.Site.Loop.Languages, LoopLanguagesParsed);
+         layout = layout.Replace(Const.Tag.Site.Loop.Menu, LoopMenuParsed);
+         layout = layout.Replace(Const.Tag.Site.Loop.SocialMedia, LoopSocialMediaParsed);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast10, BlogPostsLast10Parsed);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast5, BlogPostsLast5Parsed);
+         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast3, BlogPostsLast3Parsed);
 
          return layout;
       }

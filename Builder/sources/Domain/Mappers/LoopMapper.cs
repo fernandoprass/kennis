@@ -6,7 +6,7 @@ namespace Builder.Domain.Mappers
 {
    public static class LoopMapper
    {
-      public static IEnumerable<Loop> ToLoop(this IEnumerable<ProjectLanguage> languages, string defaultLanguage)
+      public static IEnumerable<Loop> ToLoop(this IEnumerable<Language> languages, string defaultLanguage)
       {
          if (languages.IsNull())
          {
@@ -21,7 +21,7 @@ namespace Builder.Domain.Mappers
             {
                Icon = language.Icon,
                Title = language.Label,
-               Link = ProjectSite.GetIndex(defaultLanguage, language.Code)
+               Link = ProjectSite.GetIndexFileName(defaultLanguage, language.Code)
             };
 
             loopItems.Add(item);

@@ -58,7 +58,7 @@ namespace Builder.Domain
             { Const.Tag.Site.Subtitle, site.Subtitle },
             { Const.Tag.Site.Description, site.Description },
             { Const.Tag.Site.Keywords, site.Keywords },
-            { Const.Tag.Site.Language, site.Language },
+            { Const.Tag.Site.Language, site.Language.Code },
             { Const.Tag.Site.Modified, site.Modified.ToString(site.DateTimeFormat) },
             { Const.Tag.Site.GoogleAnalyticTrackingId, site.GoogleAnalyticTrackingId },
            

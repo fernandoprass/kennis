@@ -11,7 +11,7 @@ namespace Builder.Domain
    {
       string BlogPostsLastX(IEnumerable<Content> posts, string layoutBase, int numberOfPosts);
 
-      string Languages(IEnumerable<ProjectLanguage> languages, string defaultLanguage, string layoutBase);
+      string Languages(IEnumerable<Language> languages, string defaultLanguage, string layoutBase);
 
       string Menu(IEnumerable<Content> menu, string layoutBase);
 
@@ -34,7 +34,7 @@ namespace Builder.Domain
          return ParseLoop(layoutBase, loopItems);
       }
 
-      public string Languages(IEnumerable<ProjectLanguage> languages, string defaultLanguage, string layoutBase)
+      public string Languages(IEnumerable<Language> languages, string defaultLanguage, string layoutBase)
       {
          var loopItems = languages.ToLoop(defaultLanguage);
 

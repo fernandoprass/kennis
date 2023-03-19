@@ -1,6 +1,6 @@
 ﻿namespace Builder.Domain.Models
 {
-    public class ProjectLanguage
+    public class Language
     {
         public string Code { get; set; }
         public string Icon { get; set; }
