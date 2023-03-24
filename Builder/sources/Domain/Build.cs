@@ -87,6 +87,8 @@ namespace Builder.Domain
 
          layout = _tag.Index(layout, site);
 
+         _logger.LogInformation("Index html page parsed", site.Language.Label);
+
          _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
 
          _save.ToHtmlFile(site.IndexFileName, layout);
