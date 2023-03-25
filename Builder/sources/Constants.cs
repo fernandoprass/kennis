@@ -13,6 +13,7 @@
       {
          public const string Project = "project.json";
          public const string ContentList = "content.json";
+         public const string Index = "index.html";
          public const string Template = "template.json";
       }
 

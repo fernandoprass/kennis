@@ -7,6 +7,7 @@ namespace Builder.Domain
 {
    public interface IBuildTag
    {
+      string Content(string layoutBase, Content content, string dateTimeFormat);
       string Index(string layoutBase, ProjectSite site);
    }
 
@@ -24,6 +25,13 @@ namespace Builder.Domain
       public string Index(string layoutBase, ProjectSite site)
       {
          var tags = GetSiteTags(site);
+
+         return ParseTags(layoutBase, tags);
+      }
+
+      public string Content(string layoutBase, Content content, string dateTimeFormat)
+      {
+         var tags = GetContentTags(content, dateTimeFormat);
 
          return ParseTags(layoutBase, tags);
       }

@@ -6,7 +6,7 @@ using Myce.Extensions;
 
 namespace Builder.Domain
 {
-    public interface IBuild
+   public interface IBuild
    {
       void Builder(string projectName);
    }
@@ -72,26 +72,76 @@ namespace Builder.Domain
 
                site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
-               ParseIndexFile(site, contentList);
+               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
+
+               ParseIndexFile(site);
+
+               ParseBlogIndexFile(site);
+
+               ParseContentFile(site, ContentType.Page, contentList);
+
+               ParseContentFile(site, ContentType.Post, contentList);
+
 
                _logger.LogInformation("Ending create site in {0}", site.Language.Label);
             }
          }
       }
 
-      private void ParseIndexFile(ProjectSite site, List<Content> contentList)
+      private void ParseIndexFile(ProjectSite site)
       {
-         var layout = ParseHtmlFile(layoutBase.Index);
+         string layout = ParseHtmlFile(layoutBase.Index);
 
          layout = _translate.To(site.Language.Code, project.Folders.Template, layout);
 
          layout = _tag.Index(layout, site);
 
-         _logger.LogInformation("Index html page parsed", site.Language.Label);
-
-         _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
+         _logger.LogInformation("Index html page parsed - " + site.Language.Label);
 
          _save.ToHtmlFile(site.IndexFileName, layout);
+      }
+
+      private void ParseBlogIndexFile(ProjectSite site)
+      {
+         string layout = ParseHtmlFile(layoutBase.Blog);
+
+         layout = _translate.To(site.Language.Code, project.Folders.Template, layout);
+
+         layout = _tag.Index(layout, site);
+
+         _logger.LogInformation("Blog index html page parsed");
+
+         _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, layout);
+      }
+
+      private void ParseContentFile(ProjectSite site, ContentType contentType,  IEnumerable<Content> contentList)
+      {
+         var type = contentType == ContentType.Page ? "pages" :"posts";
+
+         var contents = contentType == ContentType.Page
+                        ? contentList.Where(x => x.Type.Equals(ContentType.Page))
+                        : contentList.Where(x => x.Type.Equals(ContentType.Post));
+
+         string layout = contentType == ContentType.Page
+                         ? ParseHtmlFile(layoutBase.Page)
+                         : ParseHtmlFile(layoutBase.BlogPost);
+
+         layout = _translate.To(site.Language.Code, project.Folders.Template, layout);
+
+         var folder = contentType == ContentType.Page
+                         ? site.Folders.Pages
+                         : site.Folders.BlogPosts;
+
+         _logger.LogInformation("Start to parsed {0}", type);
+
+         foreach (var content in contents)
+         {
+            string post = _tag.Content(layout, content, site.DateTimeFormat);
+            _logger.LogInformation("Content parsed: " + content.Title);
+            _save.ToHtmlFile(folder + content.Filename, post);
+         }
+
+         _logger.LogInformation("Finish to parsed {0}", type);
       }
 
       private void ParseLoopLayouts(ProjectSite site, List<Content> contentList)
