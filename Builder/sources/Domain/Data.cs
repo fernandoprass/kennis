@@ -12,6 +12,8 @@ namespace Builder.Domain
       List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
       void SaveContentList(string contentPath, List<Content> contentList);
+
+      void UpdateProjectSite(string defaulfLanguageCode, ProjectSite projectSite);
    }
 
    public class Data : IData
@@ -78,6 +80,13 @@ namespace Builder.Domain
       {
          var filename = Path.Combine(contentPath, Const.File.ContentList);
          _save.ToJsonFile(filename, contentList);
+      }
+
+      public void UpdateProjectSite(string defaulfLanguageCode, ProjectSite projectSite)
+      {
+         projectSite.IndexFileName = projectSite.Language.Code.Equals(defaulfLanguageCode)
+                                   ? string.Concat("index", Const.Extension.WebPages)
+                                   : string.Concat("index", "-", language, Const.Extension.WebPages);
       }
 
       #endregion

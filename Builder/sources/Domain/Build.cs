@@ -21,8 +21,8 @@ namespace Builder.Domain
       private readonly IData _data;
       private readonly ISave _save;
 
-      private Project project;
-      private Layout layoutBase;
+      private Project project { get; set; }
+      private Layout layoutBase { get; set; }
 
       private string LoopLanguagesParsed { get; set; }
       private string LoopSocialMediaParsed { get; set; }
@@ -30,8 +30,6 @@ namespace Builder.Domain
       private string BlogPostsLast10Parsed { get; set; }
       private string BlogPostsLast5Parsed { get; set; }
       private string BlogPostsLast3Parsed { get; set; }
-
-
 
       public Build(ILoad load,
          IBuildLoop loop,
@@ -64,7 +62,7 @@ namespace Builder.Domain
             {
                _logger.LogInformation("Starting create site in {0}", site.Language.Label);
 
-               site.SetIndexFileName(project.DefaultLanguageCode);
+               _data.UpdateProjectSite(project.DefaultLanguageCode, site);
 
                var contentList = _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
