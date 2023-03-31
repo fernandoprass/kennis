@@ -2,7 +2,6 @@
 using Builder.Domain.Models;
 using Builder.Domain.Wrappers;
 using Microsoft.Extensions.Logging;
-using static Kennis.Builder.Constants.Const;
 
 namespace Builder.Tests.Domain
 {

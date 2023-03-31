@@ -1,6 +1,4 @@
-﻿using Kennis.Builder.Constants;
-
-namespace Builder.Domain.Models
+﻿namespace Builder.Domain.Models
 {
    public class ProjectSite
    {
@@ -10,17 +8,9 @@ namespace Builder.Domain.Models
       public string Description { get; set; }
       public string Keywords { get; set; }
       public string DateTimeFormat { get; set; }
-      public string? IndexFileName { get; set; }
       public DateTime Modified { get; set; }
       public string? GoogleAnalyticTrackingId { get; set; }
       public Author Author { get; set; }
       public ProjectSiteFolders Folders { get; set; }
-
-      public static string GetIndexFileName(string defaultLanguage, string language)
-      {
-         return defaultLanguage == language
-                                   ? string.Concat("index", Const.Extension.WebPages)
-                                   : string.Concat("index", "-", language, Const.Extension.WebPages);
-      }
    }
 }

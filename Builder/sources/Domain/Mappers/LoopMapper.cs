@@ -21,7 +21,7 @@ namespace Builder.Domain.Mappers
             {
                Icon = language.Icon,
                Title = language.Label,
-               Link = ProjectSite.GetIndexFileName(defaultLanguage, language.Code)
+               Link = language.IndexFileName
             };
 
             loopItems.Add(item);

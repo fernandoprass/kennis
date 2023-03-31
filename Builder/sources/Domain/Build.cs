@@ -56,19 +56,21 @@ namespace Builder.Domain
          {
             //todo add validate here
 
+            _data.UpdateLanguageIndexFileName(project.DefaultLanguageCode, project.Sites);
+
             layoutBase = _load.Layout(project.Folders.Template);
 
             foreach (var site in project.Sites)
             {
                _logger.LogInformation("Starting create site in {0}", site.Language.Label);
 
-               _data.UpdateProjectSite(project.DefaultLanguageCode, site);
-
                var contentList = _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
                ParseLoopLayouts(site, contentList);
 
-               site.Modified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+               var lastModified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+
+               _data.UpdateProjectSiteModified(lastModified, site);
 
                _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
 
@@ -96,7 +98,7 @@ namespace Builder.Domain
 
          _logger.LogInformation("Index html page parsed - " + site.Language.Label);
 
-         _save.ToHtmlFile(site.IndexFileName, layout);
+         _save.ToHtmlFile(site.Language.IndexFileName, layout);
       }
 
       private void ParseBlogIndexFile(ProjectSite site)
@@ -142,7 +144,7 @@ namespace Builder.Domain
          _logger.LogInformation("Finish to parsed {0}", type);
       }
 
-      private void ParseLoopLayouts(ProjectSite site, List<Content> contentList)
+      private void ParseLoopLayouts(ProjectSite site, IEnumerable<Content> contentList)
       {
          //todo => this methods should be async
          var languages = project.Sites.Select(x => x.Language);

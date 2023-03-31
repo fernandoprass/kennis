@@ -9,11 +9,13 @@ namespace Builder.Domain
 {
    public interface IData
    {
-      List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+      IEnumerable<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
-      void SaveContentList(string contentPath, List<Content> contentList);
+      void SaveContentList(string contentPath, IEnumerable<Content> contentList);
 
-      void UpdateProjectSite(string defaulfLanguageCode, ProjectSite projectSite);
+      void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> pro);
+
+      void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
 
    public class Data : IData
@@ -30,18 +32,18 @@ namespace Builder.Domain
       private List<Content> ContentList { get; set; }
 
       public Data(IDirectoryWrapper directoryWrapper,
-         ILoad load, 
-         ISave save, 
+         ILoad load,
+         ISave save,
          ILogger<Build> logger)
       {
          _directoryWrapper = directoryWrapper;
          _load = load;
-         _save =  save;
+         _save = save;
          _logger = logger;
       }
 
       #region Public methods
-      public List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
+      public IEnumerable<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
@@ -76,17 +78,26 @@ namespace Builder.Domain
          return ContentList;
       }
 
-      public void SaveContentList(string contentPath, List<Content> contentList)
+      public void SaveContentList(string contentPath, IEnumerable<Content> contentList)
       {
          var filename = Path.Combine(contentPath, Const.File.ContentList);
          _save.ToJsonFile(filename, contentList);
       }
 
-      public void UpdateProjectSite(string defaulfLanguageCode, ProjectSite projectSite)
+
+      public void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> projectSites)
       {
-         projectSite.IndexFileName = projectSite.Language.Code.Equals(defaulfLanguageCode)
-                                   ? string.Concat("index", Const.Extension.WebPages)
-                                   : string.Concat("index", "-", language, Const.Extension.WebPages);
+         foreach (var projectSite in projectSites)
+         {
+            projectSite.Language.IndexFileName = projectSite.Language.Code.Equals(defaulfLanguageCode)
+                                                 ? string.Concat("index", Const.Extension.WebPages)
+                                                 : string.Concat("index", "-", projectSite.Language.Code, Const.Extension.WebPages);
+         }
+      }
+
+      public void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite)
+      {
+         projectSite.Modified = lastModified;
       }
 
       #endregion
@@ -103,7 +114,7 @@ namespace Builder.Domain
 
       private void UpdateContentField()
       {
-         foreach(var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
+         foreach (var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
          {
             var category = content.Categories?.FirstOrDefault();
             content.Keywords = GetKeywords(content.Categories, content.Tags);
@@ -115,10 +126,11 @@ namespace Builder.Domain
       {
          var keywords = categories.HasData() ? categories : new List<string>();
 
-         if (tags.HasData()) { 
+         if (tags.HasData())
+         {
             keywords = keywords.Union(tags);
          }
-         
+
          return string.Join(",", keywords);
       }
 
@@ -165,7 +177,7 @@ namespace Builder.Domain
          if (content.IsNull())
          {
             content = contentHeader.ToContent();
-            content.Type= contentType;
+            content.Type = contentType;
             content.Filename = filename;
 
             ContentList.Add(content);
