@@ -9,9 +9,13 @@ namespace Builder.Domain
 {
    public interface IData
    {
-      IEnumerable<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+      List<Content> ContentList { get;  set; }
+
+      void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
       void SaveContentList(string contentPath, IEnumerable<Content> contentList);
+
+      void UpdateContentList();
 
       void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> pro);
 
@@ -29,7 +33,7 @@ namespace Builder.Domain
       private string ContentPostsPath { get; set; }
       private string HtmlPagesPath { get; set; }
       private string HtmlPostsPath { get; set; }
-      private List<Content> ContentList { get; set; }
+      public List<Content> ContentList { get;  set; }
 
       public Data(IDirectoryWrapper directoryWrapper,
          ILoad load,
@@ -43,7 +47,7 @@ namespace Builder.Domain
       }
 
       #region Public methods
-      public IEnumerable<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
+      public void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
@@ -71,11 +75,7 @@ namespace Builder.Domain
             }
          }
 
-         UpdateContentField();
-
          SortContentList();
-
-         return ContentList;
       }
 
       public void SaveContentList(string contentPath, IEnumerable<Content> contentList)
@@ -84,6 +84,15 @@ namespace Builder.Domain
          _save.ToJsonFile(filename, contentList);
       }
 
+      public void UpdateContentList()
+      {
+         foreach (var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
+         {
+            var category = content.Categories?.FirstOrDefault();
+            content.Keywords = GetKeywords(content.Categories, content.Tags);
+            content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
+         }
+      }
 
       public void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> projectSites)
       {
@@ -110,16 +119,6 @@ namespace Builder.Domain
          ContentPostsPath = Path.Combine(ContentBasePath, Const.Folder.Posts);
          HtmlPagesPath = htmlPagePath;
          HtmlPostsPath = htmlPostPath;
-      }
-
-      private void UpdateContentField()
-      {
-         foreach (var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
-         {
-            var category = content.Categories?.FirstOrDefault();
-            content.Keywords = GetKeywords(content.Categories, content.Tags);
-            content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
-         }
       }
 
       private string GetKeywords(IEnumerable<string> categories, IEnumerable<string> tags)
@@ -151,7 +150,7 @@ namespace Builder.Domain
          var baseUrl = type == ContentType.Page ? HtmlPagesPath : HtmlPostsPath;
          baseUrl = baseUrl.Replace("{category}", GetSlug(category));
          baseUrl = baseUrl.Replace("{year}", year.ToString());
-         return baseUrl + slug + ".html";
+         return baseUrl + slug + Const.Extension.WebPages;
       }
 
       private void SortContentList()

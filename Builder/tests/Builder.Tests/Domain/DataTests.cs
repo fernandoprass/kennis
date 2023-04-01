@@ -37,10 +37,10 @@ namespace Builder.Tests.Domain
 
          MockDataForContentListTests(new List<Content>());
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         Assert.Single(result.Where(x => x.Type == ContentType.Page));
-         Assert.Single(result.Where(x => x.Type == ContentType.Post));
+         Assert.Single(_data.ContentList.Where(x => x.Type == ContentType.Page));
+         Assert.Single(_data.ContentList.Where(x => x.Type == ContentType.Post));
       }
 
       [Fact]
@@ -53,9 +53,9 @@ namespace Builder.Tests.Domain
 
          MockDataForContentListTests(new List<Content>());
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         var post = result.Single(x => x.Type == ContentType.Post);
+         var post = _data.ContentList.Single(x => x.Type == ContentType.Post);
 
          Assert.Single(post.Categories);
          Assert.Equal(2, post.Tags.Count());
@@ -74,10 +74,10 @@ namespace Builder.Tests.Domain
 
          MockDataForContentListTests(new List<Content>());
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         Assert.Equal(2, result.Count());
-         Assert.Empty(result.Where(x => x. Draft));
+         Assert.Equal(2, _data.ContentList.Count());
+         Assert.Empty(_data.ContentList.Where(x => x. Draft));
       }
 
       [Fact]
@@ -94,13 +94,13 @@ namespace Builder.Tests.Domain
 
          string oldPageTitle = contentList.Single(x => x.Type == ContentType.Page).Title;
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         string newPageTitle = result.Single(x => x.Type == ContentType.Page).Title;
+         string newPageTitle = _data.ContentList.Single(x => x.Type == ContentType.Page).Title;
 
-         Assert.Equal(2, result.Count());
+         Assert.Equal(2, _data.ContentList.Count());
          Assert.NotEqual(newPageTitle, oldPageTitle);
-         Assert.Null(result.First().Categories);
+         Assert.Null(_data.ContentList.First().Categories);
       }
       #endregion
 

@@ -64,23 +64,25 @@ namespace Builder.Domain
             {
                _logger.LogInformation("Starting create site in {0}", site.Language.Label);
 
-               var contentList = _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
+               _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
 
-               ParseLoopLayouts(site, contentList);
+               _data.UpdateContentList();
 
-               var lastModified = contentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+               ParseLoopLayouts(site, _data.ContentList);
+
+               var lastModified = _data.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
                _data.UpdateProjectSiteModified(lastModified, site);
 
-               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), contentList);
+               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code), _data.ContentList);
 
                ParseIndexFile(site);
 
                ParseBlogIndexFile(site);
 
-               ParseContentFile(site, ContentType.Page, contentList);
+               ParseContentFile(site, ContentType.Page, _data.ContentList);
 
-               ParseContentFile(site, ContentType.Post, contentList);
+               ParseContentFile(site, ContentType.Post, _data.ContentList);
 
 
                _logger.LogInformation("Ending create site in {0}", site.Language.Label);
