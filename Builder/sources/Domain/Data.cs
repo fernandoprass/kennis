@@ -1,9 +1,9 @@
 ﻿using Builder.Domain.Mappers;
 using Builder.Domain.Models;
-using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
+using Myce.Wrappers.Contracts;
 
 namespace Builder.Domain
 {

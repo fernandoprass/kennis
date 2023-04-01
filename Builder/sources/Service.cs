@@ -1,8 +1,8 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Internationalization;
-using Builder.Domain.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
 using Myce.Wrappers;
+using Myce.Wrappers.Contracts;
 using Serilog;
 
 namespace Builder

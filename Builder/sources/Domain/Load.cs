@@ -5,7 +5,7 @@ using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
-using Myce.Wrappers;
+using Myce.Wrappers.Contracts;
 using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -214,7 +214,7 @@ namespace Builder.Domain
          return default(T);
       }
 
-      private T ReadYamlFile<T>(string yaml)
+      private T? ReadYamlFile<T>(string yaml)
       {
          if (yaml.IsNotNull())
          {
@@ -232,7 +232,7 @@ namespace Builder.Domain
             }
          }
 
-         return default(T);
+         return default;
       }
       #endregion
    }

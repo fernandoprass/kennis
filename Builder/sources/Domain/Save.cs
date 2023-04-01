@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Myce.Wrappers;
+using Myce.Wrappers.Contracts;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 

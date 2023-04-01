@@ -1,7 +1,7 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Models;
 using Microsoft.Extensions.Logging;
-using Myce.Wrappers;
+using Myce.Wrappers.Contracts;
 
 namespace Builder.Tests.Domain
 {
