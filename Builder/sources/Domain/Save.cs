@@ -7,14 +7,16 @@ namespace Builder.Domain
 {
    public interface ISave
    {
-      void Configure(string destinationFolder);
+      void Configure(string htmlFolder, string jsonFolder);
       void ToJsonFile<T>(string filename, T contentList);
       void ToHtmlFile(string filename, string webPage);
    }
 
    public class Save : ISave
    {
-      private string DestinationFolder { get; set; }
+      private string HtmlFolder { get; set; }
+      private string JsonFolder { get; set; }
+
 
       private readonly IFileWrapper _file;
       private readonly ILogger<Build> _logger;
@@ -24,6 +26,12 @@ namespace Builder.Domain
       {
          _file = fileWrapper;
          _logger = logger;
+      }
+
+      public void Configure(string htmlFolder, string jsonFolder)
+      {
+         HtmlFolder = htmlFolder;
+         JsonFolder = jsonFolder;
       }
 
       public void ToJsonFile<T>(string filename, T contentList)
@@ -38,6 +46,8 @@ namespace Builder.Domain
 
             var json = JsonSerializer.Serialize(contentList, options)!;
 
+            filename = Path.Combine(JsonFolder, filename);
+
             ToHtmlFile(filename, json);
 
             _logger.LogInformation("Json file serialized: {0}", filename);
@@ -50,6 +60,8 @@ namespace Builder.Domain
 
       public void ToHtmlFile(string filename, string webPage)
       {
+         filename = Path.Combine(HtmlFolder, filename);
+
          ToTxtFile(filename, webPage);
       }
 
@@ -57,8 +69,6 @@ namespace Builder.Domain
       {
          try
          {
-            filename = Path.Combine(DestinationFolder, filename);
-
             _file.WriteAllText(filename, content);
 
             _logger.LogInformation("File saved: {0}", filename);
@@ -67,11 +77,6 @@ namespace Builder.Domain
          {
             _logger.LogError(ex, "Error when try to save file {0}", filename);
          }
-      }
-
-      public void Configure(string destinationFolder)
-      {
-         DestinationFolder = destinationFolder;
       }
    }
 }
