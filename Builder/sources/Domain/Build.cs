@@ -58,12 +58,12 @@ namespace Builder.Domain
 
             _data.UpdateLanguageIndexFileName(project.DefaultLanguageCode, project.Sites);
 
-            _save.Configure(project.Folders.Destination);
-
             layoutBase = _load.Layout(project.Folders.Template);
 
             foreach (var site in project.Sites)
             {
+               _save.Configure(project.Folders.Destination, Path.Combine(project.Folders.Project, site.Language.Code));
+
                _logger.LogInformation("Starting create site in {0}", site.Language.Label);
 
                _data.GetContentList(project.Folders, site.Language.Code, site.Folders.Pages, site.Folders.BlogPosts);
@@ -74,7 +74,7 @@ namespace Builder.Domain
 
                _data.UpdateProjectSiteModified(lastModified, site);
 
-               _data.SaveContentList(Path.Combine(project.Folders.Project, site.Language.Code));
+               _data.SaveContentList();
 
                ParseLoopLayouts(site, _data.ContentList);
 

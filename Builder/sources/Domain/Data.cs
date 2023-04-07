@@ -13,7 +13,7 @@ namespace Builder.Domain
 
       void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
-      void SaveContentList(string contentPath);
+      void SaveContentList();
 
       void UpdateContentList();
 
@@ -78,10 +78,9 @@ namespace Builder.Domain
          SortContentList();
       }
 
-      public void SaveContentList(string contentPath)
+      public void SaveContentList()
       {
-         var filename = Path.Combine(contentPath, Const.File.ContentList);
-         _save.ToJsonFile(filename, ContentList);
+         _save.ToJsonFile(Const.File.ContentList, ContentList);
       }
 
       public void UpdateContentList()
