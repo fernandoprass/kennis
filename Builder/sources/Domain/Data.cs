@@ -57,7 +57,7 @@ namespace Builder.Domain
 
          foreach (var file in files)
          {
-            _logger.LogInformation("Reading {0}", file);
+            _logger.LogInformation("Reading file: " + file);
 
             string yaml = _load.YamlContentHeader(file);
 
@@ -71,6 +71,11 @@ namespace Builder.Domain
                   var (filename, contentType) = GetFilenameAndContentType(file);
 
                   AddToContentList(contentType, filename, header);
+               }
+
+               if (header.IsNull())
+               {
+                  _logger.LogError("File does not have a header: " + file);
                }
             }
          }
