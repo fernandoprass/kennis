@@ -13,7 +13,6 @@ namespace Builder.Domain
 
    public class Build : IBuild
    {
-      private readonly ILoad _load;
       private readonly IBuildLoop _loop;
       private readonly IBuildSetup _setup;
       private readonly IBuildTag _tag;
@@ -23,7 +22,7 @@ namespace Builder.Domain
       private readonly ISave _save;
 
       private Project Project { get; set; }
-      private Layout LayoutBase { get; set; }
+      private Layout Layout { get; set; }
 
       private string LoopLanguagesParsed { get; set; }
       private string LoopSocialMediaParsed { get; set; }
@@ -41,7 +40,6 @@ namespace Builder.Domain
          ISave save,
          ITranslate translate)
       {
-         _load = load;
          _loop = loop;
          _tag = tag;
          _logger = logger;
@@ -55,7 +53,7 @@ namespace Builder.Domain
       {
          Setup(projectName);
 
-         if (Project.IsNotNull())
+         if (Project.IsNotNull() && Layout.IsNotNull())
          {
             foreach (var site in Project.Sites)
             {
@@ -97,13 +95,13 @@ namespace Builder.Domain
          {
             _setup.ProjectUpdateLanguageIndexFileName(Project.DefaultLanguageCode, Project.Sites);
 
-            LayoutBase = _load.Layout(Project.Folders.Template);
+            Layout = _setup.Layout(Project.Folders.Template);
          }
       }
 
       private void ParseIndexFile(ProjectSite site)
       {
-         string layout = ParseHtmlFile(LayoutBase.Index);
+         string layout = ParseHtmlFile(Layout.Index);
 
          layout = _translate.To(site.Language.Code, Project.Folders.Template, layout);
 
@@ -116,7 +114,7 @@ namespace Builder.Domain
 
       private void ParseBlogIndexFile(ProjectSite site)
       {
-         string layout = ParseHtmlFile(LayoutBase.Blog);
+         string layout = ParseHtmlFile(Layout.Blog);
 
          layout = _translate.To(site.Language.Code, Project.Folders.Template, layout);
 
@@ -136,8 +134,8 @@ namespace Builder.Domain
                         : contentList.Where(x => x.Type.Equals(ContentType.Post));
 
          string layout = contentType == ContentType.Page
-                         ? ParseHtmlFile(LayoutBase.Page)
-                         : ParseHtmlFile(LayoutBase.BlogPost);
+                         ? ParseHtmlFile(Layout.Page)
+                         : ParseHtmlFile(Layout.BlogPost);
 
          layout = _translate.To(site.Language.Code, Project.Folders.Template, layout);
 
@@ -162,17 +160,17 @@ namespace Builder.Domain
          //todo => this methods should be async
          var languages = Project.Sites.Select(x => x.Language);
 
-         LoopLanguagesParsed = _loop.Languages(languages, Project.DefaultLanguageCode, LayoutBase.Loops.Languages);
+         LoopLanguagesParsed = _loop.Languages(languages, Project.DefaultLanguageCode, Layout.Loops.Languages);
 
-         LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, LayoutBase.Loops.SocialMedia);
+         LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, Layout.Loops.SocialMedia);
 
          var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
-         LoopMenuParsed = _loop.Menu(menuList, LayoutBase.Loops.Menu);
+         LoopMenuParsed = _loop.Menu(menuList, Layout.Loops.Menu);
 
          var posts = contentList.Where(content => content.Type == ContentType.Post);
-         BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, LayoutBase.Loops.BlogPostLast10, 10);
-         BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, LayoutBase.Loops.BlogPostLast5, 5);
-         BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, LayoutBase.Loops.BlogPostLast3, 3);
+         BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast10, 10);
+         BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast5, 5);
+         BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast3, 3);
       }
 
       private string ParseHtmlFile(string layout)
