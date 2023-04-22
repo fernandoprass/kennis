@@ -1,8 +1,7 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Models;
-using Builder.Domain.Wrappers;
 using Microsoft.Extensions.Logging;
-using static Kennis.Builder.Constants.Const;
+using Myce.Wrappers.Contracts;
 
 namespace Builder.Tests.Domain
 {
@@ -36,33 +35,12 @@ namespace Builder.Tests.Domain
             Project = @"c:\project"
          };
 
-         MockDataForContentListTests(new List<Content>());
+         MockDataForGetContentListTests(new List<Content>());
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         Assert.Single(result.Where(x => x.Type == ContentType.Page));
-         Assert.Single(result.Where(x => x.Type == ContentType.Post));
-      }
-
-      [Fact]
-      public void GetContentList_ReceiveContentWithCategoriesAndTags_ShouldImport()
-      {
-         var projectFolder = new ProjectFolder
-         {
-            Project = @"c:\project"
-         };
-
-         MockDataForContentListTests(new List<Content>());
-
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
-
-         var post = result.Single(x => x.Type == ContentType.Post);
-
-         Assert.Single(post.Categories);
-         Assert.Equal(2, post.Tags.Count());
-         Assert.Contains(post.Categories.First(), post.Keywords);
-         Assert.Contains(post.Tags.First(), post.Keywords);
-         Assert.Contains(post.Tags.Last(), post.Keywords);
+         Assert.Single(_data.ContentList.Where(x => x.Type == ContentType.Page));
+         Assert.Single(_data.ContentList.Where(x => x.Type == ContentType.Post));
       }
 
       [Fact]
@@ -73,12 +51,12 @@ namespace Builder.Tests.Domain
             Project = @"c:\project"
          };
 
-         MockDataForContentListTests(new List<Content>());
+         MockDataForGetContentListTests(new List<Content>());
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         Assert.Equal(2, result.Count());
-         Assert.Empty(result.Where(x => x. Draft));
+         Assert.Equal(2, _data.ContentList.Count());
+         Assert.Empty(_data.ContentList.Where(x => x. Draft));
       }
 
       [Fact]
@@ -91,17 +69,33 @@ namespace Builder.Tests.Domain
 
          var contentList = CreateContentList();
 
-         MockDataForContentListTests(contentList);
+         MockDataForGetContentListTests(contentList);
 
          string oldPageTitle = contentList.Single(x => x.Type == ContentType.Page).Title;
 
-         var result = _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
+         _data.GetContentList(projectFolder, "en", "/pages/", "/posts/");
 
-         string newPageTitle = result.Single(x => x.Type == ContentType.Page).Title;
+         string newPageTitle = _data.ContentList.Single(x => x.Type == ContentType.Page).Title;
 
-         Assert.Equal(2, result.Count());
+         Assert.Equal(2, _data.ContentList.Count());
          Assert.NotEqual(newPageTitle, oldPageTitle);
-         Assert.Null(result.First().Categories);
+         Assert.Null(_data.ContentList.First().Categories);
+      }
+
+      [Fact]
+      public void UpdateContentList_ReceiveListOfContent_ShouldUpdate()
+      {
+         _data.ContentList = CreateContentList();
+
+         _data.UpdateContentList();
+
+         var post = _data.ContentList.Single(x => x.Type == ContentType.Post);
+
+         Assert.Single(post.Categories);
+         Assert.Equal(2, post.Tags.Count());
+         Assert.Contains(post.Categories.First(), post.Keywords);
+         Assert.Contains(post.Tags.First(), post.Keywords);
+         Assert.Contains(post.Tags.Last(), post.Keywords);
       }
       #endregion
 
@@ -109,18 +103,18 @@ namespace Builder.Tests.Domain
       [Fact]
       public void SaveContentList_ReceiveListOfContent_ShouldSave()
 		{
-         var contentList = CreateContentList();
+         _data.ContentList = CreateContentList();
 
-         _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList)).Verifiable();
+         _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), _data.ContentList)).Verifiable();
 
-         _data.SaveContentList(@"c:\data\", contentList);
+         _data.SaveContentList();
 
-         _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), contentList), Times.Once);
+         _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), _data.ContentList), Times.Once);
 		}
       #endregion
 
       #region Private Methods
-      private void MockDataForContentListTests(List<Content> contentList)
+      private void MockDataForGetContentListTests(List<Content> contentList)
       {
          var files = new string[] { @"c:\project\en\pages\page.md", @"c:\project\en\posts\post.md", @"c:\posts\draft.md" };
          var yamlPage = "page content header";
@@ -165,11 +159,20 @@ namespace Builder.Tests.Domain
          return new List<Content> {
             new Content
             {
-               Title = "Mock Content",
+               Title = "Mock Page Content",
                Categories = new string[] { "cat1"},
                Tags = new string[] { "tag1", "tag2"},
                Filename = "page.md",
                Type = ContentType.Page,
+               Created = DateTime.Now,
+            },
+            new Content
+            {
+               Title = "Mock Post Content",
+               Categories = new string[] { "cat2"},
+               Tags = new string[] { "tag1", "tag2"},
+               Filename = "post.md",
+               Type = ContentType.Post,
                Created = DateTime.Now,
             }
          };

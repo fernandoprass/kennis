@@ -1,17 +1,23 @@
 ﻿using Builder.Domain.Mappers;
 using Builder.Domain.Models;
-using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
+using Myce.Wrappers.Contracts;
 
 namespace Builder.Domain
 {
    public interface IData
    {
-      List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+      List<Content> ContentList { get;  set; }
 
-      void SaveContentList(string contentPath, List<Content> contentList);
+      void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+
+      void SaveContentList();
+
+      void UpdateContentList();
+
+      void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
 
    public class Data : IData
@@ -25,21 +31,21 @@ namespace Builder.Domain
       private string ContentPostsPath { get; set; }
       private string HtmlPagesPath { get; set; }
       private string HtmlPostsPath { get; set; }
-      private List<Content> ContentList { get; set; }
+      public List<Content> ContentList { get;  set; }
 
       public Data(IDirectoryWrapper directoryWrapper,
-         ILoad load, 
-         ISave save, 
+         ILoad load,
+         ISave save,
          ILogger<Build> logger)
       {
          _directoryWrapper = directoryWrapper;
          _load = load;
-         _save =  save;
+         _save = save;
          _logger = logger;
       }
 
       #region Public methods
-      public List<Content> GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
+      public void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
@@ -49,7 +55,7 @@ namespace Builder.Domain
 
          foreach (var file in files)
          {
-            _logger.LogInformation("Reading {0}", file);
+            _logger.LogInformation("Reading file: " + file);
 
             string yaml = _load.YamlContentHeader(file);
 
@@ -64,20 +70,35 @@ namespace Builder.Domain
 
                   AddToContentList(contentType, filename, header);
                }
+
+               if (header.IsNull())
+               {
+                  _logger.LogError("File does not have a header: " + file);
+               }
             }
          }
 
-         UpdateContentField();
-
          SortContentList();
-
-         return ContentList;
       }
 
-      public void SaveContentList(string contentPath, List<Content> contentList)
+      public void SaveContentList()
       {
-         var filename = Path.Combine(contentPath, Const.File.ContentList);
-         _save.ToJsonFile(filename, contentList);
+         _save.ToJsonFile(Const.File.ContentList, ContentList);
+      }
+
+      public void UpdateContentList()
+      {
+         foreach (var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
+         {
+            var category = content.Categories?.FirstOrDefault();
+            content.Keywords = GetKeywords(content.Categories, content.Tags);
+            content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
+         }
+      }
+
+      public void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite)
+      {
+         projectSite.Modified = lastModified;
       }
 
       #endregion
@@ -92,24 +113,15 @@ namespace Builder.Domain
          HtmlPostsPath = htmlPostPath;
       }
 
-      private void UpdateContentField()
-      {
-         foreach(var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
-         {
-            var category = content.Categories?.FirstOrDefault();
-            content.Keywords = GetKeywords(content.Categories, content.Tags);
-            content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
-         }
-      }
-
       private string GetKeywords(IEnumerable<string> categories, IEnumerable<string> tags)
       {
          var keywords = categories.HasData() ? categories : new List<string>();
 
-         if (tags.HasData()) { 
+         if (tags.HasData())
+         {
             keywords = keywords.Union(tags);
          }
-         
+
          return string.Join(",", keywords);
       }
 
@@ -130,7 +142,7 @@ namespace Builder.Domain
          var baseUrl = type == ContentType.Page ? HtmlPagesPath : HtmlPostsPath;
          baseUrl = baseUrl.Replace("{category}", GetSlug(category));
          baseUrl = baseUrl.Replace("{year}", year.ToString());
-         return baseUrl + slug + ".html";
+         return baseUrl + slug + Const.Extension.WebPages;
       }
 
       private void SortContentList()
@@ -156,7 +168,7 @@ namespace Builder.Domain
          if (content.IsNull())
          {
             content = contentHeader.ToContent();
-            content.Type= contentType;
+            content.Type = contentType;
             content.Filename = filename;
 
             ContentList.Add(content);

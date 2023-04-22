@@ -7,6 +7,7 @@ namespace Builder.Domain
 {
    public interface IBuildTag
    {
+      string Content(string layoutBase, Content content, string dateTimeFormat);
       string Index(string layoutBase, ProjectSite site);
    }
 
@@ -24,6 +25,13 @@ namespace Builder.Domain
       public string Index(string layoutBase, ProjectSite site)
       {
          var tags = GetSiteTags(site);
+
+         return ParseTags(layoutBase, tags);
+      }
+
+      public string Content(string layoutBase, Content content, string dateTimeFormat)
+      {
+         var tags = GetContentTags(content, dateTimeFormat);
 
          return ParseTags(layoutBase, tags);
       }
@@ -58,7 +66,7 @@ namespace Builder.Domain
             { Const.Tag.Site.Subtitle, site.Subtitle },
             { Const.Tag.Site.Description, site.Description },
             { Const.Tag.Site.Keywords, site.Keywords },
-            { Const.Tag.Site.Language, site.Language },
+            { Const.Tag.Site.Language, site.Language.Code },
             { Const.Tag.Site.Modified, site.Modified.ToString(site.DateTimeFormat) },
             { Const.Tag.Site.GoogleAnalyticTrackingId, site.GoogleAnalyticTrackingId },
            

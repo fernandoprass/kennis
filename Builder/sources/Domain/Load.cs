@@ -1,11 +1,11 @@
 ﻿using Builder.Domain.Models;
-using Builder.Domain.Wrappers;
 using Kennis.Builder.Constants;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
+using Myce.Wrappers.Contracts;
 using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -109,49 +109,11 @@ namespace Builder.Domain
       }
       #endregion
 
-      #region Load Project
-      public Project Project(string projectName)
+
+      public Project Project(string fileName)
       {
-         var projectPath = GetProjectPath(projectName);
-
-         var fileName = Path.Combine(projectPath, Const.File.Project);
-
-         var project = ReadJsonFile<Project>(fileName);
-
-         if (project.IsNotNull())
-         {
-            project.Folders = GetProjectFolders(projectName, project.Template);
-
-            return project;
-         }
-
-         return null;
+         return ReadJsonFile<Project>(fileName);
       }
-
-      private static string GetProjectPath(string projectName)
-      {
-         var applicationPath = AppContext.BaseDirectory;
-
-         return Path.Combine(applicationPath, Const.Folder.Projects, projectName);
-      }
-
-      private static ProjectFolder GetProjectFolders(string projectName, string templateName)
-      {
-         var applicationPath = AppContext.BaseDirectory;
-
-         string projectPath = GetProjectPath(projectName);
-         string template = Path.Combine(applicationPath, Const.Folder.Templates, templateName);
-
-         return new ProjectFolder
-         {
-            Application = applicationPath,
-            Project = projectPath,
-            Template = template,
-            TemplateTranslations = Path.Combine(template, Const.Folder.TemplatesTranslations),
-            Destination = Path.Combine(applicationPath, Const.Folder.Sites, projectName)
-         };
-      }
-      #endregion
 
       public string YamlContentHeader(string filename)
       {
@@ -207,14 +169,14 @@ namespace Builder.Domain
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try deserialize JSON file. Json content {0}", jsonString);
+               _logger.LogError(ex, "Falling when try deserialize JSON file. Content {0}", jsonString);
             }
          }
 
          return default(T);
       }
 
-      private T ReadYamlFile<T>(string yaml)
+      private T? ReadYamlFile<T>(string yaml)
       {
          if (yaml.IsNotNull())
          {
@@ -228,11 +190,11 @@ namespace Builder.Domain
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try deserialize YAML file. Yaml content {0}", yaml);
+               _logger.LogError(ex, "Falling when try deserialize YAML file. Content {0}", yaml);
             }
          }
 
-         return default(T);
+         return default;
       }
       #endregion
    }

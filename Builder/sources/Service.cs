@@ -1,7 +1,8 @@
 ﻿using Builder.Domain;
 using Builder.Domain.Internationalization;
-using Builder.Domain.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
+using Myce.Wrappers;
+using Myce.Wrappers.Contracts;
 using Serilog;
 
 namespace Builder
@@ -38,6 +39,7 @@ namespace Builder
                         .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
+                        .AddSingleton<IBuildSetup, BuildSetup>()
                         .AddScoped<IBuild, Build>()
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()
