@@ -85,7 +85,6 @@ namespace Builder.Tests.Domain
       [Fact]
       public void UpdateContentList_ReceiveListOfContent_ShouldUpdate()
       {
-         _data.in
          _data.ContentList = CreateContentList();
 
          _data.UpdateContentList();
@@ -108,7 +107,7 @@ namespace Builder.Tests.Domain
 
          _saveMock.Setup(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), _data.ContentList)).Verifiable();
 
-         _data.SaveContentList(@"c:\data\");
+         _data.SaveContentList();
 
          _saveMock.Verify(x => x.ToJsonFile(It.Is<string>(s => s.Contains(_jsonExtension)), _data.ContentList), Times.Once);
 		}

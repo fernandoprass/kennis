@@ -17,8 +17,6 @@ namespace Builder.Domain
 
       void UpdateContentList();
 
-      void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> pro);
-
       void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
 
@@ -95,16 +93,6 @@ namespace Builder.Domain
             var category = content.Categories?.FirstOrDefault();
             content.Keywords = GetKeywords(content.Categories, content.Tags);
             content.Url = GetUrl(content.Type, content.Title, category, content.Created.Year);
-         }
-      }
-
-      public void UpdateLanguageIndexFileName(string defaulfLanguageCode, IEnumerable<ProjectSite> projectSites)
-      {
-         foreach (var projectSite in projectSites)
-         {
-            projectSite.Language.IndexFileName = projectSite.Language.Code.Equals(defaulfLanguageCode)
-                                                 ? string.Concat("index", Const.Extension.WebPages)
-                                                 : string.Concat("index", "-", projectSite.Language.Code, Const.Extension.WebPages);
          }
       }
 

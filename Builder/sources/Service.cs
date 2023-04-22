@@ -39,6 +39,7 @@ namespace Builder
                         .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
+                        .AddSingleton<IBuildSetup, BuildSetup>()
                         .AddScoped<IBuild, Build>()
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()

@@ -15,6 +15,7 @@ namespace Builder.Domain
    {
       private readonly ILoad _load;
       private readonly IBuildLoop _loop;
+      private readonly IBuildSetup _setup;
       private readonly IBuildTag _tag;
       private readonly ILogger<Build> _logger;
       private readonly ITranslate _translate;
@@ -33,6 +34,7 @@ namespace Builder.Domain
 
       public Build(ILoad load,
          IBuildLoop loop,
+         IBuildSetup setup,
          IBuildTag tag,
          ILogger<Build> logger,
          IData data,
@@ -45,21 +47,16 @@ namespace Builder.Domain
          _logger = logger;
          _data = data;
          _save = save;
+         _setup= setup;
          _translate = translate;
       }
 
       public void Builder(string projectName)
       {
-         Project = _load.Project(projectName);
+         Setup(projectName);
 
          if (Project.IsNotNull())
          {
-            //todo add validate here
-
-            _data.UpdateLanguageIndexFileName(Project.DefaultLanguageCode, Project.Sites);
-
-            LayoutBase = _load.Layout(Project.Folders.Template);
-
             foreach (var site in Project.Sites)
             {
                _save.Configure(Project.Folders.Destination, Path.Combine(Project.Folders.Project, site.Language.Code));
@@ -91,6 +88,19 @@ namespace Builder.Domain
          }
       }
 
+      private void Setup(string projectName)
+      {
+         Project = _setup.ProjectGet(projectName);
+
+         //todo add validate here
+         if (Project.IsNotNull())
+         {
+            _setup.ProjectUpdateLanguageIndexFileName(Project.DefaultLanguageCode, Project.Sites);
+
+            LayoutBase = _load.Layout(Project.Folders.Template);
+         }
+      }
+
       private void ParseIndexFile(ProjectSite site)
       {
          string layout = ParseHtmlFile(LayoutBase.Index);
@@ -117,9 +127,9 @@ namespace Builder.Domain
          _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, layout);
       }
 
-      private void ParseContentFile(ProjectSite site, ContentType contentType,  IEnumerable<Content> contentList)
+      private void ParseContentFile(ProjectSite site, ContentType contentType, IEnumerable<Content> contentList)
       {
-         var type = contentType == ContentType.Page ? "pages" :"posts";
+         var type = contentType == ContentType.Page ? "pages" : "posts";
 
          var contents = contentType == ContentType.Page
                         ? contentList.Where(x => x.Type.Equals(ContentType.Page))
