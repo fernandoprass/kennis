@@ -34,13 +34,13 @@ namespace Builder.Domain
 
          if (Project.IsNotNull() && Layout.IsNotNull())
          {
-            foreach (var site in Project.Sites)
+            foreach (var projectSite in Project.Sites)
             {
-               _logger.LogInformation("Starting create site in {0}", site.Language.Label);
+               _logger.LogInformation("Starting create site in {0}", projectSite.Language.Label);
 
-               _site.Build(site);
+               _site.Build(Project.DefaultLanguageCode, Project.Folders, projectSite);
 
-               _logger.LogInformation("Ending create site in {0}", site.Language.Label);
+               _logger.LogInformation("Ending create site in {0}", projectSite.Language.Label);
             }
          }
       }
@@ -52,7 +52,7 @@ namespace Builder.Domain
          //todo add validate here
          if (Project.IsNotNull())
          {
-            _setup.ProjectUpdateSiteLanguageData(Project.DefaultLanguageCode, Project.Sites);
+            _setup.ProjectSiteUpdateLanguageData(Project.DefaultLanguageCode, Project.Sites);
 
             Layout = _setup.Layout(Project.Folders.Template);
          }

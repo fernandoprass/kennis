@@ -13,11 +13,13 @@ namespace Builder.Domain.Internationalization
    public class Translate : ITranslate
    {
       private readonly IFileWrapper _file;
+      private readonly ILoad _load;
       private readonly ILogger<Build> _logger;
 
-      public Translate(IFileWrapper file, ILogger<Build> logger)
+      public Translate(IFileWrapper file, ILoad load, ILogger<Build> logger)
       {
          _file = file;
+         _load = load;
          _logger = logger;
       }
 
