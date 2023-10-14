@@ -41,6 +41,7 @@ namespace Builder
                         .AddSingleton<ISave, Save>()
                         .AddSingleton<IBuildSetup, BuildSetup>()
                         .AddScoped<IBuild, Build>()
+                        .AddScoped<IBuildSite, BuildSite>()
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()
                         .AddScoped<IData, Data>()

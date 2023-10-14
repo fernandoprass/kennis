@@ -41,7 +41,7 @@ namespace Builder.Domain
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);          
+            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);
          }
 
          return null;
@@ -59,18 +59,29 @@ namespace Builder.Domain
       public Layout Layout(string templateFolder)
       {
          var filename = Path.Combine(templateFolder, Const.File.Template);
-         var template = ReadJsonFile<Template>(filename);
 
-         var layout = new Layout
+         try
          {
-            Languages = template.Languages
-         };
+            
+            var template = ReadJsonFile<Template>(filename);
 
-         LoadLayoutMainTemplates(layout, template, templateFolder);
+            var layout = new Layout
+            {
+               Languages = template.Languages
+            };
 
-         layout.Loops = LoadLayoutLoopTemplates(template.Loops, templateFolder);
+            LoadLayoutMainTemplates(layout, template, templateFolder);
 
-         return layout;
+            layout.Loops = LoadLayoutLoopTemplates(template.Loops, templateFolder);
+
+            return layout;
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError(ex, "Falling when try to load layout {0}", filename);
+         }
+
+         return null;
       }
 
       private void LoadLayoutMainTemplates(Layout layout, Template template, string folder)
