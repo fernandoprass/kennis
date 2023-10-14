@@ -129,7 +129,10 @@ namespace Builder.Domain
          //todo => this methods should be async
 
          //todo two options here: 1 add Project as a parameter; 2 move loop languages out side of build site
-         var languages = Project.Sites.Select(x => x.Language);
+         var languages = new List<Language>
+         {
+            site.Language
+         };
 
          LoopLanguagesParsed = _loop.Languages(languages, DefaultLanguageCode, Layout.Loops.Languages);
 
