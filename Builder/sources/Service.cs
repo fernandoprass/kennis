@@ -36,10 +36,12 @@ namespace Builder
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
          return services.AddSingleton<IFileWrapper, FileWrapper>()
+                        .AddSingleton<IPathWrapper, PathWrapper>()
                         .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
                         .AddSingleton<IBuildSetup, BuildSetup>()
+                        .AddSingleton<IProjectService, ProjectService>()
                         .AddScoped<IBuild, Build>()
                         .AddScoped<IBuildSite, BuildSite>()
                         .AddScoped<IBuildLoop, BuildLoop>()

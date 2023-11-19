@@ -6,7 +6,7 @@ namespace Builder.Domain
 {
    public interface IBuild
    {
-      void Builder(string projectName);
+      void Builder(Project project, bool rebuildAll);
    }
 
    public class Build : IBuild
@@ -21,16 +21,16 @@ namespace Builder.Domain
       public Build(
          ILogger<Build> logger,
          IBuildSetup setup,
-         IBuildSite site)
+         IBuildSite site,
+         IProjectService projectService)
       {
          _logger = logger;
          _setup = setup;
          _site = site;
       }
 
-      public void Builder(string projectName)
+      public void Builder(Project project, bool rebuildAll)
       {
-         Setup(projectName);
 
          if (Project.IsNotNull() && Layout.IsNotNull())
          {
@@ -42,19 +42,6 @@ namespace Builder.Domain
 
                _logger.LogInformation("Ending create site in {0}", projectSite.Language.Label);
             }
-         }
-      }
-
-      private void Setup(string projectName)
-      {
-         Project = _setup.ProjectGet(projectName);
-
-         //todo add validate here
-         if (Project.IsNotNull())
-         {
-            _setup.ProjectSiteUpdateLanguageData(Project.DefaultLanguageCode, Project.Sites);
-
-            Layout = _setup.Layout(Project.Folders.Template);
          }
       }
    }

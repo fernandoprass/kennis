@@ -17,20 +17,23 @@ namespace Builder.Domain
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Layout Layout(string templateFolder);
-      Project Project(string projectName);
+      Project Project(string filename);
       string YamlContentHeader(string filename);
    }
 
    public class Load : ILoad
    {
       private readonly IFileWrapper _file;
+      private readonly IPathWrapper _path;
       private readonly ILogger<Build> _logger;
 
       public Load(IFileWrapper fileWrapper,
-         ILogger<Build> logger)
+         ILogger<Build> logger,
+         IPathWrapper pathWrapper)
       {
          _file = fileWrapper;
          _logger = logger;
+         _path = pathWrapper;
       }
 
       public ContentHeader ContentHeader(string yaml)
@@ -62,15 +65,10 @@ namespace Builder.Domain
 
          try
          {
-            
+
             var template = ReadJsonFile<Template>(filename);
 
-            var layout = new Layout
-            {
-               Languages = template.Languages
-            };
-
-            LoadLayoutMainTemplates(layout, template, templateFolder);
+            var layout = LoadLayoutMainTemplates(template, templateFolder);
 
             layout.Loops = LoadLayoutLoopTemplates(template.Loops, templateFolder);
 
@@ -84,15 +82,20 @@ namespace Builder.Domain
          return null;
       }
 
-      private void LoadLayoutMainTemplates(Layout layout, Template template, string folder)
+      private Layout LoadLayoutMainTemplates(Template template, string folder)
       {
-         layout.Index = ReadTextFile(folder, template.Index);
-         layout.Page = ReadTextFile(folder, template.Page);
-         layout.Blog = ReadTextFile(folder, template.Blog);
-         layout.BlogArchive = ReadTextFile(folder, template.BlogArchive);
-         layout.BlogCategories = ReadTextFile(folder, template.BlogCategories);
-         layout.BlogPost = ReadTextFile(folder, template.BlogPost);
-         layout.BlogTags = ReadTextFile(folder, template.BlogTags);
+         var layout = new Layout
+         {
+            Index = ReadTextFile(folder, template.Index),
+            Page = ReadTextFile(folder, template.Page),
+            Blog = ReadTextFile(folder, template.Blog),
+            BlogArchive = ReadTextFile(folder, template.BlogArchive),
+            BlogCategories = ReadTextFile(folder, template.BlogCategories),
+            BlogPost = ReadTextFile(folder, template.BlogPost),
+            BlogTags = ReadTextFile(folder, template.BlogTags)
+         };
+
+         return layout;
       }
 
       private LayoutLoop LoadLayoutLoopTemplates(TemplateLoop loops, string folder)
@@ -121,9 +124,9 @@ namespace Builder.Domain
       #endregion
 
 
-      public Project Project(string fileName)
+      public Project Project(string filename)
       {
-         return ReadJsonFile<Project>(fileName);
+         return ReadJsonFile<Project>(filename);
       }
 
       public string YamlContentHeader(string filename)
@@ -160,7 +163,7 @@ namespace Builder.Domain
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try read file {0} ad {1}", filename, folder);
+               _logger.LogError(ex, "Falling when try read file {0} at {1}", filename, folder);
             }
          }
 

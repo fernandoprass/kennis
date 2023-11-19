@@ -25,16 +25,6 @@ namespace Builder.Tests.Domain
 
       #region Load Layout Tests
       [Fact]
-      public void Layout_ReceiveJsonFileWithListOfLanguages_ShouldReturnLanguages()
-		{
-         var layout = GetLayoutFromMockData();
-
-         Assert.Equal(2, layout.Languages.Count());
-			Assert.Equal("en", layout.Languages.First());
-			Assert.Equal("pt-br", layout.Languages.Last());
-		}
-
-      [Fact]
       public void Layout_ReceiveJsonFileWithEmptyTemplateAttribuite_ShouldReturnNullForThisAttribute()
       {
          var layout = GetLayoutFromMockData();
