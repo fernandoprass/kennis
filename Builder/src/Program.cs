@@ -4,10 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Myce.Extensions;
 using System;
 
-namespace Builder
-{
-   public class KennisBuilder
-   {
+namespace Builder {
+   public class KennisBuilder {
       static void Main(string[] args)
       {
          var projectName = "KennisDemo";
@@ -17,9 +15,12 @@ namespace Builder
 
          var project = LoadProject(serviceProvider, projectName);
 
-         var build = serviceProvider.GetService<IBuild>();
+         if (project.IsNotNull())
+         {
+            var build = serviceProvider.GetService<IBuildService>();
 
-         build.Builder(project, regenerateAllSite);
+            build.Builder(project, regenerateAllSite);
+         }
       }
 
 

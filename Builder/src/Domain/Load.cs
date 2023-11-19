@@ -10,10 +10,8 @@ using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Builder.Domain
-{
-   public interface ILoad
-   {
+namespace Builder.Domain {
+   public interface ILoad {
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Layout Layout(string templateFolder);
@@ -21,14 +19,13 @@ namespace Builder.Domain
       string YamlContentHeader(string filename);
    }
 
-   public class Load : ILoad
-   {
+   public class Load : ILoad {
       private readonly IFileWrapper _file;
       private readonly IPathWrapper _path;
-      private readonly ILogger<Build> _logger;
+      private readonly ILogger<BuildService> _logger;
 
       public Load(IFileWrapper fileWrapper,
-         ILogger<Build> logger,
+         ILogger<BuildService> logger,
          IPathWrapper pathWrapper)
       {
          _file = fileWrapper;
@@ -61,22 +58,23 @@ namespace Builder.Domain
       #region Load Layout
       public Layout Layout(string templateFolder)
       {
-         var filename = Path.Combine(templateFolder, Const.File.Template);
+         var filename = _path.Combine(templateFolder, Const.File.Template);
 
-         try
+         _logger.LogInformation("Load templates at {0}", templateFolder);
+
+         var template = ReadJsonFile<Template>(filename);
+
+         if (template.IsNotNull())
          {
-
-            var template = ReadJsonFile<Template>(filename);
-
             var layout = LoadLayoutMainTemplates(template, templateFolder);
 
             layout.Loops = LoadLayoutLoopTemplates(template.Loops, templateFolder);
 
             return layout;
          }
-         catch (Exception ex)
+         else
          {
-            _logger.LogError(ex, "Falling when try to load layout {0}", filename);
+            _logger.LogError("Falling when try to load layout", filename);
          }
 
          return null;

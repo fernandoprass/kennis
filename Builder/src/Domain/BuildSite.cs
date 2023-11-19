@@ -12,7 +12,7 @@ namespace Builder.Domain
 
    public class BuildSite : IBuildSite
    {
-      private readonly ILogger<Build> _logger;
+      private readonly ILogger<BuildService> _logger;
       private readonly IData _data;
       private readonly ISave _save;
       private readonly IBuildLoop _loop;
@@ -30,7 +30,7 @@ namespace Builder.Domain
       private string BlogPostsLast3Parsed { get; set; }
 
       public BuildSite(
-         ILogger<Build> logger,
+         ILogger<BuildService> logger,
          IData data,
          ISave save,
          IBuildLoop loop,

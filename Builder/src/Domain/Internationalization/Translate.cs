@@ -14,9 +14,9 @@ namespace Builder.Domain.Internationalization
    {
       private readonly IFileWrapper _file;
       private readonly ILoad _load;
-      private readonly ILogger<Build> _logger;
+      private readonly ILogger<BuildService> _logger;
 
-      public Translate(IFileWrapper file, ILoad load, ILogger<Build> logger)
+      public Translate(IFileWrapper file, ILoad load, ILogger<BuildService> logger)
       {
          _file = file;
          _load = load;

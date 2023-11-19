@@ -8,7 +8,7 @@ namespace Builder.Tests.Domain
    public class LoadTests
    {
       private readonly Mock<IFileWrapper> _fileMock;
-      private readonly Mock<ILogger<Build>> _loggerMock;
+      private readonly Mock<ILogger<BuildService>> _loggerMock;
       private readonly ILoad _load;
 
 		private readonly string _mdExtension = ".md";
@@ -19,7 +19,7 @@ namespace Builder.Tests.Domain
 
       public LoadTests() { 
          _fileMock= new Mock<IFileWrapper>();
-         _loggerMock= new Mock<ILogger<Build>>();
+         _loggerMock= new Mock<ILogger<BuildService>>();
          _load = new Load(_fileMock.Object, _loggerMock.Object);
       }
 

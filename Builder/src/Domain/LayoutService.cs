@@ -2,22 +2,22 @@
 
 namespace Builder.Domain
 {
-   public interface IBuildSetup
+   public interface ILayoutService
    {
-      Layout Layout(string templateFolder);
+      Layout Load(string templateFolder);
       
    }
-   public class BuildSetup : IBuildSetup
+   public class LayoutService : ILayoutService
    {
       private readonly ILoad _load;
 
-      public BuildSetup(ILoad load)
+      public LayoutService(ILoad load)
       {
          _load = load;
       }
 
       #region Load Layout
-      public Layout Layout(string templateFolder)
+      public Layout Load(string templateFolder)
       {
          return _load.Layout(templateFolder);
       }

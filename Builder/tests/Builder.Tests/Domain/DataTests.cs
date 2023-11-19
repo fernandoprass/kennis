@@ -8,7 +8,7 @@ namespace Builder.Tests.Domain
    public class DataTests
    {
       private readonly Mock<IDirectoryWrapper> _directoryWrapper;
-      private readonly Mock<ILogger<Build>> _loggerMock;
+      private readonly Mock<ILogger<BuildService>> _loggerMock;
       private readonly Mock<ILoad> _loadMock;
       private readonly Mock<ISave> _saveMock;
 
@@ -18,7 +18,7 @@ namespace Builder.Tests.Domain
 
       public DataTests() {
          _directoryWrapper = new Mock<IDirectoryWrapper>();
-         _loggerMock= new Mock<ILogger<Build>>();
+         _loggerMock= new Mock<ILogger<BuildService>>();
          _loadMock = new Mock<ILoad>();
          _saveMock = new Mock<ISave>();
 
