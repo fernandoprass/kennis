@@ -20,9 +20,9 @@ namespace Builder.Domain
    }
    public class BuildLoop : IBuildLoop
    {
-      private readonly ILogger<BuildService> _logger;
+      private readonly ILogger<BuilderService> _logger;
 
-      public BuildLoop(ILogger<BuildService> logger)
+      public BuildLoop(ILogger<BuilderService> logger)
       {
          _logger = logger;
       }

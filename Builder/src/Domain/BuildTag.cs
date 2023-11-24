@@ -13,11 +13,11 @@ namespace Builder.Domain
 
    public class BuildTag : IBuildTag
    {
-      private readonly ILogger<BuildService> _logger;
+      private readonly ILogger<BuilderService> _logger;
       private Dictionary<string, string> _siteTags { get; set; }
       private Dictionary<string, string> _contentTags { get; set; }
 
-      public BuildTag(ILogger<BuildService> logger)
+      public BuildTag(ILogger<BuilderService> logger)
       {
          _logger = logger;
       }

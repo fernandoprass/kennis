@@ -2,7 +2,6 @@
 using Builder.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Myce.Extensions;
-using System;
 
 namespace Builder {
    public class KennisBuilder {
@@ -17,9 +16,9 @@ namespace Builder {
 
          if (project.IsNotNull())
          {
-            var build = serviceProvider.GetService<IBuildService>();
+            var builder = serviceProvider.GetService<IBuilderService>();
 
-            build.Builder(project, regenerateAllSite);
+            builder.Build(project, regenerateAllSite);
          }
       }
 

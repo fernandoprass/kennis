@@ -22,10 +22,10 @@ namespace Builder.Domain {
    public class Load : ILoad {
       private readonly IFileWrapper _file;
       private readonly IPathWrapper _path;
-      private readonly ILogger<BuildService> _logger;
+      private readonly ILogger<BuilderService> _logger;
 
       public Load(IFileWrapper fileWrapper,
-         ILogger<BuildService> logger,
+         ILogger<BuilderService> logger,
          IPathWrapper pathWrapper)
       {
          _file = fileWrapper;

@@ -1,39 +1,40 @@
 ﻿using Builder.Domain.Models;
 using Microsoft.Extensions.Logging;
-using Myce.Extensions;
 
 namespace Builder.Domain {
-   public interface IBuildService
+   public interface IBuilderService
    {
-      void Builder(Project project, bool rebuildAll);
+      void Build(Project project, bool rebuildAll);
    }
 
-   public class BuildService : IBuildService
+   public class BuilderService : IBuilderService
    {
       private readonly ILayoutService _layoutService;
-      private readonly IBuildSite _site;
-      private readonly ILogger<BuildService> _logger;
+      private readonly IBuildSiteService _buildSiteService;
+      private readonly ILogger<BuilderService> _logger;
 
-      public BuildService(
-         ILogger<BuildService> logger,
+      public BuilderService(
+         ILogger<BuilderService> logger,
          ILayoutService layoutService,
-         IBuildSite site)
+         IBuildSiteService site)
       {
          _logger = logger;
          _layoutService = layoutService;
-         _site = site;
+         _buildSiteService = site;
       }
 
-      public void Builder(Project project, bool rebuildAll)
+      public void Build(Project project, bool rebuildAll)
       {
          var layout = _layoutService.Load(project.Folders.Template);
-         if (layout.IsNotNull())
+         if (layout)
          {
             foreach (var projectSite in project.Sites)
             {
+               _layoutService.Translate(projectSite.Language.Code);
+
                _logger.LogInformation("Starting create site in {0}", projectSite.Language.Label);
 
-               _site.Build(project.DefaultLanguageCode, project.Folders, projectSite);
+               _buildSiteService.Build(project.DefaultLanguageCode, project.Folders, projectSite);
 
                _logger.LogInformation("Ending create site in {0}", projectSite.Language.Label);
             }

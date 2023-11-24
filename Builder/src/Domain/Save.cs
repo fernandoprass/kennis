@@ -19,10 +19,10 @@ namespace Builder.Domain
 
 
       private readonly IFileWrapper _file;
-      private readonly ILogger<BuildService> _logger;
+      private readonly ILogger<BuilderService> _logger;
 
       public Save(IFileWrapper fileWrapper,
-         ILogger<BuildService> logger)
+         ILogger<BuilderService> logger)
       {
          _file = fileWrapper;
          _logger = logger;

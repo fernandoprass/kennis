@@ -1,23 +1,21 @@
-﻿using Builder.Domain.Internationalization;
-using Builder.Domain.Models;
+﻿using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 
 namespace Builder.Domain
 {
-   public interface IBuildSite
+    public interface IBuildSiteService
    {
       void Build(string defaultLanguage, ProjectFolder projectFolder, ProjectSite projectSite);
    }
 
-   public class BuildSite : IBuildSite
+   public class BuilderSiteService : IBuildSiteService
    {
-      private readonly ILogger<BuildService> _logger;
+      private readonly ILogger<BuilderService> _logger;
       private readonly IData _data;
       private readonly ISave _save;
       private readonly IBuildLoop _loop;
       private readonly IBuildTag _tag;
-      private readonly ITranslate _translate;
 
       private ProjectFolder ProjectFolder { get; set; }
       private Layout Layout { get; set; }
@@ -29,20 +27,18 @@ namespace Builder.Domain
       private string BlogPostsLast5Parsed { get; set; }
       private string BlogPostsLast3Parsed { get; set; }
 
-      public BuildSite(
-         ILogger<BuildService> logger,
+      public BuilderSiteService(
+         ILogger<BuilderService> logger,
          IData data,
          ISave save,
          IBuildLoop loop,
-         IBuildTag tag,
-         ITranslate translate)
+         IBuildTag tag)
       {
          _logger = logger;
          _data = data;
          _save = save;
          _loop = loop;
          _tag = tag;
-         _translate = translate;
       }
 
       public void Build(string defaultLanguageCode, ProjectFolder projectFolder, ProjectSite projectSite)
@@ -72,7 +68,7 @@ namespace Builder.Domain
       {
          string layout = ParseHtmlFile(Layout.Index);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
+         //layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
 
          layout = _tag.Index(layout, site);
 
@@ -85,7 +81,7 @@ namespace Builder.Domain
       {
          string layout = ParseHtmlFile(Layout.Blog);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
+         //layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
 
          layout = _tag.Index(layout, site);
 
@@ -106,7 +102,7 @@ namespace Builder.Domain
                          ? ParseHtmlFile(Layout.Page)
                          : ParseHtmlFile(Layout.BlogPost);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
+         //layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
 
          var folder = contentType == ContentType.Page
                          ? site.Folders.Pages
