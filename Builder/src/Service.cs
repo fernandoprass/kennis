@@ -39,14 +39,14 @@ namespace Builder
                         .AddSingleton<IPathWrapper, PathWrapper>()
                         .AddSingleton<ILoad, Load>()
                         .AddSingleton<ISave, Save>()
-                        .AddSingleton<ILayoutService, LayoutService>()
+                        .AddSingleton<ITemplateService, TemplateService>()
                         .AddSingleton<IProjectService, ProjectService>()
                         .AddScoped<IBuilderService, BuilderService>()
                         .AddScoped<IBuildSiteService, BuilderSiteService>()
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()
                         .AddScoped<IData, Data>()
-                        .AddScoped<ILayoutTranslateService, LayoutTranslateService>()
+                        .AddScoped<ITemplateTranslateService, TemplateTranslateService>()
                         .BuildServiceProvider();
       }
    }

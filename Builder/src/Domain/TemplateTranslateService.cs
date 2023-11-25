@@ -4,46 +4,46 @@ using Myce.Wrappers.Contracts;
 using System.Text.Json;
 
 namespace Builder.Domain {
-   public interface ILayoutTranslateService
+   public interface ITemplateTranslateService
     {
-        string To(string language, string templatePath, string layout);
+        string To(string language, string templatePath, string template);
     }
 
-    public class LayoutTranslateService : ILayoutTranslateService
+    public class TemplateTranslateService : ITemplateTranslateService
     {
         private readonly IFileWrapper _file;
         private readonly ILoad _load;
         private readonly ILogger<BuilderService> _logger;
 
-        public LayoutTranslateService(IFileWrapper file, ILoad load, ILogger<BuilderService> logger)
+        public TemplateTranslateService(IFileWrapper file, ILoad load, ILogger<BuilderService> logger)
         {
             _file = file;
             _load = load;
             _logger = logger;
         }
 
-        public string To(string language, string templatePath, string layoutBase)
+        public string To(string language, string templatePath, string templateBase)
         {
             var i18nData = LoadI18nData(language, templatePath);
 
-            return TranslateLayoutTemplate(layoutBase, i18nData);
+            return TranslateTemplate(templateBase, i18nData);
         }
 
-        private string TranslateLayoutTemplate(string layoutTemplate, Dictionary<string, string> i18nData)
+        private static string TranslateTemplate(string template, Dictionary<string, string> i18nData)
         {
-            if (string.IsNullOrEmpty(layoutTemplate))
+            if (string.IsNullOrEmpty(template))
             {
                 return null;
             }
 
-            var layout = layoutTemplate;
+            var tralatedTemplate = template;
 
             foreach (var i18m in i18nData)
             {
-                layout = layout.Replace($"{{:{i18m.Key}}}", i18m.Value);
+                tralatedTemplate = tralatedTemplate.Replace($"{{:{i18m.Key}}}", i18m.Value);
             }
 
-            return layout;
+            return tralatedTemplate;
         }
 
         private Dictionary<string, string> LoadI18nData(string language, string templatePath)

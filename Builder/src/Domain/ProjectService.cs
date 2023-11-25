@@ -6,13 +6,10 @@ using Myce.Validation;
 using Myce.Validation.ErrorMessages;
 using Myce.Wrappers.Contracts;
 
-namespace Builder.Domain
-{
+namespace Builder.Domain {
    public interface IProjectService
    {
       Project? Load(string projectName);
-
-      void ProjectSiteUpdateLanguageData(string defaulfLanguageCode, IEnumerable<ProjectSite> projectSites);
 
       Result Validate(Project project);
    }
@@ -37,6 +34,8 @@ namespace Builder.Domain
 
          if (project.IsNotNull())
          {
+            ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
+
             project.Folders = GetProjectFolders(project.Name, project.Template);
 
             return project;
@@ -103,7 +102,7 @@ namespace Builder.Domain
          return _path.Combine(applicationPath, Const.Folder.Projects, projectName, Const.File.Project);
       }
 
-      private ProjectFolder GetProjectFolders( string projectName, string templateName)
+      private ProjectFolder GetProjectFolders(string projectName, string templateName)
       {
          var applicationPath = AppContext.BaseDirectory;
 

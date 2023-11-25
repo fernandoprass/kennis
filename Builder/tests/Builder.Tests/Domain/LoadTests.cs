@@ -8,7 +8,7 @@ namespace Builder.Tests.Domain
    public class LoadTests
    {
       private readonly Mock<IFileWrapper> _fileMock;
-      private readonly Mock<ILogger<BuildService>> _loggerMock;
+      private readonly Mock<ILogger<BuilderService>> _loggerMock;
       private readonly ILoad _load;
 
 		private readonly string _mdExtension = ".md";
@@ -19,53 +19,53 @@ namespace Builder.Tests.Domain
 
       public LoadTests() { 
          _fileMock= new Mock<IFileWrapper>();
-         _loggerMock= new Mock<ILogger<BuildService>>();
-         _load = new Load(_fileMock.Object, _loggerMock.Object);
+         _loggerMock= new Mock<ILogger<BuilderService>>();
+       //  _load = new Load(_fileMock.Object, _loggerMock.Object);
       }
 
       #region Load Layout Tests
       [Fact]
       public void Layout_ReceiveJsonFileWithEmptyTemplateAttribuite_ShouldReturnNullForThisAttribute()
       {
-         var layout = GetLayoutFromMockData();
+         var template = GetLayoutFromMockData();
 
-         Assert.Null(layout.Page);
+         Assert.Null(template.Page);
 		}
 
       [Fact]
       public void Layout_ReceiveJsonFileWithTemplateAttribuite_ShouldReturnThisAttribute()
       {
-         var layout = GetLayoutFromMockData();
+         var template = GetLayoutFromMockData();
 
-         Assert.NotNull(layout.Index);
-         Assert.Equal(_templateHtmlFile, layout.Index);
+         Assert.NotNull(template.Index);
+         Assert.Equal(_templateHtmlFile, template.Index);
       }
 
       [Fact]
       public void Layout_ReceiveJsonFileWithEmptyLoopAttribuite_ShouldReturnNullForThisAttribute()
       {
-         var layout = GetLayoutFromMockData();
+         var template = GetLayoutFromMockData();
 
-         Assert.NotNull(layout.Loops.BlogArchive);
-         Assert.Equal(_templateHtmlFile, layout.Loops.BlogArchive);
+         Assert.NotNull(template.Loops.BlogArchive);
+         Assert.Equal(_templateHtmlFile, template.Loops.BlogArchive);
       }
 
       [Fact]
       public void Layout_ReceiveJsonFileWithLoopAttribuite_ShouldReturnThisAttribute()
       {
-         var layout = GetLayoutFromMockData();
+         var template = GetLayoutFromMockData();
 
-         Assert.NotNull(layout.Loops);
-         Assert.Equal(_templateHtmlFile, layout.Index);
+         Assert.NotNull(template.Loops);
+         Assert.Equal(_templateHtmlFile, template.Index);
       }
 
-      private Layout GetLayoutFromMockData()
+      private Template GetLayoutFromMockData()
       {
          MockLoadTextFile(_jsonExtension, LoadTestsMockData.TemplateJsonFile());
 
          MockLoadTextFile(_htmlExtension, _templateHtmlFile);
 
-         return _load.Layout(_jsonExtension);
+         return _load.Template(_jsonExtension);
       }
       #endregion
 

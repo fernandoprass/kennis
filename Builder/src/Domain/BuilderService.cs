@@ -1,44 +1,53 @@
-﻿using Builder.Domain.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Myce.Extensions;
 
 namespace Builder.Domain {
-   public interface IBuilderService
-   {
-      void Build(Project project, bool rebuildAll);
+   public interface IBuilderService {
+      void Build(string projectName, bool rebuildAll);
    }
 
-   public class BuilderService : IBuilderService
-   {
-      private readonly ILayoutService _layoutService;
+   public class BuilderService : IBuilderService {
+      private readonly ITemplateService _templateService;
       private readonly IBuildSiteService _buildSiteService;
       private readonly ILogger<BuilderService> _logger;
+      private readonly IProjectService _projectService;
 
       public BuilderService(
          ILogger<BuilderService> logger,
-         ILayoutService layoutService,
-         IBuildSiteService site)
+         ITemplateService templateService,
+         IBuildSiteService site,
+         IProjectService projectService)
       {
          _logger = logger;
-         _layoutService = layoutService;
+         _templateService = templateService;
          _buildSiteService = site;
+         _projectService = projectService;
       }
 
-      public void Build(Project project, bool rebuildAll)
+      public void Build(string projectName, bool rebuildAll)
       {
-         var layout = _layoutService.Load(project.Folders.Template);
-         if (layout)
+         _logger.LogInformation("Starting to build Project {projectName}", projectName);
+         var project = _projectService.Load(projectName);
+
+         if (project.IsNotNull())
          {
-            foreach (var projectSite in project.Sites)
+            var template = _templateService.Load(project.Folders.Template);
+
+            if (template)
             {
-               _layoutService.Translate(projectSite.Language.Code);
+               foreach (var projectSite in project.Sites)
+               {
+                  _templateService.Translate(projectSite.Language.Code);
 
-               _logger.LogInformation("Starting create site in {0}", projectSite.Language.Label);
+                  _logger.LogInformation("Starting to build site in {languageLabel}", projectSite.Language.Label);
 
-               _buildSiteService.Build(project.DefaultLanguageCode, project.Folders, projectSite);
+                  _buildSiteService.Build(project.DefaultLanguageCode, project.Folders, projectSite);
 
-               _logger.LogInformation("Ending create site in {0}", projectSite.Language.Label);
+                  _logger.LogInformation("Finished to build site in {languageLabel}", projectSite.Language.Label);
+               }
             }
          }
+         _logger.LogInformation("Finished to build Project {projectName}", projectName);
       }
    }
 }

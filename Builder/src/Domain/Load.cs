@@ -14,7 +14,7 @@ namespace Builder.Domain {
    public interface ILoad {
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
-      Layout Layout(string templateFolder);
+      Template Template(string templateFolder);
       Project Project(string filename);
       string YamlContentHeader(string filename);
    }
@@ -49,40 +49,40 @@ namespace Builder.Domain {
 
       public List<Content> ContentList(string path)
       {
-         var filename = Path.Combine(path, Const.File.ContentList);
+         var filename = _path.Combine(path, Const.File.ContentList);
          var list = ReadJsonFile<List<Content>>(filename);
 
          return list.IsNotNull() ? list : new List<Content>();
       }
 
       #region Load Layout
-      public Layout Layout(string templateFolder)
+      public Template Template(string templateFolder)
       {
          var filename = _path.Combine(templateFolder, Const.File.Template);
 
-         _logger.LogInformation("Load templates at {0}", templateFolder);
+         _logger.LogInformation("Load templates at {templateFolder}", templateFolder);
 
-         var template = ReadJsonFile<Template>(filename);
+         var templateFile = ReadJsonFile<Template>(filename);
 
-         if (template.IsNotNull())
+         if (templateFile.IsNotNull())
          {
-            var layout = LoadLayoutMainTemplates(template, templateFolder);
+            var template = LoadLayoutMainTemplates(templateFile, templateFolder);
 
-            layout.Loops = LoadLayoutLoopTemplates(template.Loops, templateFolder);
+            template.Loops = LoadLayoutLoopTemplates(templateFile.Loops, templateFolder);
 
-            return layout;
+            return template;
          }
          else
          {
-            _logger.LogError("Falling when try to load layout", filename);
+            _logger.LogError("Falling when try to load template {filename}", filename);
          }
 
          return null;
       }
 
-      private Layout LoadLayoutMainTemplates(Template template, string folder)
+      private Template LoadLayoutMainTemplates(Template template, string folder)
       {
-         var layout = new Layout
+         var layout = new Template
          {
             Index = ReadTextFile(folder, template.Index),
             Page = ReadTextFile(folder, template.Page),
@@ -96,14 +96,14 @@ namespace Builder.Domain {
          return layout;
       }
 
-      private LayoutLoop LoadLayoutLoopTemplates(TemplateLoop loops, string folder)
+      private TemplateLoop LoadLayoutLoopTemplates(TemplateLoop loops, string folder)
       {
          if (loops.IsNull())
          {
             return null;
          }
 
-         var layoutLoop = new LayoutLoop
+         var templateLoop = new TemplateLoop
          {
             BlogArchive = ReadTextFile(folder, loops.BlogArchive),
             BlogCategories = ReadTextFile(folder, loops.BlogCategories),
@@ -117,7 +117,7 @@ namespace Builder.Domain {
             SocialMedia = ReadTextFile(folder, loops.SocialMedia)
          };
 
-         return layoutLoop;
+         return templateLoop;
       }
       #endregion
 
@@ -156,7 +156,7 @@ namespace Builder.Domain {
          {
             try
             {
-               filename = Path.Combine(folder, filename);
+               filename = _path.Combine(folder, filename);
                return _file.ReadAllText(filename);
             }
             catch (Exception ex)

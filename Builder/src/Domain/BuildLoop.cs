@@ -9,13 +9,13 @@ namespace Builder.Domain
 {
    public interface IBuildLoop
    {
-      string BlogPostsLastX(IEnumerable<Content> posts, string layoutBase, int numberOfPosts);
+      string BlogPostsLastX(IEnumerable<Content> posts, string templateBase, int numberOfPosts);
 
-      string Languages(IEnumerable<Language> languages, string defaultLanguage, string layoutBase);
+      string Languages(IEnumerable<Language> languages, string defaultLanguage, string templateBase);
 
-      string Menu(IEnumerable<Content> menu, string layoutBase);
+      string Menu(IEnumerable<Content> menu, string templateBase);
 
-      string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string layoutBase);
+      string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string templateBase);
 
    }
    public class BuildLoop : IBuildLoop
@@ -26,38 +26,38 @@ namespace Builder.Domain
       {
          _logger = logger;
       }
-      public string BlogPostsLastX(IEnumerable<Content> posts, string layoutBase, int numberOfPosts)
+      public string BlogPostsLastX(IEnumerable<Content> posts, string templateBase, int numberOfPosts)
       {
          var postLastX = posts.OrderByDescending(x => x.Created).Take(numberOfPosts);
          var loopItems = posts.ToLoop();
 
-         return ParseLoop(layoutBase, loopItems);
+         return ParseLoop(templateBase, loopItems);
       }
 
-      public string Languages(IEnumerable<Language> languages, string defaultLanguage, string layoutBase)
+      public string Languages(IEnumerable<Language> languages, string defaultLanguage, string templateBase)
       {
          var loopItems = languages.ToLoop(defaultLanguage);
 
-         return ParseLoop(layoutBase, loopItems);
+         return ParseLoop(templateBase, loopItems);
       }
 
-      public string Menu(IEnumerable<Content> menu, string layoutBase)
+      public string Menu(IEnumerable<Content> menu, string templateBase)
       {
          var loopItems = menu.ToLoop();
 
-         return ParseLoop(layoutBase, loopItems);
+         return ParseLoop(templateBase, loopItems);
       }
 
-      public string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string layoutBase)
+      public string SocialMedia(IEnumerable<AuthorSocialMedia> socialMedia, string templateBase)
       {
          var loopItems = socialMedia.ToLoop();
 
-         return ParseLoop(layoutBase, loopItems);
+         return ParseLoop(templateBase, loopItems);
       }
 
-      private static string ParseLoop(string layoutBase, IEnumerable<Loop> loopItems)
+      private static string ParseLoop(string templateBase, IEnumerable<Loop> loopItems)
       {
-         if (layoutBase.IsNull())
+         if (templateBase.IsNull())
          {
             return string.Empty;
          } 
@@ -66,13 +66,13 @@ namespace Builder.Domain
 
          foreach (var item in loopItems)
          {
-            string layout = layoutBase;
-            layout = layout.Replace(Const.Tag.Loop.Icon, item.Icon.EmptyIfIsNull());
-            layout = layout.Replace(Const.Tag.Loop.Link, item.Link);
-            layout = layout.Replace(Const.Tag.Loop.Title, item.Title);
-            layout = layout.Replace(Const.Tag.Loop.Description, item.Description.EmptyIfIsNull());
+            string template = templateBase;
+            template = template.Replace(Const.Tag.Loop.Icon, item.Icon.EmptyIfIsNull());
+            template = template.Replace(Const.Tag.Loop.Link, item.Link);
+            template = template.Replace(Const.Tag.Loop.Title, item.Title);
+            template = template.Replace(Const.Tag.Loop.Description, item.Description.EmptyIfIsNull());
 
-            result.Append(layout);
+            result.Append(template);
          }
 
          return result.ToString();
