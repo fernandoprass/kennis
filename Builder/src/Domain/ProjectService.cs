@@ -16,10 +16,10 @@ namespace Builder.Domain {
 
    public class ProjectService : IProjectService
    {
-      private readonly ILoad _load;
+      private readonly ILoadService _load;
       private readonly IPathWrapper _path;
 
-      public ProjectService(ILoad load,
+      public ProjectService(ILoadService load,
          IPathWrapper pathWrapper)
       {
          _load = load;
@@ -37,6 +37,8 @@ namespace Builder.Domain {
             ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
 
             project.Folders = GetProjectFolders(project.Name, project.Template);
+
+            _load.ConfigureFolder(project.Folders);
 
             return project;
          }

@@ -23,7 +23,7 @@ namespace Builder.Domain
    public class Data : IData
    {
       private readonly IDirectoryWrapper _directoryWrapper;
-      private readonly ILoad _load;
+      private readonly ILoadService _load;
       private readonly ISave _save;
       private readonly ILogger<BuilderService> _logger;
       private string ContentBasePath { get; set; }
@@ -34,7 +34,7 @@ namespace Builder.Domain
       public List<Content> ContentList { get;  set; }
 
       public Data(IDirectoryWrapper directoryWrapper,
-         ILoad load,
+         ILoadService load,
          ISave save,
          ILogger<BuilderService> logger)
       {

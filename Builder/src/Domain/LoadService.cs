@@ -11,26 +11,34 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Builder.Domain {
-   public interface ILoad {
+   public interface ILoadService {
+      void ConfigureFolder(ProjectFolder projectFolder);
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
-      Template Template(string templateFolder);
+      Template Template();
       Project Project(string filename);
       string YamlContentHeader(string filename);
    }
 
-   public class Load : ILoad {
+   public class LoadService : ILoadService {
       private readonly IFileWrapper _file;
       private readonly IPathWrapper _path;
       private readonly ILogger<BuilderService> _logger;
 
-      public Load(IFileWrapper fileWrapper,
+      private ProjectFolder _projectFolder;
+
+      public LoadService(IFileWrapper fileWrapper,
          ILogger<BuilderService> logger,
          IPathWrapper pathWrapper)
       {
          _file = fileWrapper;
          _logger = logger;
          _path = pathWrapper;
+      }
+
+      public void ConfigureFolder(ProjectFolder projectFolder)
+      {
+         _projectFolder = projectFolder;
       }
 
       public ContentHeader ContentHeader(string yaml)
@@ -41,7 +49,7 @@ namespace Builder.Domain {
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Falling when try to read content header. Yaml {0}", yaml);
+            _logger.LogError(ex, "Falling when try to read content header. Yaml {yaml}", yaml);
          }
 
          return null;
@@ -50,25 +58,26 @@ namespace Builder.Domain {
       public List<Content> ContentList(string path)
       {
          var filename = _path.Combine(path, Const.File.ContentList);
+
          var list = ReadJsonFile<List<Content>>(filename);
 
          return list.IsNotNull() ? list : new List<Content>();
       }
 
       #region Load Layout
-      public Template Template(string templateFolder)
+      public Template Template()
       {
-         var filename = _path.Combine(templateFolder, Const.File.Template);
+         var filename = _path.Combine(_projectFolder.Template, Const.File.Template);
 
-         _logger.LogInformation("Load templates at {templateFolder}", templateFolder);
+         _logger.LogInformation("Load templates at {template}", _projectFolder.Template);
 
          var templateFile = ReadJsonFile<Template>(filename);
 
          if (templateFile.IsNotNull())
          {
-            var template = LoadLayoutMainTemplates(templateFile, templateFolder);
+            var template = LoadLayoutMainTemplates(templateFile, _projectFolder.Template);
 
-            template.Loops = LoadLayoutLoopTemplates(templateFile.Loops, templateFolder);
+            template.Loops = LoadLayoutLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
             return template;
          }
@@ -181,7 +190,7 @@ namespace Builder.Domain {
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try deserialize JSON file. Content {0}", jsonString);
+               _logger.LogError(ex, "Falling when try deserialize JSON file. Content {jsonString}", jsonString);
             }
          }
 
@@ -202,7 +211,7 @@ namespace Builder.Domain {
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try deserialize YAML file. Content {0}", yaml);
+               _logger.LogError(ex, "Falling when try deserialize YAML file. Content {yaml}", yaml);
             }
          }
 

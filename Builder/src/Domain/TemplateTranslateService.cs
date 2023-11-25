@@ -12,10 +12,10 @@ namespace Builder.Domain {
     public class TemplateTranslateService : ITemplateTranslateService
     {
         private readonly IFileWrapper _file;
-        private readonly ILoad _load;
+        private readonly ILoadService _load;
         private readonly ILogger<BuilderService> _logger;
 
-        public TemplateTranslateService(IFileWrapper file, ILoad load, ILogger<BuilderService> logger)
+        public TemplateTranslateService(IFileWrapper file, ILoadService load, ILogger<BuilderService> logger)
         {
             _file = file;
             _load = load;

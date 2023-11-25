@@ -9,7 +9,7 @@ namespace Builder.Tests.Domain
    {
       private readonly Mock<IFileWrapper> _fileMock;
       private readonly Mock<ILogger<BuilderService>> _loggerMock;
-      private readonly ILoad _load;
+      private readonly ILoadService _load;
 
 		private readonly string _mdExtension = ".md";
       private readonly string _jsonExtension = ".json";

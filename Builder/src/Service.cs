@@ -37,7 +37,7 @@ namespace Builder
          return services.AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
                         .AddSingleton<IFileWrapper, FileWrapper>()
                         .AddSingleton<IPathWrapper, PathWrapper>()
-                        .AddSingleton<ILoad, Load>()
+                        .AddSingleton<ILoadService, LoadService>()
                         .AddSingleton<ISave, Save>()
                         .AddSingleton<ITemplateService, TemplateService>()
                         .AddSingleton<IProjectService, ProjectService>()

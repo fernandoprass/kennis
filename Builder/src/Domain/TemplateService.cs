@@ -11,12 +11,12 @@ namespace Builder.Domain
    }
    public class TemplateService : ITemplateService
    {
-      private readonly ILoad _load;
+      private readonly ILoadService _load;
       private readonly ITemplateTranslateService _templateTranslateService;
 
       private Template _template;
 
-      public TemplateService(ILoad load, ITemplateTranslateService templateTranslateService)
+      public TemplateService(ILoadService load, ITemplateTranslateService templateTranslateService)
       {
          _load = load;
          _templateTranslateService = templateTranslateService;
@@ -24,7 +24,7 @@ namespace Builder.Domain
 
       public bool Load(string templateFolder)
       {
-         _template = _load.Template(templateFolder);
+         _template = _load.Template();
 
          return _template.IsNotNull();
       }
