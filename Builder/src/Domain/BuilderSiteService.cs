@@ -6,14 +6,14 @@ namespace Builder.Domain
 {
     public interface IBuildSiteService
    {
-      void Build(string defaultLanguage, ProjectFolder projectFolder, ProjectSite projectSite);
+      void Build(string defaultLanguage, ProjectSite projectSite, Template template);
    }
 
    public class BuilderSiteService : IBuildSiteService
    {
       private readonly ILogger<BuilderService> _logger;
       private readonly IData _data;
-      private readonly ISave _save;
+      private readonly ISaveService _save;
       private readonly IBuildLoop _loop;
       private readonly IBuildTag _tag;
 
@@ -30,7 +30,7 @@ namespace Builder.Domain
       public BuilderSiteService(
          ILogger<BuilderService> logger,
          IData data,
-         ISave save,
+         ISaveService save,
          IBuildLoop loop,
          IBuildTag tag)
       {
@@ -41,11 +41,10 @@ namespace Builder.Domain
          _tag = tag;
       }
 
-      public void Build(string defaultLanguageCode, ProjectFolder projectFolder, ProjectSite projectSite)
+      public void Build(string defaultLanguageCode, ProjectSite projectSite, Template template)
       {
          DefaultLanguageCode = defaultLanguageCode;
-         ProjectFolder = projectFolder;
-         _save.Configure(projectFolder.Destination, Path.Combine(projectFolder.Project, projectSite.Language.Code));
+
          _data.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
          _data.UpdateContentList();
 
@@ -62,13 +61,13 @@ namespace Builder.Domain
          ParseContentFile(projectSite, ContentType.Page, _data.ContentList);
 
          ParseContentFile(projectSite, ContentType.Post, _data.ContentList);
+
+         projectSite.LastSuccessfulCreation = DateTime.UtcNow;
       }
 
       private void ParseIndexFile(ProjectSite site)
       {
          string template = ParseHtmlFile(Template.Index);
-
-         //template = _translate.To(site.Language.Code, ProjectFolder.Template, template);
 
          template = _tag.Index(template, site);
 
@@ -80,8 +79,6 @@ namespace Builder.Domain
       private void ParseBlogIndexFile(ProjectSite site)
       {
          string template = ParseHtmlFile(Template.Blog);
-
-         //template = _translate.To(site.Language.Code, ProjectFolder.Template, template);
 
          template = _tag.Index(template, site);
 

@@ -41,7 +41,7 @@ namespace Builder.Domain {
 
                   _logger.LogInformation("Starting to build site in {languageLabel}", projectSite.Language.Label);
 
-                  _buildSiteService.Build(project.DefaultLanguageCode, project.Folders, projectSite);
+                  _buildSiteService.Build(project.DefaultLanguageCode, projectSite, template);
 
                   _logger.LogInformation("Finished to build site in {languageLabel}", projectSite.Language.Label);
                }

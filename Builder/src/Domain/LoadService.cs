@@ -12,7 +12,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Builder.Domain {
    public interface ILoadService {
-      void ConfigureFolder(ProjectFolder projectFolder);
+      void Configure(ProjectFolder projectFolder);
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Template Template();
@@ -26,7 +26,7 @@ namespace Builder.Domain {
       private readonly IPathWrapper _path;
       private readonly ILogger<BuilderService> _logger;
 
-      private ProjectFolder _projectFolder;
+      private ProjectFolder? _projectFolder;
 
       public LoadService(IFileWrapper fileWrapper,
          ILogger<BuilderService> logger,
@@ -37,7 +37,7 @@ namespace Builder.Domain {
          _path = pathWrapper;
       }
 
-      public void ConfigureFolder(ProjectFolder projectFolder)
+      public void Configure(ProjectFolder projectFolder)
       {
          _projectFolder = projectFolder;
       }

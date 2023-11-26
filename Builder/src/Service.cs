@@ -38,7 +38,7 @@ namespace Builder
                         .AddSingleton<IFileWrapper, FileWrapper>()
                         .AddSingleton<IPathWrapper, PathWrapper>()
                         .AddSingleton<ILoadService, LoadService>()
-                        .AddSingleton<ISave, Save>()
+                        .AddSingleton<ISaveService, SaveService>()
                         .AddSingleton<ITemplateService, TemplateService>()
                         .AddSingleton<IProjectService, ProjectService>()
                         .AddScoped<IBuilderService, BuilderService>()

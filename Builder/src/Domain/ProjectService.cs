@@ -10,27 +10,29 @@ namespace Builder.Domain {
    public interface IProjectService
    {
       Project? Load(string projectName);
-
       Result Validate(Project project);
+      void Save();
    }
 
-   public class ProjectService : IProjectService
-   {
-      private readonly ILoadService _load;
+   public class ProjectService : IProjectService {
+      private readonly ILoadService _loadService;
       private readonly IPathWrapper _path;
+      private readonly ISaveService _saveService;
 
-      public ProjectService(ILoadService load,
-         IPathWrapper pathWrapper)
+      public ProjectService(ILoadService loadService,
+         IPathWrapper pathWrapper,
+         ISaveService saveService)
       {
-         _load = load;
+         _loadService = loadService;
          _path = pathWrapper;
+         _saveService = saveService;
       }
 
       public Project? Load(string projectName)
       {
          var filename = GetProjectFilename(projectName);
 
-         var project = _load.Project(filename);
+         var project = _loadService.Project(filename);
 
          if (project.IsNotNull())
          {
@@ -38,7 +40,8 @@ namespace Builder.Domain {
 
             project.Folders = GetProjectFolders(project.Name, project.Template);
 
-            _load.ConfigureFolder(project.Folders);
+            _loadService.Configure(project.Folders);
+            _saveService.Configure(project.Folders.Destination, project.Folders.Project);
 
             return project;
          }
@@ -118,6 +121,11 @@ namespace Builder.Domain {
             TemplateTranslations = _path.Combine(template, Const.Folder.TemplatesTranslations),
             Destination = _path.Combine(applicationPath, Const.Folder.Sites, projectName)
          };
+      }
+
+      public void Save()
+      {
+        // _saveService.ToJsonFile<Project>(_project)
       }
    }
 }

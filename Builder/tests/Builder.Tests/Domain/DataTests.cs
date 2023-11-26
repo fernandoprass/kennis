@@ -10,7 +10,7 @@ namespace Builder.Tests.Domain
       private readonly Mock<IDirectoryWrapper> _directoryWrapper;
       private readonly Mock<ILogger<BuilderService>> _loggerMock;
       private readonly Mock<ILoadService> _loadMock;
-      private readonly Mock<ISave> _saveMock;
+      private readonly Mock<ISaveService> _saveMock;
 
       private readonly IData _data;
 
@@ -20,7 +20,7 @@ namespace Builder.Tests.Domain
          _directoryWrapper = new Mock<IDirectoryWrapper>();
          _loggerMock= new Mock<ILogger<BuilderService>>();
          _loadMock = new Mock<ILoadService>();
-         _saveMock = new Mock<ISave>();
+         _saveMock = new Mock<ISaveService>();
 
          _data = new Data(_directoryWrapper.Object, _loadMock.Object, _saveMock.Object, _loggerMock.Object);
       }

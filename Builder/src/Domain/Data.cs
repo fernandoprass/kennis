@@ -24,7 +24,7 @@ namespace Builder.Domain
    {
       private readonly IDirectoryWrapper _directoryWrapper;
       private readonly ILoadService _load;
-      private readonly ISave _save;
+      private readonly ISaveService _save;
       private readonly ILogger<BuilderService> _logger;
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
@@ -35,7 +35,7 @@ namespace Builder.Domain
 
       public Data(IDirectoryWrapper directoryWrapper,
          ILoadService load,
-         ISave save,
+         ISaveService save,
          ILogger<BuilderService> logger)
       {
          _directoryWrapper = directoryWrapper;
