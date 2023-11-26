@@ -31,13 +31,13 @@ namespace Builder.Domain {
 
          if (project.IsNotNull())
          {
-            var template = _templateService.Load(project.Folders.Template);
+            _templateService.Load(project.DefaultLanguageCode);
 
-            if (template)
+            if (_templateService.IsTemplateLoaded())
             {
                foreach (var projectSite in project.Sites)
                {
-                  _templateService.Translate(projectSite.Language.Code);
+                  var template = _templateService.TranslateTo(projectSite.Language.Code);
 
                   _logger.LogInformation("Starting to build site in {languageLabel}", projectSite.Language.Label);
 

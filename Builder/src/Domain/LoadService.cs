@@ -16,6 +16,7 @@ namespace Builder.Domain {
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Template Template();
+      Dictionary<string, string> TemplateTranslationData(string language);
       Project Project(string filename);
       string YamlContentHeader(string filename);
    }
@@ -64,7 +65,7 @@ namespace Builder.Domain {
          return list.IsNotNull() ? list : new List<Content>();
       }
 
-      #region Load Layout
+      #region Load Template
       public Template Template()
       {
          var filename = _path.Combine(_projectFolder.Template, Const.File.Template);
@@ -75,9 +76,9 @@ namespace Builder.Domain {
 
          if (templateFile.IsNotNull())
          {
-            var template = LoadLayoutMainTemplates(templateFile, _projectFolder.Template);
+            var template = LoadMainTemplates(templateFile, _projectFolder.Template);
 
-            template.Loops = LoadLayoutLoopTemplates(templateFile.Loops, _projectFolder.Template);
+            template.Loops = LoadtLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
             return template;
          }
@@ -89,7 +90,7 @@ namespace Builder.Domain {
          return null;
       }
 
-      private Template LoadLayoutMainTemplates(Template template, string folder)
+      private Template LoadMainTemplates(Template template, string folder)
       {
          var layout = new Template
          {
@@ -105,7 +106,7 @@ namespace Builder.Domain {
          return layout;
       }
 
-      private TemplateLoop LoadLayoutLoopTemplates(TemplateLoop loops, string folder)
+      private TemplateLoop LoadtLoopTemplates(TemplateLoop loops, string folder)
       {
          if (loops.IsNull())
          {
@@ -127,6 +128,21 @@ namespace Builder.Domain {
          };
 
          return templateLoop;
+      }
+
+      public Dictionary<string, string> TemplateTranslationData(string language)
+      {
+         _logger.LogInformation("Loading i18n data for {language} on {translatePath}", language, _projectFolder.TemplateTranslations);
+         var filename = _path.Combine(_projectFolder.TemplateTranslations, Const.Folder.TemplatesTranslations, language + Const.Extension.I18n);
+
+         var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
+
+         if (i18nData.IsNotNull())
+         {
+            _logger.LogInformation("I18n data for {language} loaded successfully", language);
+         }
+
+         return i18nData;
       }
       #endregion
 
