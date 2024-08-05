@@ -43,20 +43,19 @@ namespace Builder.Domain {
             BlogPost = Translate(_template.BlogPost, i18nData),
             BlogTags = Translate(_template.BlogTags, i18nData),
             Page = Translate(_template.Page, i18nData),
-         };
-
-         translatedTemplate.Loops = new TemplateLoop
-         {
-            BlogArchive = Translate(_template.Loops.BlogArchive, i18nData),
-            BlogCategories = Translate(_template.Loops.BlogCategories, i18nData),
-            BlogPostLast3 = Translate(_template.Loops.BlogPostLast3, i18nData),
-            BlogPostLast5 = Translate(_template.Loops.BlogPostLast5, i18nData),
-            BlogPostLast10 = Translate(_template.Loops.BlogPostLast10, i18nData),
-            BlogPosts = Translate(_template.Loops.BlogPosts, i18nData),
-            BlogTags = Translate(_template.Loops.BlogTags, i18nData),
-            Languages = Translate(_template.Loops.Languages, i18nData),
-            Menu = Translate(_template.Loops.Menu, i18nData),
-            SocialMedia = Translate(_template.Loops.SocialMedia, i18nData)
+            Loops = new TemplateLoop
+            {
+               BlogArchive = Translate(_template.Loops.BlogArchive, i18nData),
+               BlogCategories = Translate(_template.Loops.BlogCategories, i18nData),
+               BlogPostLast3 = Translate(_template.Loops.BlogPostLast3, i18nData),
+               BlogPostLast5 = Translate(_template.Loops.BlogPostLast5, i18nData),
+               BlogPostLast10 = Translate(_template.Loops.BlogPostLast10, i18nData),
+               BlogPosts = Translate(_template.Loops.BlogPosts, i18nData),
+               BlogTags = Translate(_template.Loops.BlogTags, i18nData),
+               Languages = Translate(_template.Loops.Languages, i18nData),
+               Menu = Translate(_template.Loops.Menu, i18nData),
+               SocialMedia = Translate(_template.Loops.SocialMedia, i18nData)
+            }
          };
 
          return translatedTemplate;

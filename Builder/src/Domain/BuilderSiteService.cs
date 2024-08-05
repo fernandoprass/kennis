@@ -45,6 +45,7 @@ namespace Builder.Domain
       {
          DefaultLanguageCode = defaultLanguageCode;
 
+         var projectFolder = new ProjectFolder();
          _data.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
          _data.UpdateContentList();
 

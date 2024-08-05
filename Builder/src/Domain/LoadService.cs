@@ -13,6 +13,7 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Builder.Domain {
    public interface ILoadService {
       void Configure(ProjectFolder projectFolder);
+      string[] ContentFiles(string contentBasePath);
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Template Template();
@@ -22,19 +23,22 @@ namespace Builder.Domain {
    }
 
    public class LoadService : ILoadService {
-      private readonly IFileWrapper _file;
-      private readonly IPathWrapper _path;
+      private readonly IDirectoryWrapper _directoryWrapper;
+      private readonly IFileWrapper _fileWrapper;
+      private readonly IPathWrapper _pathWrapper;
       private readonly ILogger<BuilderService> _logger;
 
       private ProjectFolder? _projectFolder;
 
-      public LoadService(IFileWrapper fileWrapper,
+      public LoadService(IDirectoryWrapper directoryWrapper,
+         IFileWrapper fileWrapper,
          ILogger<BuilderService> logger,
          IPathWrapper pathWrapper)
       {
-         _file = fileWrapper;
+         _directoryWrapper = directoryWrapper;
+         _fileWrapper = fileWrapper;
          _logger = logger;
-         _path = pathWrapper;
+         _pathWrapper = pathWrapper;
       }
 
       public void Configure(ProjectFolder projectFolder)
@@ -58,17 +62,24 @@ namespace Builder.Domain {
 
       public List<Content> ContentList(string path)
       {
-         var filename = _path.Combine(path, Const.File.ContentList);
+         var filename = _pathWrapper.Combine(path, Const.File.ContentList);
 
          var list = ReadJsonFile<List<Content>>(filename);
 
          return list.IsNotNull() ? list : new List<Content>();
       }
 
+      public string[] ContentFiles(string contentBasePath)
+      {
+         var criteria = "*" + Const.Extension.Content;
+         var files = _directoryWrapper.GetFiles(contentBasePath, criteria, SearchOption.AllDirectories);
+         return files;
+      }
+
       #region Load Template
       public Template Template()
       {
-         var filename = _path.Combine(_projectFolder.Template, Const.File.Template);
+         var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
          _logger.LogInformation("Load templates at {template}", _projectFolder.Template);
 
@@ -100,7 +111,8 @@ namespace Builder.Domain {
             BlogArchive = ReadTextFile(folder, template.BlogArchive),
             BlogCategories = ReadTextFile(folder, template.BlogCategories),
             BlogPost = ReadTextFile(folder, template.BlogPost),
-            BlogTags = ReadTextFile(folder, template.BlogTags)
+            BlogTags = ReadTextFile(folder, template.BlogTags),
+            Languages = template.Languages
          };
 
          return layout;
@@ -133,7 +145,7 @@ namespace Builder.Domain {
       public Dictionary<string, string> TemplateTranslationData(string language)
       {
          _logger.LogInformation("Loading i18n data for {language} on {translatePath}", language, _projectFolder.TemplateTranslations);
-         var filename = _path.Combine(_projectFolder.TemplateTranslations, Const.Folder.TemplatesTranslations, language + Const.Extension.I18n);
+         var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, language + Const.Extension.I18n);
 
          var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
 
@@ -181,8 +193,8 @@ namespace Builder.Domain {
          {
             try
             {
-               filename = _path.Combine(folder, filename);
-               return _file.ReadAllText(filename);
+               filename = _pathWrapper.Combine(folder, filename);
+               return _fileWrapper.ReadAllText(filename);
             }
             catch (Exception ex)
             {
@@ -195,7 +207,7 @@ namespace Builder.Domain {
 
       private T ReadJsonFile<T>(string filename)
       {
-         if (_file.Exists(filename))
+         if (_fileWrapper.Exists(filename))
          {
             string jsonString = string.Empty;
             try

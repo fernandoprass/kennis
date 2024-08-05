@@ -46,7 +46,6 @@ namespace Builder
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()
                         .AddScoped<IData, Data>()
-                        .AddScoped<ITemplateTranslateService, TemplateTranslateService>()
                         .BuildServiceProvider();
       }
    }
