@@ -7,50 +7,50 @@ namespace Builder.Domain
 {
    public interface IBuildTag
    {
-      string Content(string layoutBase, Content content, string dateTimeFormat);
-      string Index(string layoutBase, ProjectSite site);
+      string Content(string templateBase, Content content, string dateTimeFormat);
+      string Index(string templateBase, ProjectSite site);
    }
 
    public class BuildTag : IBuildTag
    {
-      private readonly ILogger<Build> _logger;
+      private readonly ILogger<BuilderService> _logger;
       private Dictionary<string, string> _siteTags { get; set; }
       private Dictionary<string, string> _contentTags { get; set; }
 
-      public BuildTag(ILogger<Build> logger)
+      public BuildTag(ILogger<BuilderService> logger)
       {
          _logger = logger;
       }
 
-      public string Index(string layoutBase, ProjectSite site)
+      public string Index(string templateBase, ProjectSite site)
       {
          var tags = GetSiteTags(site);
 
-         return ParseTags(layoutBase, tags);
+         return ParseTags(templateBase, tags);
       }
 
-      public string Content(string layoutBase, Content content, string dateTimeFormat)
+      public string Content(string templateBase, Content content, string dateTimeFormat)
       {
          var tags = GetContentTags(content, dateTimeFormat);
 
-         return ParseTags(layoutBase, tags);
+         return ParseTags(templateBase, tags);
       }
 
-      private static string ParseTags(string layoutBase, Dictionary<string, string> tags)
+      private static string ParseTags(string templateBase, Dictionary<string, string> tags)
       {
-         if (layoutBase.IsNull())
+         if (templateBase.IsNull())
          {
             return string.Empty;
          }
 
-         string layout = layoutBase;
+         string template = templateBase;
 
          foreach (var tag in tags)
          {
-            layout = layout.Replace(tag.Key, tag.Value.EmptyIfIsNull());
+            template = template.Replace(tag.Key, tag.Value.EmptyIfIsNull());
          }
 
-         return layout;
+         return template;
       }
 
       private Dictionary<string, string> GetSiteTags(ProjectSite site)

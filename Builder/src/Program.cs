@@ -1,20 +1,19 @@
 ﻿using Builder.Domain;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Builder
-{
-   public class KennisBuilder
-   {
+namespace Builder {
+   public class KennisBuilder {
       static void Main(string[] args)
       {
          var projectName = "KennisDemo";
+         bool regenerateAllSite = true;
 
          var serviceProvider = Service.Configure(projectName);
 
-         var build = serviceProvider.GetService<IBuild>();
+         var builder = serviceProvider.GetService<IBuilderService>();
 
-         build.Builder(projectName);
+         builder.Build(projectName, regenerateAllSite);
+
       }
-
    }
 }

@@ -12,5 +12,6 @@
       public string? GoogleAnalyticTrackingId { get; set; }
       public Author Author { get; set; }
       public ProjectSiteFolders Folders { get; set; }
+      public DateTime? LastSuccessfulCreation { get; set; }
    }
 }

@@ -1,5 +1,4 @@
 ﻿using Builder.Domain;
-using Builder.Domain.Internationalization;
 using Microsoft.Extensions.DependencyInjection;
 using Myce.Wrappers;
 using Myce.Wrappers.Contracts;
@@ -7,7 +6,7 @@ using Serilog;
 
 namespace Builder
 {
-   public static class Service
+    public static class Service
    {
       public static ServiceProvider Configure(string projectName)
       {
@@ -35,17 +34,18 @@ namespace Builder
 
       private static ServiceProvider ConfigureBusinessServices(IServiceCollection services)
       {
-         return services.AddSingleton<IFileWrapper, FileWrapper>()
-                        .AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
-                        .AddSingleton<ILoad, Load>()
-                        .AddSingleton<ISave, Save>()
-                        .AddSingleton<IBuildSetup, BuildSetup>()
-                        .AddScoped<IBuild, Build>()
-                        .AddScoped<IBuildSite, BuildSite>()
+         return services.AddSingleton<IDirectoryWrapper, DirectoryWrapper>()
+                        .AddSingleton<IFileWrapper, FileWrapper>()
+                        .AddSingleton<IPathWrapper, PathWrapper>()
+                        .AddSingleton<ILoadService, LoadService>()
+                        .AddSingleton<ISaveService, SaveService>()
+                        .AddSingleton<ITemplateService, TemplateService>()
+                        .AddSingleton<IProjectService, ProjectService>()
+                        .AddScoped<IBuilderService, BuilderService>()
+                        .AddScoped<IBuildSiteService, BuilderSiteService>()
                         .AddScoped<IBuildLoop, BuildLoop>()
                         .AddScoped<IBuildTag, BuildTag>()
                         .AddScoped<IData, Data>()
-                        .AddScoped<ITranslate, Translate>()
                         .BuildServiceProvider();
       }
    }

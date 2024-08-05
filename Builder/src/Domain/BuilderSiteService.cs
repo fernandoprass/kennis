@@ -1,26 +1,24 @@
-﻿using Builder.Domain.Internationalization;
-using Builder.Domain.Models;
+﻿using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 
 namespace Builder.Domain
 {
-   public interface IBuildSite
+    public interface IBuildSiteService
    {
-      void Build(string defaultLanguage, ProjectFolder projectFolder, ProjectSite projectSite);
+      void Build(string defaultLanguage, ProjectSite projectSite, Template template);
    }
 
-   public class BuildSite : IBuildSite
+   public class BuilderSiteService : IBuildSiteService
    {
-      private readonly ILogger<Build> _logger;
+      private readonly ILogger<BuilderService> _logger;
       private readonly IData _data;
-      private readonly ISave _save;
+      private readonly ISaveService _save;
       private readonly IBuildLoop _loop;
       private readonly IBuildTag _tag;
-      private readonly ITranslate _translate;
 
       private ProjectFolder ProjectFolder { get; set; }
-      private Layout Layout { get; set; }
+      private Template Template { get; set; }
       private string DefaultLanguageCode { get; set; }
       private string LoopLanguagesParsed { get; set; }
       private string LoopSocialMediaParsed { get; set; }
@@ -29,27 +27,25 @@ namespace Builder.Domain
       private string BlogPostsLast5Parsed { get; set; }
       private string BlogPostsLast3Parsed { get; set; }
 
-      public BuildSite(
-         ILogger<Build> logger,
+      public BuilderSiteService(
+         ILogger<BuilderService> logger,
          IData data,
-         ISave save,
+         ISaveService save,
          IBuildLoop loop,
-         IBuildTag tag,
-         ITranslate translate)
+         IBuildTag tag)
       {
          _logger = logger;
          _data = data;
          _save = save;
          _loop = loop;
          _tag = tag;
-         _translate = translate;
       }
 
-      public void Build(string defaultLanguageCode, ProjectFolder projectFolder, ProjectSite projectSite)
+      public void Build(string defaultLanguageCode, ProjectSite projectSite, Template template)
       {
          DefaultLanguageCode = defaultLanguageCode;
-         ProjectFolder = projectFolder;
-         _save.Configure(projectFolder.Destination, Path.Combine(projectFolder.Project, projectSite.Language.Code));
+
+         var projectFolder = new ProjectFolder();
          _data.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
          _data.UpdateContentList();
 
@@ -66,32 +62,30 @@ namespace Builder.Domain
          ParseContentFile(projectSite, ContentType.Page, _data.ContentList);
 
          ParseContentFile(projectSite, ContentType.Post, _data.ContentList);
+
+         projectSite.LastSuccessfulCreation = DateTime.UtcNow;
       }
 
       private void ParseIndexFile(ProjectSite site)
       {
-         string layout = ParseHtmlFile(Layout.Index);
+         string template = ParseHtmlFile(Template.Index);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
-
-         layout = _tag.Index(layout, site);
+         template = _tag.Index(template, site);
 
          _logger.LogInformation("Index html page parsed - " + site.Language.Label);
 
-         _save.ToHtmlFile(site.Language.IndexFileName, layout);
+         _save.ToHtmlFile(site.Language.IndexFileName, template);
       }
 
       private void ParseBlogIndexFile(ProjectSite site)
       {
-         string layout = ParseHtmlFile(Layout.Blog);
+         string template = ParseHtmlFile(Template.Blog);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
-
-         layout = _tag.Index(layout, site);
+         template = _tag.Index(template, site);
 
          _logger.LogInformation("Blog index html page parsed");
 
-         _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, layout);
+         _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
       }
 
       private void ParseContentFile(ProjectSite site, ContentType contentType, IEnumerable<Content> contentList)
@@ -102,11 +96,11 @@ namespace Builder.Domain
                         ? contentList.Where(x => x.Type.Equals(ContentType.Page))
                         : contentList.Where(x => x.Type.Equals(ContentType.Post));
 
-         string layout = contentType == ContentType.Page
-                         ? ParseHtmlFile(Layout.Page)
-                         : ParseHtmlFile(Layout.BlogPost);
+         string template = contentType == ContentType.Page
+                         ? ParseHtmlFile(Template.Page)
+                         : ParseHtmlFile(Template.BlogPost);
 
-         layout = _translate.To(site.Language.Code, ProjectFolder.Template, layout);
+         //template = _translate.To(site.Language.Code, ProjectFolder.Template, template);
 
          var folder = contentType == ContentType.Page
                          ? site.Folders.Pages
@@ -116,7 +110,7 @@ namespace Builder.Domain
 
          foreach (var content in contents)
          {
-            string post = _tag.Content(layout, content, site.DateTimeFormat);
+            string post = _tag.Content(template, content, site.DateTimeFormat);
             _logger.LogInformation("Content parsed: " + content.Title);
             _save.ToHtmlFile(folder + content.Filename, post);
          }
@@ -134,29 +128,29 @@ namespace Builder.Domain
             site.Language
          };
 
-         LoopLanguagesParsed = _loop.Languages(languages, DefaultLanguageCode, Layout.Loops.Languages);
+         LoopLanguagesParsed = _loop.Languages(languages, DefaultLanguageCode, Template.Loops.Languages);
 
-         LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, Layout.Loops.SocialMedia);
+         LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, Template.Loops.SocialMedia);
 
          var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
-         LoopMenuParsed = _loop.Menu(menuList, Layout.Loops.Menu);
+         LoopMenuParsed = _loop.Menu(menuList, Template.Loops.Menu);
 
          var posts = contentList.Where(content => content.Type == ContentType.Post);
-         BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast10, 10);
-         BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast5, 5);
-         BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, Layout.Loops.BlogPostLast3, 3);
+         BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast10, 10);
+         BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast5, 5);
+         BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast3, 3);
       }
 
-      private string ParseHtmlFile(string layout)
+      private string ParseHtmlFile(string template)
       {
-         layout = layout.Replace(Const.Tag.Site.Loop.Languages, LoopLanguagesParsed);
-         layout = layout.Replace(Const.Tag.Site.Loop.Menu, LoopMenuParsed);
-         layout = layout.Replace(Const.Tag.Site.Loop.SocialMedia, LoopSocialMediaParsed);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast10, BlogPostsLast10Parsed);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast5, BlogPostsLast5Parsed);
-         layout = layout.Replace(Const.Tag.Site.Loop.BlogPostLast3, BlogPostsLast3Parsed);
+         template = template.Replace(Const.Tag.Site.Loop.Languages, LoopLanguagesParsed);
+         template = template.Replace(Const.Tag.Site.Loop.Menu, LoopMenuParsed);
+         template = template.Replace(Const.Tag.Site.Loop.SocialMedia, LoopSocialMediaParsed);
+         template = template.Replace(Const.Tag.Site.Loop.BlogPostLast10, BlogPostsLast10Parsed);
+         template = template.Replace(Const.Tag.Site.Loop.BlogPostLast5, BlogPostsLast5Parsed);
+         template = template.Replace(Const.Tag.Site.Loop.BlogPostLast3, BlogPostsLast3Parsed);
 
-         return layout;
+         return template;
       }
 
    }

@@ -3,10 +3,8 @@ using Builder.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
-using Myce.Wrappers.Contracts;
 
-namespace Builder.Domain
-{
+namespace Builder.Domain {
    public interface IData
    {
       List<Content> ContentList { get;  set; }
@@ -22,10 +20,9 @@ namespace Builder.Domain
 
    public class Data : IData
    {
-      private readonly IDirectoryWrapper _directoryWrapper;
-      private readonly ILoad _load;
-      private readonly ISave _save;
-      private readonly ILogger<Build> _logger;
+      private readonly ILoadService _loadService;
+      private readonly ISaveService _saveService;
+      private readonly ILogger<BuilderService> _logger;
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
       private string ContentPostsPath { get; set; }
@@ -33,14 +30,12 @@ namespace Builder.Domain
       private string HtmlPostsPath { get; set; }
       public List<Content> ContentList { get;  set; }
 
-      public Data(IDirectoryWrapper directoryWrapper,
-         ILoad load,
-         ISave save,
-         ILogger<Build> logger)
+      public Data(ILoadService loadService,
+         ISaveService saveService,
+         ILogger<BuilderService> logger)
       {
-         _directoryWrapper = directoryWrapper;
-         _load = load;
-         _save = save;
+         _loadService = loadService;
+         _saveService = saveService;
          _logger = logger;
       }
 
@@ -49,19 +44,19 @@ namespace Builder.Domain
       {
          InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
 
-         var files = GetFiles();
+         var files = _loadService.ContentFiles(ContentBasePath);
 
          InitializeContentList();
 
          foreach (var file in files)
          {
-            _logger.LogInformation("Reading file: " + file);
+            _logger.LogInformation("Reading file {file}", file);
 
-            string yaml = _load.YamlContentHeader(file);
+            string yaml = _loadService.YamlContentHeader(file);
 
             if (yaml.IsNotNull())
             {
-               var header = _load.ContentHeader(yaml);
+               var header = _loadService.ContentHeader(yaml);
 
                //Draft contents should not be added
                if (header.IsNotNull() && !header.Draft)
@@ -73,7 +68,7 @@ namespace Builder.Domain
 
                if (header.IsNull())
                {
-                  _logger.LogError("File does not have a header: " + file);
+                  _logger.LogError("File does not have a header {file}", file);
                }
             }
          }
@@ -83,7 +78,7 @@ namespace Builder.Domain
 
       public void SaveContentList()
       {
-         _save.ToJsonFile(Const.File.ContentList, ContentList);
+         _saveService.ToJsonFile(Const.File.ContentList, ContentList);
       }
 
       public void UpdateContentList()
@@ -182,15 +177,8 @@ namespace Builder.Domain
 
       private void InitializeContentList()
       {
-         ContentList = _load.ContentList(ContentBasePath);
+         ContentList = _loadService.ContentList(ContentBasePath);
          ContentList.ForEach(page => { page.Delete = true; });
-      }
-
-      private string[] GetFiles()
-      {
-         var criteria = "*" + Const.Extension.Content;
-         var files = _directoryWrapper.GetFiles(ContentBasePath, criteria, SearchOption.AllDirectories);
-         return files;
       }
       #endregion
    }
