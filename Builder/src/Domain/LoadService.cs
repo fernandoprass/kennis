@@ -54,7 +54,7 @@ namespace Builder.Domain {
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Falling when try to read content header. Yaml {yaml}", yaml);
+            _logger.LogError(ex, "Failed to read Content Header. Yaml {yaml}", yaml);
          }
 
          return null;
@@ -81,7 +81,7 @@ namespace Builder.Domain {
       {
          var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
-         _logger.LogInformation("Load templates at {template}", _projectFolder.Template);
+         _logger.LogInformation("Loading templates at {template}", _projectFolder.Template);
 
          var templateFile = ReadJsonFile<Template>(filename);
 
@@ -91,11 +91,13 @@ namespace Builder.Domain {
 
             template.Loops = LoadtLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
+            _logger.LogInformation("Template loaded successfully");
+
             return template;
          }
          else
          {
-            _logger.LogError("Falling when try to load template {filename}", filename);
+            _logger.LogCritical("Failed to load template {filename}", filename);
          }
 
          return null;
@@ -173,32 +175,50 @@ namespace Builder.Domain {
                 .Build();
 
             var mdFile = ReadTextFile(string.Empty, filename);
-            var document = Markdown.Parse(mdFile, pipeline);
-            var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
-            var yaml = yamlHeader.Lines.ToString();
-            return yaml;
+            if (mdFile.IsNotNull())
+            {
+               var document = Markdown.Parse(mdFile, pipeline);
+               var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
+               var yaml = yamlHeader.Lines.ToString();
+               return yaml; 
+            }
 
+            return null;
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Falling when try to read file {0}", filename);
+            _logger.LogError(ex, "Failed to read YAML Content Header file {0}", filename);
             return null;
          }
       }
 
       #region File Read
+      private bool FileExists(string filename)
+      {
+         if (_fileWrapper.Exists(filename))
+         {
+            return true;
+         }
+
+         _logger.LogError("File not found: {filename}", filename);
+         return false;
+      }
+
       private string ReadTextFile(string folder, string filename)
       {
          if (!string.IsNullOrEmpty(filename))
          {
             try
             {
-               filename = _pathWrapper.Combine(folder, filename);
-               return _fileWrapper.ReadAllText(filename);
+               string _filename = _pathWrapper.Combine(folder, filename);
+               if (FileExists(_filename))
+               {
+                  return _fileWrapper.ReadAllText(_filename);
+               }           
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try read file {0} at {1}", filename, folder);
+               _logger.LogError(ex, "Failed to read file {0} at {1}", filename, folder);
             }
          }
 
@@ -207,19 +227,20 @@ namespace Builder.Domain {
 
       private T ReadJsonFile<T>(string filename)
       {
-         if (_fileWrapper.Exists(filename))
+         string json = string.Empty;
+         try
          {
-            string jsonString = string.Empty;
-            try
-            {
-               jsonString = ReadTextFile(string.Empty, filename);
+            json = ReadTextFile(string.Empty, filename);
 
-               return JsonSerializer.Deserialize<T>(jsonString)!;
-            }
-            catch (Exception ex)
+            if (!json.IsNullOrEmpty())
             {
-               _logger.LogError(ex, "Falling when try deserialize JSON file. Content {jsonString}", jsonString);
+               return JsonSerializer.Deserialize<T>(json)!;
             }
+
+         }
+         catch (Exception ex)
+         {
+            _logger.LogError(ex, "Failed to deserialize JSON file. Content: {json}", json);
          }
 
          return default(T);
@@ -239,7 +260,7 @@ namespace Builder.Domain {
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Falling when try deserialize YAML file. Content {yaml}", yaml);
+               _logger.LogError(ex, "Failed to deserialize YAML file. Content: {yaml}", yaml);
             }
          }
 

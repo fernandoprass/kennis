@@ -1,5 +1,6 @@
 ﻿using Builder.Domain.Models;
 using Kennis.Builder.Constants;
+using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 using Myce.Response;
 using Myce.Validation;
@@ -16,14 +17,17 @@ namespace Builder.Domain {
 
    public class ProjectService : IProjectService {
       private readonly ILoadService _loadService;
+      private readonly ILogger<BuilderService> _logger;
       private readonly IPathWrapper _path;
       private readonly ISaveService _saveService;
 
       public ProjectService(ILoadService loadService,
+         ILogger<BuilderService> logger,
          IPathWrapper pathWrapper,
          ISaveService saveService)
       {
          _loadService = loadService;
+         _logger = logger;
          _path = pathWrapper;
          _saveService = saveService;
       }
@@ -45,6 +49,8 @@ namespace Builder.Domain {
 
             return project;
          }
+
+
 
          return null;
       }

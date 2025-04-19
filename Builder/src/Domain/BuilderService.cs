@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
-
 namespace Builder.Domain {
    public interface IBuilderService {
       void Build(string projectName, bool rebuildAll);
@@ -27,8 +26,7 @@ namespace Builder.Domain {
 
       public void Build(string projectName, bool rebuildAll)
       {
-         _logger.LogInformation("Starting to build Project {projectName}", projectName); 
-         
+         _logger.LogInformation("Starting to build Project {projectName}", projectName);
          var project = _projectService.Load(projectName);
 
          if (project.IsNotNull())
