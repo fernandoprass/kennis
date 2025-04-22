@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kennis.Builder.Constants;
+using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
 namespace Builder.Domain {
@@ -26,7 +27,7 @@ namespace Builder.Domain {
 
       public void Build(string projectName, bool rebuildAll)
       {
-         _logger.LogInformation("Starting to build Project {projectName}", projectName);
+         _logger.LogInformation(Const.Log.Project.StartBuild, projectName);
          var project = _projectService.Load(projectName);
 
          if (project.IsNotNull())
@@ -46,8 +47,8 @@ namespace Builder.Domain {
                   _logger.LogInformation("Finished to build site in {languageLabel}", projectSite.Language.Label);
                }
             }
+            _logger.LogInformation(Const.Log.Project.FinishBuild, projectName);
          }
-         _logger.LogInformation("Finished to build Project {projectName}", projectName);
       }
    }
 }

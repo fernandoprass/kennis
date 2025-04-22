@@ -49,8 +49,8 @@ namespace Builder.Domain {
 
             return project;
          }
-
-
+         
+         _logger.LogCritical("Failed to load project {projectName}", projectName);
 
          return null;
       }

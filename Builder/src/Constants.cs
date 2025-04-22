@@ -27,6 +27,13 @@
          public const string Posts = @"posts\";
       }
 
+      public static class Log {
+         public static class Project
+         {
+            public const string StartBuild = "Starting to build Project {projectName}";
+            public const string FinishBuild = "Finished to build Project {projectName}";
+         }
+      }
       public static class Tag
       {
          public static class Site
