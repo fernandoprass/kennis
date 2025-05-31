@@ -20,12 +20,13 @@ namespace Kennis.Domain
    }
    public class BuildLoop : IBuildLoop
    {
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
 
-      public BuildLoop(ILogger<BuilderService> logger)
+      public BuildLoop(ILogService logService)
       {
-         _logger = logger;
+         _logService = logService;
       }
+
       public string BlogPostsLastX(IEnumerable<Content> posts, string templateBase, int numberOfPosts)
       {
          var postLastX = posts.OrderByDescending(x => x.Created).Take(numberOfPosts);

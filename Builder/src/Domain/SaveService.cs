@@ -1,6 +1,4 @@
-﻿using Kennis.Domain.Models;
-using Kennis.Builder.Constants;
-using Microsoft.Extensions.Logging;
+﻿using Kennis.Builder.Constants;
 using Myce.Wrappers.Contracts;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -14,22 +12,25 @@ namespace Kennis.Domain
       void ToHtmlFile(string filename, string webPage);
    }
 
-   public class SaveService : ISaveService {
-      private string HtmlFolder { get; set; }
-      private string JsonFolder { get; set; }
+   public class SaveService(IFileWrapper fileWrapper,
+                            IPathWrapper pathWrapper,
+                            ILogService logService) : ISaveService {
 
-      private readonly IFileWrapper _file;
-      private readonly IPathWrapper _path;
-      private readonly ILogger<BuilderService> _logger;
+      private readonly IFileWrapper _file = fileWrapper;
+      private readonly IPathWrapper _path = pathWrapper;
+      private readonly ILogService _logService = logService;
 
-      public SaveService(IFileWrapper fileWrapper,
-         IPathWrapper pathWrapper,
-         ILogger<BuilderService> logger)
-      {
-         _file = fileWrapper;
-         _path = pathWrapper;
-         _logger = logger;
-      }
+      private string HtmlFolder { get; set; } = string.Empty;
+      private string JsonFolder { get; set; } = string.Empty;
+
+      //public SaveService(IFileWrapper fileWrapper,
+      //   IPathWrapper pathWrapper,
+      //   ILogService logService)
+      //{
+      //   _file = fileWrapper;
+      //   _path = pathWrapper;
+      //   _logService = logService;
+      //}
 
       public void Configure(string htmlFolder, string jsonFolder)
       {
@@ -53,11 +54,11 @@ namespace Kennis.Domain
 
             ToHtmlFile(filename, json);
 
-            _logger.LogInformation("Json file saved: {filename}", filename);
+            _logService.LogInfo(Const.Log.Category.JsonFile, Const.Log.Action.SaveSuccessfully, filename);
          }
          catch(Exception ex)
          { 
-            _logger.LogError(ex, "Error when try to save to Json file {filename}", filename);
+            _logService.LogError(ex, Const.Log.Category.JsonFile, Const.Log.Action.SaveFailed, filename);
          }
       }
 
@@ -74,11 +75,11 @@ namespace Kennis.Domain
          {
             _file.WriteAllText(filename, content);
 
-            _logger.LogInformation("Html File saved: {filename}", filename);
+            _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.SaveSuccessfully, filename);
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Error when try to save Html file {filename}", filename);
+            _logService.LogError(ex, Const.Log.Category.HtmlFile, Const.Log.Action.SaveFailed, filename);
          }
       }
    }

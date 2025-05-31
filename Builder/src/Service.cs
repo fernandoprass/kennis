@@ -38,6 +38,7 @@ namespace Kennis
                         .AddSingleton<IFileWrapper, FileWrapper>()
                         .AddSingleton<IPathWrapper, PathWrapper>()
                         .AddSingleton<ILoadService, LoadService>()
+                        .AddSingleton<ILogService, LogService>()
                         .AddSingleton<ISaveService, SaveService>()
                         .AddSingleton<ITemplateService, TemplateService>()
                         .AddSingleton<ITranslationService, TranslationService>()

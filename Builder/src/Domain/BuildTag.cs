@@ -13,13 +13,13 @@ namespace Kennis.Domain
 
    public class BuildTag : IBuildTag
    {
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
       private Dictionary<string, string> _siteTags { get; set; }
       private Dictionary<string, string> _contentTags { get; set; }
 
-      public BuildTag(ILogger<BuilderService> logger)
+      public BuildTag(ILogService logService)
       {
-         _logger = logger;
+         _logService = logService;
       }
 
       public string Index(string templateBase, ProjectSite site)

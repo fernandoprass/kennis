@@ -6,42 +6,34 @@ namespace Kennis.Domain
 {
    public interface IBuilderService
    {
-      void Build(Dictionary<string, Dictionary<string, string>> logMessages, string projectName, bool rebuildAll);
+      void Build(string projectName, bool rebuildAll);
    }
 
-   public class BuilderService : IBuilderService
+   internal class BuilderService : IBuilderService
    {
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
       private readonly IBuildSiteService _buildSiteService;
       private readonly IProjectService _projectService;
       private readonly ITemplateService _templateService;
       private readonly ITranslationService _translationService;
 
       public BuilderService(
-         ILogger<BuilderService> logger,
+         ILogService logService,
          IBuildSiteService site,
          IProjectService projectService,
          ITemplateService templateService,
          ITranslationService translationService)
       {
-         _logger = logger;
+         _logService = logService;
          _buildSiteService = site;
          _projectService = projectService;
          _templateService = templateService;
          _translationService = translationService;
       }
 
-      public static string GetMessage(Dictionary<string, Dictionary<string, string>> logMessages, string category, string key)
+      public void Build(string projectName, bool rebuildAll)
       {
-         return logMessages.ContainsKey(category) && logMessages[category].ContainsKey(key)
-             ? logMessages[category][key]
-             : $"[{key}]";
-      }
-
-      public void Build(Dictionary<string, Dictionary<string, string>> logMessages, string projectName, bool rebuildAll)
-      {
-         string message = GetMessage(logMessages, Const.Log.Category.Project, Const.Log.Action.BuildStarting);
-         _logger.LogInformation(message, projectName);
+         _logService.LogInfo(Const.Log.Category.Project, Const.Log.Action.BuildStarting, projectName);
          var project = _projectService.Load(projectName);
 
          if (project.IsNotNull())
@@ -56,15 +48,15 @@ namespace Kennis.Domain
 
                   if (template.IsNotNull())
                   {
-                     _logger.LogInformation(GetMessage(logMessages, Const.Log.Category.Site, Const.Log.Action.BuildStarting), projectSite.Language.Label);
+                     _logService.LogInfo(Const.Log.Category.Site, Const.Log.Action.BuildStarting, projectSite.Language.Label);
 
                      _buildSiteService.Build(project.DefaultLanguageCode, projectSite, template);
 
-                     _logger.LogInformation(GetMessage(logMessages, Const.Log.Category.Site, Const.Log.Action.BuildFinished), projectSite.Language.Label);
+                     _logService.LogInfo(Const.Log.Category.Site, Const.Log.Action.BuildFinished, projectSite.Language.Label);
                   }
                }
             }
-            _logger.LogInformation(GetMessage(logMessages, Const.Log.Category.Project, Const.Log.Action.BuildFinished), projectName);
+            _logService.LogInfo(Const.Log.Category.Project, Const.Log.Action.BuildFinished, projectName);
          }
       }
    }

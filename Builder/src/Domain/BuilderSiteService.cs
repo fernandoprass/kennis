@@ -11,7 +11,7 @@ namespace Kennis.Domain
 
    public class BuilderSiteService : IBuildSiteService
    {
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
       private readonly IData _data;
       private readonly ISaveService _save;
       private readonly IBuildLoop _loop;
@@ -28,13 +28,13 @@ namespace Kennis.Domain
       private string BlogPostsLast3Parsed { get; set; }
 
       public BuilderSiteService(
-         ILogger<BuilderService> logger,
+         ILogService logService,
          IData data,
          ISaveService save,
          IBuildLoop loop,
          IBuildTag tag)
       {
-         _logger = logger;
+         _logService = logService;
          _data = data;
          _save = save;
          _loop = loop;
@@ -72,7 +72,7 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logger.LogInformation("Index html page parsed - " + site.Language.Label);
+         _logService.LogInformation("Index html page parsed - " + site.Language.Label);
 
          _save.ToHtmlFile(site.Language.IndexFileName, template);
       }
@@ -83,7 +83,7 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logger.LogInformation("Blog index html page parsed");
+         _logService.LogInformation("Blog index html page parsed");
 
          _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
       }
@@ -106,16 +106,16 @@ namespace Kennis.Domain
                          ? site.Folders.Pages
                          : site.Folders.BlogPosts;
 
-         _logger.LogInformation("Start to parsed {0}", type);
+         _logService.LogInformation("Start to parsed {0}", type);
 
          foreach (var content in contents)
          {
             string post = _tag.Content(template, content, site.DateTimeFormat);
-            _logger.LogInformation("Content parsed: " + content.Title);
+            _logService.LogInformation("Content parsed: " + content.Title);
             _save.ToHtmlFile(folder + content.Filename, post);
          }
 
-         _logger.LogInformation("Finish to parsed {0}", type);
+         _logService.LogInformation("Finish to parsed {0}", type);
       }
 
       private void ParseLoopLayouts(ProjectSite site, IEnumerable<Content> contentList)

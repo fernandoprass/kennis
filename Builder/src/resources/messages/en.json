@@ -1,10 +1,32 @@
 {
   "project": {
     "buildStarting": "Starting to build project {projectName}",
-    "buildFinished": "Project build finished for {projectName}"
+    "buildFinished": "Project build finished for {projectName}",
+    "loadFinishedFailed": "Failed to load project {projectName}"
   },
   "site": {
     "buildStarting": "Starting to build site for {languageLabel}",
     "buildFinished": "Site build finished for {languageLabel}"
+  },
+  "template": {
+    "loadStarting": "Starting to load templates at {template}",
+    "loadFinishedSuccessfully": "Template loaded successfully",
+    "loadFinishedFailed": "Failed to load template {filename}"
+  },
+  "translationFile": {
+    "loadStarting": "Loading i18n data for {language} on {translatePath}",
+    "loadFinishedSuccessfully": "I18n data for {language} loaded successfully"
+  },
+  "htmlFile": {
+    "saveSuccessfully": "HTML file saved {filename}",
+    "saveFailed": "Error when try to save to HTML file {filename}"
+  },
+  "jsonFile": {
+    "deserializeFailed": "Failed to deserialize JSON file. Content: {json}",
+    "saveSuccessfully": "Json file saved {filename}",
+    "saveFailed": "Error when try to save to Json file {filename}"
+  },
+  "yamlFile": {
+    "deserializeFailed": "Failed to deserialize YAML file. Content: {yaml}"
   }
 }

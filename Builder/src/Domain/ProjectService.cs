@@ -17,17 +17,17 @@ namespace Kennis.Domain {
 
    public class ProjectService : IProjectService {
       private readonly ILoadService _loadService;
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
       private readonly IPathWrapper _path;
       private readonly ISaveService _saveService;
 
       public ProjectService(ILoadService loadService,
-         ILogger<BuilderService> logger,
+         ILogService logService,
          IPathWrapper pathWrapper,
          ISaveService saveService)
       {
          _loadService = loadService;
-         _logger = logger;
+         _logService = logService;
          _path = pathWrapper;
          _saveService = saveService;
       }
@@ -50,7 +50,7 @@ namespace Kennis.Domain {
             return project;
          }
          
-         _logger.LogCritical("Failed to load project {projectName}", projectName);
+         _logService.LogCritical(Const.Log.Category.Project,Const.Log.Action.LoadFinishedFailed, projectName);
 
          return null;
       }
@@ -81,9 +81,7 @@ namespace Kennis.Domain {
       {
          var entityValidator = new EntityValidator()
                      .IsMandatory(project.Template, new ErrorIsMandatory(nameof(project.Template)))
-                     .IsMandatory(project.Sites, new ErrorIsMandatory(nameof(project.Sites)));
-
-         
+                     .IsMandatory(project.Sites, new ErrorIsMandatory(nameof(project.Sites)));   
 
          return entityValidator.Validate();
       }

@@ -28,18 +28,18 @@ namespace Kennis.Domain
       private readonly IDirectoryWrapper _directoryWrapper;
       private readonly IFileWrapper _fileWrapper;
       private readonly IPathWrapper _pathWrapper;
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
 
       private ProjectFolder? _projectFolder;
 
       public LoadService(IDirectoryWrapper directoryWrapper,
          IFileWrapper fileWrapper,
-         ILogger<BuilderService> logger,
+         ILogService logService,
          IPathWrapper pathWrapper)
       {
          _directoryWrapper = directoryWrapper;
          _fileWrapper = fileWrapper;
-         _logger = logger;
+         _logService = logService;
          _pathWrapper = pathWrapper;
       }
 
@@ -56,7 +56,7 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Failed to read Content Header. Yaml {yaml}", yaml);
+            _logService.LogError(ex, "Failed to read Content Header. Yaml {yaml}", yaml);
          }
 
          return null;
@@ -83,7 +83,7 @@ namespace Kennis.Domain
       {
          var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
-         _logger.LogInformation("Loading templates at {template}", _projectFolder.Template);
+         _logService.LogInfo(Const.Log.Category.Template, Const.Log.Action.LoadStarting, _projectFolder.Template);
 
          var templateFile = ReadJsonFile<Template>(filename);
 
@@ -93,13 +93,13 @@ namespace Kennis.Domain
 
             template.Loops = LoadLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
-            _logger.LogInformation("Template loaded successfully");
+            _logService.LogInfo(Const.Log.Category.Template, Const.Log.Action.LoadStarting);
 
             return template;
          }
          else
          {
-            _logger.LogCritical("Failed to load template {filename}", filename);
+            _logService.LogCritical("Failed to load template {filename}", filename);
          }
 
          return null;
@@ -148,14 +148,14 @@ namespace Kennis.Domain
 
       public Dictionary<string, string> TemplateTranslationData(string language)
       {
-         _logger.LogInformation("Loading i18n data for {language} on {translatePath}", language, _projectFolder.TemplateTranslations);
+         _logService.LogInfo(Const.Log.Category.TranslationFile, Const.Log.Action.LoadStarting, language, _projectFolder.TemplateTranslations);
          var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, $"{language}{Const.Extension.I18n}");
 
          var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
 
          if (i18nData.IsNotNull())
          {
-            _logger.LogInformation("I18n data for {language} loaded successfully", language);
+            _logService.LogInfo(Const.Log.Category.TranslationFile, Const.Log.Action.LoadFinishedSuccessfully, language);
          }
 
          return i18nData;
@@ -195,7 +195,7 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Failed to read YAML Content Header file {0}", filename);
+            _logService.LogError(ex, "Failed to read YAML Content Header file {0}", filename);
             return null;
          }
       }
@@ -208,7 +208,7 @@ namespace Kennis.Domain
             return true;
          }
 
-         _logger.LogError("File not found: {filename}", filename);
+         _logService.LogError("File not found: {filename}", filename);
          return false;
       }
 
@@ -226,7 +226,7 @@ namespace Kennis.Domain
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Failed to read file {0} at {1}", filename, folder);
+               _logService.LogError(ex, "Failed to read file {0} at {1}", filename, folder);
             }
          }
 
@@ -248,10 +248,10 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logger.LogError(ex, "Failed to deserialize JSON file. Content: {json}", json);
+            _logService.LogError(ex, Const.Log.Category.JsonFile, Const.Log.Action.DeserializeFailed, json);
          }
 
-         return default(T);
+         return default;
       }
 
       private T? ReadYamlFile<T>(string yaml)
@@ -268,7 +268,7 @@ namespace Kennis.Domain
             }
             catch (Exception ex)
             {
-               _logger.LogError(ex, "Failed to deserialize YAML file. Content: {yaml}", yaml);
+               _logService.LogError(ex, Const.Log.Category.YamlFile, Const.Log.Action.DeserializeFailed, yaml);
             }
          }
 

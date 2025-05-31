@@ -23,7 +23,7 @@ namespace Kennis.Domain
    {
       private readonly ILoadService _loadService;
       private readonly ISaveService _saveService;
-      private readonly ILogger<BuilderService> _logger;
+      private readonly ILogService _logService;
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
       private string ContentPostsPath { get; set; }
@@ -33,11 +33,11 @@ namespace Kennis.Domain
 
       public Data(ILoadService loadService,
          ISaveService saveService,
-         ILogger<BuilderService> logger)
+         ILogService logService)
       {
          _loadService = loadService;
          _saveService = saveService;
-         _logger = logger;
+         _logService = logService;
       }
 
       #region Public methods
@@ -51,7 +51,7 @@ namespace Kennis.Domain
 
          foreach (var file in files)
          {
-            _logger.LogInformation("Reading file {file}", file);
+            _logService.LogInformation("Reading file {file}", file);
 
             string yaml = _loadService.YamlContentHeader(file);
 
@@ -69,7 +69,7 @@ namespace Kennis.Domain
 
                if (header.IsNull())
                {
-                  _logger.LogError("File does not have a header {file}", file);
+                  _logService.LogError("File does not have a header {file}", file);
                }
             }
          }

@@ -17,14 +17,18 @@ namespace Kennis {
 
          var serviceProvider = Service.Configure(projectName);
 
-         var loadService = serviceProvider.GetService<ILoadService>();
+         var logService = serviceProvider.GetService<ILogService>();
 
-         var logMessages = loadService.LogMessages(language);
+         if (logService.LoadMessages(language))
+         {
+            var builderService = serviceProvider.GetService<IBuilderService>();
 
-         var builderService = serviceProvider.GetService<IBuilderService>();
-
-         builderService.Build(logMessages, projectName, regenerateAllSite);
-
+            builderService.Build(projectName, regenerateAllSite);
+         }
+         else
+         {
+            Console.WriteLine("Log message file not found. Reinstall the application");
+         }
       }
    }
 }
