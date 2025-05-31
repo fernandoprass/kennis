@@ -1,11 +1,11 @@
-﻿using Builder.Domain.Mappers;
-using Builder.Domain.Models;
-using Kennis.Builder.Constants;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Mappers;
+using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 using System.Text;
 
-namespace Builder.Domain
+namespace Kennis.Domain
 {
    public interface IBuildLoop
    {

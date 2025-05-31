@@ -1,4 +1,4 @@
-﻿namespace Builder.Tests.Domain
+﻿namespace Kennis.Tests.Domain
 {
    internal static class LoadTestsMockData
    {

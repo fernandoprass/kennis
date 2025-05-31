@@ -1,10 +1,10 @@
-﻿using Builder.Domain;
+﻿using Kennis.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Myce.Wrappers;
 using Myce.Wrappers.Contracts;
 using Serilog;
 
-namespace Builder
+namespace Kennis
 {
     public static class Service
    {
@@ -40,6 +40,7 @@ namespace Builder
                         .AddSingleton<ILoadService, LoadService>()
                         .AddSingleton<ISaveService, SaveService>()
                         .AddSingleton<ITemplateService, TemplateService>()
+                        .AddSingleton<ITranslationService, TranslationService>()
                         .AddSingleton<IProjectService, ProjectService>()
                         .AddScoped<IBuilderService, BuilderService>()
                         .AddScoped<IBuildSiteService, BuilderSiteService>()

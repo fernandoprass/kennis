@@ -1,4 +1,4 @@
-﻿namespace Builder.Domain.Models
+﻿namespace Kennis.Domain.Models
 {
    public class Language
    {

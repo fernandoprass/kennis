@@ -1,10 +1,10 @@
-﻿using Builder.Domain.Models;
-using Kennis.Builder.Constants;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Builder.Domain
+namespace Kennis.Domain
 {
-    public interface IBuildSiteService
+   public interface IBuildSiteService
    {
       void Build(string defaultLanguage, ProjectSite projectSite, Template template);
    }

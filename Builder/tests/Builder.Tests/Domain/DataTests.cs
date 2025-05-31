@@ -1,9 +1,9 @@
-﻿using Builder.Domain;
-using Builder.Domain.Models;
+﻿using Kennis.Domain;
+using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Myce.Wrappers.Contracts;
 
-namespace Builder.Tests.Domain
+namespace Kennis.Tests.Domain
 {
    public class DataTests
    {

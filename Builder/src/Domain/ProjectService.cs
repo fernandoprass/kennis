@@ -1,4 +1,4 @@
-﻿using Builder.Domain.Models;
+﻿using Kennis.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
@@ -7,7 +7,7 @@ using Myce.Validation;
 using Myce.Validation.ErrorMessages;
 using Myce.Wrappers.Contracts;
 
-namespace Builder.Domain {
+namespace Kennis.Domain {
    public interface IProjectService
    {
       Project? Load(string projectName);

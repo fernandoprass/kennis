@@ -1,8 +1,8 @@
-﻿using Builder.Domain.Models;
+﻿using Kennis.Domain.Models;
 using Myce.Response;
 using Myce.Validation;
 
-namespace Builder.Domain.Validators
+namespace Kennis.Domain.Validators
 {
    public class ProjectValidator : EntityValidator<ProjectValidator>
    {

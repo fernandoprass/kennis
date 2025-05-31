@@ -1,11 +1,6 @@
-﻿using Builder.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Kennis.Domain.Models;
 
-namespace Builder.Domain.Mappers
+namespace Kennis.Domain.Mappers
 {
    public static class ContentHeaderMapper
    {

@@ -1,6 +1,6 @@
 ﻿using Kennis.Builder;
 
-namespace Builder.Domain.Validation
+namespace Kennis.Domain.Validation
 {
     internal static class Validate
     {

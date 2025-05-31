@@ -1,5 +1,5 @@
-﻿using Builder.Domain.Models;
-using Kennis.Builder.Constants;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Models;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
@@ -10,7 +10,8 @@ using System.Text.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Builder.Domain {
+namespace Kennis.Domain
+{
    public interface ILoadService {
       void Configure(ProjectFolder projectFolder);
       string[] ContentFiles(string contentBasePath);

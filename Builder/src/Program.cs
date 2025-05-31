@@ -1,8 +1,8 @@
-﻿using Builder.Domain;
+﻿using Kennis.Domain;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Builder {
-   public class KennisBuilder {
+namespace Kennis {
+   public class Kennis {
       static void Main(string[] args)
       {
          var projectName = "KennisDemo";

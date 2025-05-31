@@ -1,9 +1,9 @@
-﻿using Builder.Domain.Models;
+﻿using Kennis.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
-namespace Builder.Domain
+namespace Kennis.Domain
 {
    public interface IBuildTag
    {

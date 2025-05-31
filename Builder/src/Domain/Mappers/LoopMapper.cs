@@ -1,7 +1,7 @@
-﻿using Builder.Domain.Models;
+﻿using Kennis.Domain.Models;
 using Myce.Extensions;
 
-namespace Builder.Domain.Mappers
+namespace Kennis.Domain.Mappers
 {
    public static class LoopMapper
    {

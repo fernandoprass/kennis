@@ -1,11 +1,11 @@
-﻿using Builder.Domain.Models;
+﻿using Kennis.Domain.Models;
 using Kennis.Builder.Constants;
 using Microsoft.Extensions.Logging;
 using Myce.Wrappers.Contracts;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-namespace Builder.Domain
+namespace Kennis.Domain
 {
    public interface ISaveService
    {

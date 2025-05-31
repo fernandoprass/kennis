@@ -1,13 +1,14 @@
-﻿using Builder.Domain.Mappers;
-using Builder.Domain.Models;
-using Kennis.Builder.Constants;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Mappers;
+using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
-namespace Builder.Domain {
+namespace Kennis.Domain
+{
    public interface IData
    {
-      List<Content> ContentList { get;  set; }
+      List<Content> ContentList { get; set; }
 
       void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
 
@@ -28,7 +29,7 @@ namespace Builder.Domain {
       private string ContentPostsPath { get; set; }
       private string HtmlPagesPath { get; set; }
       private string HtmlPostsPath { get; set; }
-      public List<Content> ContentList { get;  set; }
+      public List<Content> ContentList { get; set; }
 
       public Data(ILoadService loadService,
          ISaveService saveService,

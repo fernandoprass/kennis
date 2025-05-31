@@ -1,4 +1,4 @@
-﻿namespace Builder.Domain.Models
+﻿namespace Kennis.Domain.Models
 {
     public class Template
     {
@@ -10,6 +10,7 @@
         public string BlogCategories { get; set; }
         public string BlogPost { get; set; }
         public string BlogTags { get; set; }
+        public string DefaultLanguage { get; set; }
         public TemplateLoop Loops { get; set; }
     }
 }
