@@ -17,6 +17,7 @@ namespace Kennis.Domain
       string[] ContentFiles(string contentBasePath);
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
+      Dictionary<string, Dictionary<string, string>> LogMessages(string language);
       Template Template();
       Dictionary<string, string> TemplateTranslationData(string language);
       Project Project(string filename);
@@ -90,7 +91,7 @@ namespace Kennis.Domain
          {
             var template = LoadMainTemplates(templateFile, _projectFolder.Template);
 
-            template.Loops = LoadtLoopTemplates(templateFile.Loops, _projectFolder.Template);
+            template.Loops = LoadLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
             _logger.LogInformation("Template loaded successfully");
 
@@ -121,7 +122,7 @@ namespace Kennis.Domain
          return layout;
       }
 
-      private TemplateLoop LoadtLoopTemplates(TemplateLoop loops, string folder)
+      private TemplateLoop LoadLoopTemplates(TemplateLoop loops, string folder)
       {
          if (loops.IsNull())
          {
@@ -148,7 +149,7 @@ namespace Kennis.Domain
       public Dictionary<string, string> TemplateTranslationData(string language)
       {
          _logger.LogInformation("Loading i18n data for {language} on {translatePath}", language, _projectFolder.TemplateTranslations);
-         var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, language + Const.Extension.I18n);
+         var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, $"{language}{Const.Extension.I18n}");
 
          var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
 
@@ -161,6 +162,12 @@ namespace Kennis.Domain
       }
       #endregion
 
+
+      public Dictionary<string, Dictionary<string, string>> LogMessages(string language)
+      {
+         var filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
+         return ReadJsonFile<Dictionary<string, Dictionary<string, string>>>(filename);
+      }
 
       public Project Project(string filename)
       {

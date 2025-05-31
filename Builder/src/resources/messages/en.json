@@ -1,0 +1,10 @@
+{
+  "project": {
+    "buildStarting": "Starting to build project {projectName}",
+    "buildFinished": "Project build finished for {projectName}"
+  },
+  "site": {
+    "buildStarting": "Starting to build site for {languageLabel}",
+    "buildFinished": "Site build finished for {languageLabel}"
+  }
+}

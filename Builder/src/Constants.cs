@@ -19,6 +19,7 @@
 
       public static class Folder
       {
+         public const string LogMessages = @"resources\messages\";
          public const string Templates = @"templates\";
          public const string TemplatesTranslations = @"i18n\";
          public const string Projects = @"projects\";
@@ -28,12 +29,19 @@
       }
 
       public static class Log {
-         public static class Project
+         public static class Category
          {
-            public const string StartBuild = "Starting to build Project {projectName}";
-            public const string FinishBuild = "Finished to build Project {projectName}";
+            public const string Project = "project";
+            public const string Site = "site";
+         }
+
+         public static class Action
+         {
+            public const string BuildStarting = "buildStarting";
+            public const string BuildFinished = "buildFinished";
          }
       }
+
       public static class Tag
       {
          public static class Site

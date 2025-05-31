@@ -1,6 +1,5 @@
 ﻿using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
-using Myce.Extensions;
 
 namespace Kennis.Domain
 {
