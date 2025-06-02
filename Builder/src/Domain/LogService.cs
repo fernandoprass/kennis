@@ -37,7 +37,7 @@ namespace Kennis.Domain
 
       public bool LoadMessages(string language)
       {
-         string filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"u{language}{Const.Extension.I18n}");
+         string filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
          string jsonContent = string.Empty;
 
          if (_fileWrapper.Exists(filename))
@@ -45,6 +45,7 @@ namespace Kennis.Domain
             try
             {
                jsonContent = _fileWrapper.ReadAllText(filename);
+
                _logMessages = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(jsonContent);
             }
             catch (Exception ex)
@@ -56,25 +57,11 @@ namespace Kennis.Domain
          return _logMessages?.Count > 0;
       }
 
-      public static string GetEnumDescription(Enum value)
-      {
-         FieldInfo fi = value.GetType().GetField(value.ToString());
-
-         DescriptionAttribute[] attributes = fi.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
-
-         if (attributes != null && attributes.Any())
-         {
-            return attributes.First().Description;
-         }
-
-         return value.ToString();
-      }
-
       private string GetMessage(LogCategory category, LogAction action)
       {
-         return _logMessages.ContainsKey(GetEnumDescription(category)) && _logMessages[category.GetDescription()].ContainsKey(action)
-                   ? _logMessages[category][key]
-                   : $"[{key}]";
+         return _logMessages.ContainsKey(category.GetDescription()) && _logMessages[category.GetDescription()].ContainsKey(action.GetDescription())
+                   ? _logMessages[category.GetDescription()][action.GetDescription()]
+                   : string.Empty;
       }
 
       public void LogCritical(string message, params object[] args)

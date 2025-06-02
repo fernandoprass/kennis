@@ -71,7 +71,7 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.ParseFinished,"index");
+         _logService.LogInfo(LogCategory.HtmlFile, LogAction.ParseFinished,"index");
 
          _saveService.ToHtmlFile(site.Language.IndexFileName, template);
       }
@@ -82,7 +82,7 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.ParseFinished, "blog index");
+         _logService.LogInfo(LogCategory.HtmlFile, LogAction.ParseFinished, "blog index");
 
          _saveService.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
       }
@@ -105,16 +105,16 @@ namespace Kennis.Domain
                          ? site.Folders.Pages
                          : site.Folders.BlogPosts;
 
-         _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseStarting, type);
+         _logService.LogInfo(LogCategory.Content, LogAction.ParseStarting, type);
 
          foreach (var content in contents)
          {
             string post = _tag.Content(template, content, site.DateTimeFormat);
-            _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseFinished, content.Title);
+            _logService.LogInfo(LogCategory.Content, LogAction.ParseFinished, content.Title);
             _saveService.ToHtmlFile(folder + content.Filename, post);
          }
 
-         _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseFinished, type);
+         _logService.LogInfo(LogCategory.Content, LogAction.ParseFinished, type);
       }
 
       private void ParseLoopLayouts(ProjectSite site, IEnumerable<Content> contentList)

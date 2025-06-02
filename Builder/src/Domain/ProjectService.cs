@@ -50,7 +50,7 @@ namespace Kennis.Domain {
             return project;
          }
          
-         _logService.LogCritical(Const.Log.Category.Project,Const.Log.Action.LoadFinishedFailed, projectName);
+         _logService.LogCritical(LogCategory.Project, LogAction.LoadFinishedFailed, projectName);
 
          return null;
       }

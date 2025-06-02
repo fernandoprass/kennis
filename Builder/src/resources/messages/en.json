@@ -1,38 +1,45 @@
 {
-  "project": {
-    "buildStarting": "Starting to build project {projectName}",
-    "buildFinished": "Project build finished for {projectName}",
-    "loadFinishedFailed": "Failed to load project {projectName}"
+  "Content": {
+    "ParseStarting": "Starting to parse {content}",
+    "ParseFinished": "Parse finished {content} ",
+    "LoadStarting": "Loading file {file}",
+    "FileReadFailed": "Failed to read Content Header. Yaml {yaml}",
+    "ContentNotFound": "File does not have a header {file}"
   },
-  "site": {
-    "buildStarting": "Starting to build site for {languageLabel}",
-    "buildFinished": "Site build finished for {languageLabel}"
+  "File": {
+    "FileNotFound": "File not found {filename}",
+    "FileReadFailed": "Failed to read file {filename} at {folder}"
   },
-  "template": {
-    "loadStarting": "Starting to load templates at {template}",
-    "loadFinishedSuccessfully": "Template loaded successfully",
-    "loadFinishedFailed": "Failed to load template {filename}"
+  "Project": {
+    "BuildStarting": "Starting to build project {projectName}",
+    "BuildFinished": "Project build finished for {projectName}",
+    "LoadFinishedFailed": "Failed to load project {projectName}"
   },
-  "translationFile": {
-    "loadStarting": "Loading i18n data for {language} on {translatePath}",
-    "loadFinishedSuccessfully": "I18n data for {language} loaded successfully"
+  "Site": {
+    "BuildStarting": "Starting to build site for {languageLabel}",
+    "BuildFinished": "Site build finished for {languageLabel}"
   },
-  "htmlFile": {
-    "saveSuccessfully": "HTML file saved {filename}",
-    "saveFailed": "Error when try to save to HTML file {filename}",
-    "fileParsed": "HTML {pageName} page parsed"
+  "Template": {
+    "LoadStarting": "Starting to load templates at {template}",
+    "LoadFinishedSuccessfully": "Template loaded successfully",
+    "LoadFinishedFailed": "Failed to load template {filename}"
   },
-  "jsonFile": {
-    "deserializeFailed": "Failed to deserialize JSON file. Content: {json}",
-    "saveSuccessfully": "Json file saved {filename}",
-    "saveFailed": "Error when try to save to Json file {filename}"
+  "TranslationFile": {
+    "LoadStarting": "Loading i18n data for {language} on {translatePath}",
+    "LoadFinishedSuccessfully": "I18n data for {language} loaded successfully"
   },
-  "yamlFile": {
-    "deserializeFailed": "Failed to deserialize YAML file. Content: {yaml}"
+  "HtmlFile": {
+    "FileParsed": "HTML {pageName} page parsed",
+    "FileSaveFailed": "Error when try to save to HTML file {filename}",
+    "FileSaveSuccessfully": "HTML file saved {filename}"
   },
-  "content": {
-    "parseStarting": "Starting to parse {content}",
-    "parseFinished": "Parse finished {content} ",
-    "loadStarting": "Loading file {file}"
+  "JsonFile": {
+    "DeserializeFailed": "Failed to deserialize JSON file. Content: {json}",
+    "FileSaveFailed": "Error when try to save to Json file {filename}",
+    "FileSaveSuccessfully": "Json file saved {filename}"
+  },
+  "YamlFile": {
+    "DeserializeFailed": "Failed to deserialize YAML file. Content: {yaml}",
+    "FileReadFailed": "Failed to read YAML Content Header file {filename}"
   }
 }

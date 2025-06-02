@@ -50,7 +50,7 @@ namespace Kennis.Domain
 
          foreach (var file in files)
          {
-            _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.LoadStarting, file);
+            _logService.LogInfo(LogCategory.Content, LogAction.LoadStarting, file);
 
             string yaml = _loadService.YamlContentHeader(file);
 
@@ -68,7 +68,7 @@ namespace Kennis.Domain
 
                if (header.IsNull())
                {
-                  _logService.LogError("File does not have a header {file}", file);
+                  _logService.LogError(LogCategory.Content, LogAction.ContentNotFound, file);
                }
             }
          }

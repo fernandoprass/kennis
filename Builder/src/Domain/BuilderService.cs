@@ -33,7 +33,7 @@ namespace Kennis.Domain
 
       public void Build(string projectName, bool rebuildAll)
       {
-         _logService.LogInfo(Const.Log.Category.Project, Const.Log.Action.BuildStarting, projectName);
+         _logService.LogInfo(LogCategory.Project, LogAction.BuildStarting, projectName);
          var project = _projectService.Load(projectName);
 
          if (project.IsNotNull())
@@ -48,15 +48,15 @@ namespace Kennis.Domain
 
                   if (template.IsNotNull())
                   {
-                     _logService.LogInfo(Const.Log.Category.Site, Const.Log.Action.BuildStarting, projectSite.Language.Label);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildStarting, projectSite.Language.Label);
 
                      _buildSiteService.Build(project.DefaultLanguageCode, projectSite, template);
 
-                     _logService.LogInfo(Const.Log.Category.Site, Const.Log.Action.BuildFinished, projectSite.Language.Label);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildFinished, projectSite.Language.Label);
                   }
                }
             }
-            _logService.LogInfo(Const.Log.Category.Project, Const.Log.Action.BuildFinished, projectName);
+            _logService.LogInfo(LogCategory.Project, LogAction.BuildFinished, projectName);
          }
       }
    }

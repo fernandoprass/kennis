@@ -17,13 +17,16 @@
    {
       BuildStarting,
       BuildFinished,
+      ContentNotFound,
+      FileNotFound,
+      FileSaveFailed,
+      FileSaveSuccessfully,
+      FileReadFailed,
       LoadStarting,
       LoadFinishedFailed,
       LoadFinishedSuccessfully,
       DeserializeFailed,
-      SaveFailed,
-      SaveSuccessfully,
       ParseStarting,
-      ParseFinished
+      ParseFinished,
    }
 }

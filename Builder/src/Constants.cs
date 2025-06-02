@@ -28,36 +28,6 @@
          public const string Posts = @"posts\";
       }
 
-      public static class Log {
-         public static class Category
-         {
-            public const string Content = "content";
-            public const string File = "file";
-            public const string Project = "project";
-            public const string Site = "site";
-            public const string Template = "template";
-            public const string HtmlFile = "htmlFile";
-            public const string JsonFile = "jsonFile";
-            public const string YamlFile = "yamlFile";
-            public const string TranslationFile = "translationFile";
-
-         }
-
-         public static class Action
-         {
-            public const string BuildStarting = "buildStarting";
-            public const string BuildFinished = "buildFinished";
-            public const string LoadStarting = "loadStarting";
-            public const string LoadFinishedFailed = "loadFinishedFailed";
-            public const string LoadFinishedSuccessfully = "loadFinishedSuccessfully";
-            public const string DeserializeFailed = "deserializeFailed";
-            public const string SaveFailed = "saveFailed";
-            public const string SaveSuccessfully = "saveSuccessfully";
-            public const string ParseStarting = "parseStarting";
-            public const string ParseFinished = "parseFinished";
-         }
-      }
-
       public static class Tag
       {
          public static class Site

@@ -54,11 +54,11 @@ namespace Kennis.Domain
 
             ToHtmlFile(filename, json);
 
-            _logService.LogInfo(Const.Log.Category.JsonFile, Const.Log.Action.SaveSuccessfully, filename);
+            _logService.LogInfo(LogCategory.JsonFile, LogAction.FileSaveSuccessfully, filename);
          }
          catch(Exception ex)
          { 
-            _logService.LogError(ex, Const.Log.Category.JsonFile, Const.Log.Action.SaveFailed, filename);
+            _logService.LogError(ex, LogCategory.JsonFile, LogAction.FileSaveFailed, filename);
          }
       }
 
@@ -75,11 +75,11 @@ namespace Kennis.Domain
          {
             _file.WriteAllText(filename, content);
 
-            _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.SaveSuccessfully, filename);
+            _logService.LogInfo(LogCategory.HtmlFile, LogAction.FileSaveSuccessfully, filename);
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, Const.Log.Category.HtmlFile, Const.Log.Action.SaveFailed, filename);
+            _logService.LogError(ex, LogCategory.HtmlFile, LogAction.FileSaveFailed, filename);
          }
       }
    }
