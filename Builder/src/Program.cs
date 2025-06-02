@@ -2,20 +2,22 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Kennis {
+namespace Kennis
+{
    public class Kennis {
       static void Main(string[] args)
       {
-         var projectName = "KennisDemo";
+         string projectName = "KennisDemo";
          bool regenerateAllSite = true;
 
          var config = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
                             .AddJsonFile("config.json").Build();
 
-         var language = config["language"];
+         string language = config["language"];
+         string logLevel = config["logLevel"];
 
-         var serviceProvider = Service.Configure(projectName);
+         var serviceProvider = Service.Configure(projectName, logLevel);
 
          var logService = serviceProvider.GetService<ILogService>();
 
@@ -27,7 +29,7 @@ namespace Kennis {
          }
          else
          {
-            Console.WriteLine("Log message file not found. Reinstall the application");
+            logService.LogCritical("Log message file not found for {language}. Reinstall the application", [language]);
          }
       }
    }

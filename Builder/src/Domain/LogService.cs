@@ -1,65 +1,109 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kennis.Builder.Constants;
+using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 using Myce.Wrappers.Contracts;
+using Myce.Extensions;
+using System.Text.Json;
+using System;
+using YamlDotNet.Core.Tokens;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace Kennis.Domain
 {
    public interface ILogService
    {
       bool LoadMessages(string language);
-      void LogCritical(string category, string key, params object[] args);
-      void LogError(string category, string key, params object[] args);
-      void LogError(Exception exception, string category, string key, params object[] args);
-      void LogInfo(string category, string key, params object[] args);
+
+      void LogCritical(string message, params object[] args);
+      void LogCritical(LogCategory category, LogAction action, params object[] args);
+      void LogError(LogCategory category, LogAction action, params object[] args);
+      void LogError(Exception exception, LogCategory category, LogAction action, params object[] args);
+      void LogInfo(LogCategory category, LogAction action, params object[] args);
+      void LogTrace(LogCategory category, LogAction action, params object[] args);
    }
 
-   public class LogService : ILogService
+   public class LogService(
+         ILogger<LogService> logger,
+         IFileWrapper fileWrapper,
+         IPathWrapper pathWrapper) : ILogService
    {
-      private readonly ILoadService _loadService;
-      private readonly ILogger<LogService> _logger;
+      private readonly ILogger<LogService> _logger = logger;
+      private readonly IFileWrapper _fileWrapper = fileWrapper;
+      private readonly IPathWrapper _pathWrapper = pathWrapper;
       private Dictionary<string, Dictionary<string, string>> _logMessages;
 
       public bool IsMessagesLoaded => _logMessages.Count.EqualZero();
 
-      public LogService(ILoadService loadService,
-         ILogger<LogService> logger)
+      public bool LoadMessages(string language)
       {
-         _loadService = loadService;
-         _logger = logger;
-         _logMessages = new Dictionary<string, Dictionary<string, string>>(1);
+         string filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"u{language}{Const.Extension.I18n}");
+         string jsonContent = string.Empty;
+
+         if (_fileWrapper.Exists(filename))
+         {
+            try
+            {
+               jsonContent = _fileWrapper.ReadAllText(filename);
+               _logMessages = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(jsonContent);
+            }
+            catch (Exception ex)
+            {
+               LogError(ex, LogCategory.JsonFile, LogAction.DeserializeFailed, jsonContent);
+            }
+         }
+
+         return _logMessages?.Count > 0;
       }
 
-      public bool LoadMessages(string language) {        
-         _logMessages = _loadService.LogMessages(language);
+      public static string GetEnumDescription(Enum value)
+      {
+         FieldInfo fi = value.GetType().GetField(value.ToString());
 
-         return _logMessages.Count.EqualZero();
+         DescriptionAttribute[] attributes = fi.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
+
+         if (attributes != null && attributes.Any())
+         {
+            return attributes.First().Description;
+         }
+
+         return value.ToString();
       }
 
-      private string GetMessage(string category, string key)
+      private string GetMessage(LogCategory category, LogAction action)
       {
-         return _logMessages.ContainsKey(category) && _logMessages[category].ContainsKey(key)
+         return _logMessages.ContainsKey(GetEnumDescription(category)) && _logMessages[category.GetDescription()].ContainsKey(action)
                    ? _logMessages[category][key]
                    : $"[{key}]";
       }
 
-      public void LogCritical(string category, string key, params object[] args)
+      public void LogCritical(string message, params object[] args)
       {
-         _logger.LogCritical(GetMessage(category, key), args);
+         _logger.LogCritical(message, args);
       }
 
-      public void LogError(string category, string key, params object[] args)
+      public void LogCritical(LogCategory category, LogAction action, params object[] args)
       {
-         _logger.LogError(GetMessage(category, key), args);
+         _logger.LogCritical(GetMessage(category, action), args);
       }
 
-      public void LogInfo(string category, string key, params object[] args)
+      public void LogError(LogCategory category, LogAction action, params object[] args)
       {
-         _logger.LogInformation(GetMessage(category, key), args);
+         _logger.LogError(GetMessage(category, action), args);
       }
 
-      void ILogService.LogError(Exception exception, string category, string key, params object[] args)
+      public void LogError(Exception exception, LogCategory category, LogAction action, params object[] args)
       {
-         _logger.LogError(exception, GetMessage(category, key), args);
+         _logger.LogError(exception, GetMessage(category, action), args);
+      }
+
+      public void LogInfo(LogCategory category, LogAction action, params object[] args)
+      {
+         _logger.LogInformation(GetMessage(category, action), args);
+      }
+      public void LogTrace(LogCategory category, LogAction action, params object[] args)
+      {
+         _logger.LogTrace(GetMessage(category, action), args);
       }
    }
 }

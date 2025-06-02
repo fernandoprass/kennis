@@ -1,12 +1,11 @@
 ﻿using Kennis.Builder.Constants;
 using Kennis.Domain.Mappers;
 using Kennis.Domain.Models;
-using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 
 namespace Kennis.Domain
 {
-   public interface IData
+   public interface IDataService
    {
       List<Content> ContentList { get; set; }
 
@@ -19,7 +18,7 @@ namespace Kennis.Domain
       void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
 
-   public class Data : IData
+   public class DataService : IDataService
    {
       private readonly ILoadService _loadService;
       private readonly ISaveService _saveService;
@@ -31,7 +30,7 @@ namespace Kennis.Domain
       private string HtmlPostsPath { get; set; }
       public List<Content> ContentList { get; set; }
 
-      public Data(ILoadService loadService,
+      public DataService(ILoadService loadService,
          ISaveService saveService,
          ILogService logService)
       {
@@ -51,7 +50,7 @@ namespace Kennis.Domain
 
          foreach (var file in files)
          {
-            _logService.LogInformation("Reading file {file}", file);
+            _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.LoadStarting, file);
 
             string yaml = _loadService.YamlContentHeader(file);
 

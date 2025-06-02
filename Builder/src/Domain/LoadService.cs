@@ -40,7 +40,7 @@ namespace Kennis.Domain
          _directoryWrapper = directoryWrapper;
          _fileWrapper = fileWrapper;
          _logService = logService;
-         _pathWrapper = pathWrapper;
+         _pathWrapper = pathWrapper; 
       }
 
       public void Configure(ProjectFolder projectFolder)

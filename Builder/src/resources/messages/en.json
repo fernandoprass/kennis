@@ -19,7 +19,8 @@
   },
   "htmlFile": {
     "saveSuccessfully": "HTML file saved {filename}",
-    "saveFailed": "Error when try to save to HTML file {filename}"
+    "saveFailed": "Error when try to save to HTML file {filename}",
+    "fileParsed": "HTML {pageName} page parsed"
   },
   "jsonFile": {
     "deserializeFailed": "Failed to deserialize JSON file. Content: {json}",
@@ -28,5 +29,10 @@
   },
   "yamlFile": {
     "deserializeFailed": "Failed to deserialize YAML file. Content: {yaml}"
+  },
+  "content": {
+    "parseStarting": "Starting to parse {content}",
+    "parseFinished": "Parse finished {content} ",
+    "loadStarting": "Loading file {file}"
   }
 }

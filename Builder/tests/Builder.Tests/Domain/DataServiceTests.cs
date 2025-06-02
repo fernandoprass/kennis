@@ -5,18 +5,18 @@ using Myce.Wrappers.Contracts;
 
 namespace Kennis.Tests.Domain
 {
-   public class DataTests
+   public class DataServiceTests
    {
       private readonly Mock<IDirectoryWrapper> _directoryWrapper;
       private readonly Mock<ILogger<BuilderService>> _loggerMock;
       private readonly Mock<ILoadService> _loadMock;
       private readonly Mock<ISaveService> _saveMock;
 
-      private readonly IData _data;
+      private readonly IDataService _data;
 
       private readonly string _jsonExtension = ".json";
 
-      public DataTests() {
+      public DataServiceTests() {
          _directoryWrapper = new Mock<IDirectoryWrapper>();
          _loggerMock= new Mock<ILogger<BuilderService>>();
          _loadMock = new Mock<ILoadService>();

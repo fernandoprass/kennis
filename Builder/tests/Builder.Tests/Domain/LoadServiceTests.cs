@@ -5,7 +5,7 @@ using Myce.Wrappers.Contracts;
 
 namespace Kennis.Tests.Domain
 {
-   public class LoadTests
+   public class LoadServiceTests
    {
       private readonly Mock<IFileWrapper> _fileMock;
       private readonly Mock<ILogger<BuilderService>> _loggerMock;
@@ -17,7 +17,7 @@ namespace Kennis.Tests.Domain
       private readonly string _templateHtmlFile = "HTML Code";
 
 
-      public LoadTests() { 
+      public LoadServiceTests() { 
          _fileMock= new Mock<IFileWrapper>();
          _loggerMock= new Mock<ILogger<BuilderService>>();
        //  _load = new Load(_fileMock.Object, _loggerMock.Object);

@@ -1,6 +1,5 @@
 ﻿using Kennis.Builder.Constants;
 using Kennis.Domain.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Kennis.Domain
 {
@@ -12,31 +11,31 @@ namespace Kennis.Domain
    public class BuilderSiteService : IBuildSiteService
    {
       private readonly ILogService _logService;
-      private readonly IData _data;
-      private readonly ISaveService _save;
+      private readonly IDataService _dataService;
+      private readonly ISaveService _saveService;
       private readonly IBuildLoop _loop;
       private readonly IBuildTag _tag;
 
       private ProjectFolder ProjectFolder { get; set; }
       private Template Template { get; set; }
-      private string DefaultLanguageCode { get; set; }
-      private string LoopLanguagesParsed { get; set; }
-      private string LoopSocialMediaParsed { get; set; }
-      private string LoopMenuParsed { get; set; }
-      private string BlogPostsLast10Parsed { get; set; }
-      private string BlogPostsLast5Parsed { get; set; }
-      private string BlogPostsLast3Parsed { get; set; }
+      private string DefaultLanguageCode { get; set; } = string.Empty;
+      private string LoopLanguagesParsed { get; set; } = string.Empty;
+      private string LoopSocialMediaParsed { get; set; } = string.Empty;
+      private string LoopMenuParsed { get; set; } = string.Empty;
+      private string BlogPostsLast10Parsed { get; set; } = string.Empty;
+      private string BlogPostsLast5Parsed { get; set; } = string.Empty;
+      private string BlogPostsLast3Parsed { get; set; } = string.Empty;
 
       public BuilderSiteService(
          ILogService logService,
-         IData data,
-         ISaveService save,
+         IDataService dataService,
+         ISaveService saveService,
          IBuildLoop loop,
          IBuildTag tag)
       {
          _logService = logService;
-         _data = data;
-         _save = save;
+         _dataService = dataService;
+         _saveService = saveService;
          _loop = loop;
          _tag = tag;
       }
@@ -46,22 +45,22 @@ namespace Kennis.Domain
          DefaultLanguageCode = defaultLanguageCode;
 
          var projectFolder = new ProjectFolder();
-         _data.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
-         _data.UpdateContentList();
+         _dataService.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
+         _dataService.UpdateContentList();
 
-         var lastModified = _data.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+         var lastModified = _dataService.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
-         _data.UpdateProjectSiteModified(lastModified, projectSite);
+         _dataService.UpdateProjectSiteModified(lastModified, projectSite);
 
-         _data.SaveContentList();
+         _dataService.SaveContentList();
 
-         ParseLoopLayouts(projectSite, _data.ContentList);
+         ParseLoopLayouts(projectSite, _dataService.ContentList);
          ParseIndexFile(projectSite);
 
          ParseBlogIndexFile(projectSite);
-         ParseContentFile(projectSite, ContentType.Page, _data.ContentList);
+         ParseContentFile(projectSite, ContentType.Page, _dataService.ContentList);
 
-         ParseContentFile(projectSite, ContentType.Post, _data.ContentList);
+         ParseContentFile(projectSite, ContentType.Post, _dataService.ContentList);
 
          projectSite.LastSuccessfulCreation = DateTime.UtcNow;
       }
@@ -72,9 +71,9 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logService.LogInformation("Index html page parsed - " + site.Language.Label);
+         _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.ParseFinished,"index");
 
-         _save.ToHtmlFile(site.Language.IndexFileName, template);
+         _saveService.ToHtmlFile(site.Language.IndexFileName, template);
       }
 
       private void ParseBlogIndexFile(ProjectSite site)
@@ -83,9 +82,9 @@ namespace Kennis.Domain
 
          template = _tag.Index(template, site);
 
-         _logService.LogInformation("Blog index html page parsed");
+         _logService.LogInfo(Const.Log.Category.HtmlFile, Const.Log.Action.ParseFinished, "blog index");
 
-         _save.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
+         _saveService.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
       }
 
       private void ParseContentFile(ProjectSite site, ContentType contentType, IEnumerable<Content> contentList)
@@ -106,16 +105,16 @@ namespace Kennis.Domain
                          ? site.Folders.Pages
                          : site.Folders.BlogPosts;
 
-         _logService.LogInformation("Start to parsed {0}", type);
+         _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseStarting, type);
 
          foreach (var content in contents)
          {
             string post = _tag.Content(template, content, site.DateTimeFormat);
-            _logService.LogInformation("Content parsed: " + content.Title);
-            _save.ToHtmlFile(folder + content.Filename, post);
+            _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseFinished, content.Title);
+            _saveService.ToHtmlFile(folder + content.Filename, post);
          }
 
-         _logService.LogInformation("Finish to parsed {0}", type);
+         _logService.LogInfo(Const.Log.Category.Content, Const.Log.Action.ParseFinished, type);
       }
 
       private void ParseLoopLayouts(ProjectSite site, IEnumerable<Content> contentList)
