@@ -5,7 +5,7 @@ namespace Kennis.Domain
 {
    public interface IBuildSiteService
    {
-      void Build(string defaultLanguage, ProjectSite projectSite, Template template);
+      void Build(string defaultLanguage, string projectFolder, ProjectSite projectSite, Template template);
    }
 
    public class BuilderSiteService : IBuildSiteService
@@ -40,11 +40,10 @@ namespace Kennis.Domain
          _tag = tag;
       }
 
-      public void Build(string defaultLanguageCode, ProjectSite projectSite, Template template)
+      public void Build(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
       {
          DefaultLanguageCode = defaultLanguageCode;
 
-         var projectFolder = new ProjectFolder();
          _dataService.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
          _dataService.UpdateContentList();
 

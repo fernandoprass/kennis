@@ -21,6 +21,8 @@ namespace Kennis.Domain
       void LogError(Exception exception, LogCategory category, LogAction action, params object[] args);
       void LogInfo(LogCategory category, LogAction action, params object[] args);
       void LogTrace(LogCategory category, LogAction action, params object[] args);
+      void LogWarning(LogCategory category, LogAction action, params object[] args);
+
    }
 
    public class LogService(
@@ -90,7 +92,12 @@ namespace Kennis.Domain
       }
       public void LogTrace(LogCategory category, LogAction action, params object[] args)
       {
-         _logger.LogTrace(GetMessage(category, action), args);
+         _logger.LogInformation(GetMessage(category, action), args);
+      }
+
+      public void LogWarning(LogCategory category, LogAction action, params object[] args)
+      {
+         _logger.LogWarning(GetMessage(category, action), args);
       }
    }
 }

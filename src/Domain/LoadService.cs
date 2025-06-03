@@ -17,7 +17,7 @@ namespace Kennis.Domain
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Dictionary<string, Dictionary<string, string>> LogMessages(string language);
-      Template Template();
+      Template Template(string name);
       Dictionary<string, string> TemplateTranslationData(string language);
       Project Project(string filename);
       string YamlContentHeader(string filename);
@@ -65,9 +65,13 @@ namespace Kennis.Domain
       {
          var filename = _pathWrapper.Combine(path, Const.File.ContentList);
 
-         var list = ReadJsonFile<List<Content>>(filename);
-
-         return list.IsNotNull() ? list : new List<Content>();
+         if (!_fileWrapper.Exists(filename))
+         {
+            _logService.LogWarning(LogCategory.Content, LogAction.FileNotFound, filename);
+            return new List<Content>();
+         }
+         
+         return ReadJsonFile<List<Content>>(filename);
       }
 
       public string[] ContentFiles(string contentBasePath)
@@ -78,11 +82,11 @@ namespace Kennis.Domain
       }
 
       #region Load Template
-      public Template Template()
+      public Template Template(string name)
       {
          var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
-         _logService.LogInfo(LogCategory.Template, LogAction.LoadStarting, _projectFolder.Template);
+         _logService.LogInfo(LogCategory.Template, LogAction.LoadStarting, name);
 
          var templateFile = ReadJsonFile<Template>(filename);
 
@@ -92,13 +96,13 @@ namespace Kennis.Domain
 
             template.Loops = LoadLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
-            _logService.LogInfo(LogCategory.Template, LogAction.LoadStarting);
+            _logService.LogInfo(LogCategory.Template, LogAction.LoadFinishedSuccessfully);
 
             return template;
          }
          else
          {
-            _logService.LogCritical("Failed to load template {filename}", filename);
+            _logService.LogCritical(LogCategory.Template, LogAction.LoadFinishedFailed, name);
          }
 
          return null;
@@ -147,15 +151,18 @@ namespace Kennis.Domain
 
       public Dictionary<string, string> TemplateTranslationData(string language)
       {
-         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadStarting, language, _projectFolder.TemplateTranslations);
+         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadStarting, language);
          var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, $"{language}{Const.Extension.I18n}");
 
          var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
 
-         if (i18nData.IsNotNull())
+         if (i18nData.IsNull())
          {
-            _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedSuccessfully, language);
+            _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedFailed, language);
+            return null;
          }
+
+         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedSuccessfully, language);
 
          return i18nData;
       }

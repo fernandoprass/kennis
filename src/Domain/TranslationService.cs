@@ -8,22 +8,16 @@ namespace Kennis.Domain
       Template Translate(Template template, string language);
    }
 
-   public class TranslationService : ITranslationService
+   public class TranslationService(ILoadService loadService, ILogService logService) : ITranslationService
    {
-      private readonly ILoadService _loadService;
-      private readonly ILogger<TranslationService> _logger;
-
-      public TranslationService(ILoadService loadService, ILogger<TranslationService> logger)
-      {
-         _loadService = loadService;
-         _logger = logger;
-      }
+      private readonly ILoadService _loadService = loadService;
+      private readonly ILogService _logService = logService;
 
       public Template Translate(Template template, string language)
       {
          if (!template.Languages.Contains(language))
          {
-            _logger.LogError("Language '{language}' is not supported by the template.", language);
+            _logService.LogError(LogCategory.Template, LogAction.FileNotFound, language);
             return null;
          }
 
@@ -56,7 +50,7 @@ namespace Kennis.Domain
          return translatedTemplate;
       }
 
-      private static string Translate(string template, Dictionary<string, string> i18nData)
+      private string Translate(string template, Dictionary<string, string> i18nData)
       {
 
          if (string.IsNullOrEmpty(template))

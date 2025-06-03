@@ -4,7 +4,7 @@ namespace Kennis.Domain
 {
    public interface ITemplateService
    {
-      Template Load(string projectDefaultLanguage);
+      Template Load(string name, string projectDefaultLanguage);
    }
 
    public class TemplateService : ITemplateService
@@ -16,9 +16,9 @@ namespace Kennis.Domain
          _loadService = loadService;
       }
 
-      public Template Load(string projectDefaultLanguage)
+      public Template Load(string name, string projectDefaultLanguage)
       {
-         var template = _loadService.Template();
+         var template = _loadService.Template(name);
 
          template.DefaultLanguage = template.Languages.Contains(projectDefaultLanguage) ? projectDefaultLanguage : template.Languages.First();
 

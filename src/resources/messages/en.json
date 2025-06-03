@@ -3,6 +3,7 @@
     "ParseStarting": "Starting to parse {content}",
     "ParseFinished": "Parse finished {content} ",
     "LoadStarting": "Loading file {file}",
+    "FileNotFound": "Content file not found {file}",
     "FileReadFailed": "Failed to read Content Header. Yaml {yaml}",
     "ContentNotFound": "File does not have a header {file}"
   },
@@ -15,20 +16,24 @@
     "BuildStarting": "Starting to build project {projectName}",
     "BuildFinished": "Project build finished for {projectName}",
     "LoadFinishedFailed": "Failed to load project {projectName}",
-    "LoadFinishedSuccessfully": "Project load successfully {projectName}"
+    "LoadFinishedSuccessfully": "Project load successfully {projectName}",
+    "FileReadSuccessfully": "Project file read successfully {projectName}"
   },
   "Site": {
     "BuildStarting": "Starting to build site for {languageLabel}",
     "BuildFinished": "Site build finished for {languageLabel}"
   },
   "Template": {
-    "LoadStarting": "Starting to load templates at {template}",
+    "LoadStarting": "Starting to load templates {templateName}",
     "LoadFinishedSuccessfully": "Template loaded successfully",
-    "LoadFinishedFailed": "Failed to load template {filename}"
+    "LoadFinishedFailed": "Failed to load template {templateName}",
+    "TranslateFinished": "Template translated {templateName}"
   },
   "TranslationFile": {
-    "LoadStarting": "Loading i18n data for {language} on {translatePath}",
-    "LoadFinishedSuccessfully": "I18n data for {language} loaded successfully"
+    "LoadStarting": "Loading i18n data for {language}",
+    "LoadFinishedFailed": "Failed to load i18n data for {language}",
+    "LoadFinishedSuccessfully": "I18n data loaded successfully for {language}",
+    "FileNotFound": "Language not supported by template {language}"
   },
   "HtmlFile": {
     "FileParsed": "HTML {pageName} page parsed",

@@ -9,7 +9,7 @@ namespace Kennis.Domain
    {
       List<Content> ContentList { get; set; }
 
-      void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath);
+      void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath);
 
       void SaveContentList();
 
@@ -40,9 +40,9 @@ namespace Kennis.Domain
       }
 
       #region Public methods
-      public void GetContentList(ProjectFolder projectFolders, string languageCode, string htmlPagePath, string htmlPostPath)
+      public void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath)
       {
-         InitializeContentPaths(projectFolders.Project, languageCode, htmlPagePath, htmlPostPath);
+         InitializeContentPaths(projectFolder, languageCode, htmlPagePath, htmlPostPath);
 
          var files = _loadService.ContentFiles(ContentBasePath);
 

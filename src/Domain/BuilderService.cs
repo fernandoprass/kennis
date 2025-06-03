@@ -38,7 +38,7 @@ namespace Kennis.Domain
 
          if (project.IsNotNull())
          {
-            var baseTemplate = _templateService.Load(project.DefaultLanguageCode);
+            var baseTemplate = _templateService.Load(project.Template, project.DefaultLanguageCode);
 
             if (baseTemplate.IsNotNull())
             {
@@ -48,11 +48,11 @@ namespace Kennis.Domain
 
                   if (template.IsNotNull())
                   {
-                     _logService.LogInfo(LogCategory.Site, LogAction.BuildStarting, projectSite.Language.Label);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildStarting, projectSite.Language.Code);
 
-                     _buildSiteService.Build(project.DefaultLanguageCode, projectSite, template);
+                     _buildSiteService.Build(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
 
-                     _logService.LogInfo(LogCategory.Site, LogAction.BuildFinished, projectSite.Language.Label);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildFinished, projectSite.Language.Code);
                   }
                }
             }

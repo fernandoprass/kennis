@@ -31,5 +31,6 @@
       LoadFinishedSuccessfully,
       ParseStarting,
       ParseFinished,
+      TranslateFinished,
    }
 }

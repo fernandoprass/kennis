@@ -40,7 +40,7 @@ namespace Kennis.Domain {
 
          if (project.IsNotNull())
          {
-            _logService.LogTrace(LogCategory.Project, LogAction.LoadFinishedSuccessfully, projectName);
+            _logService.LogTrace(LogCategory.Project, LogAction.FileReadSuccessfully, projectName);
 
             ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
 
