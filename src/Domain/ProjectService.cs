@@ -40,6 +40,8 @@ namespace Kennis.Domain {
 
          if (project.IsNotNull())
          {
+            _logService.LogTrace(LogCategory.Project, LogAction.LoadFinishedSuccessfully, projectName);
+
             ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
 
             project.Folders = GetProjectFolders(project.Name, project.Template);

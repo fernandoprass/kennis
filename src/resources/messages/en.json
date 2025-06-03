@@ -8,12 +8,14 @@
   },
   "File": {
     "FileNotFound": "File not found {filename}",
-    "FileReadFailed": "Failed to read file {filename} at {folder}"
+    "FileReadFailed": "Failed to read file {filename} at {folder}",
+    "FileReadSuccessfully": "File read successfully {filename}"
   },
   "Project": {
     "BuildStarting": "Starting to build project {projectName}",
     "BuildFinished": "Project build finished for {projectName}",
-    "LoadFinishedFailed": "Failed to load project {projectName}"
+    "LoadFinishedFailed": "Failed to load project {projectName}",
+    "LoadFinishedSuccessfully": "Project load successfully {projectName}"
   },
   "Site": {
     "BuildStarting": "Starting to build site for {languageLabel}",
@@ -34,12 +36,15 @@
     "FileSaveSuccessfully": "HTML file saved {filename}"
   },
   "JsonFile": {
-    "ContentDeserializeFailed": "Failed to deserialize JSON file. Content:\n{json}",
+    "ContentDeserializeFailed": "JSON file Content:\n{json}",
+    "FileDeserializeFailed": "Failed to deserialize JSON file {filename}",
+    "FileDeserializeSuccessfully": "JSON file deserialize successfully {filename}",
     "FileSaveFailed": "Error when try to save to Json file {filename}",
     "FileSaveSuccessfully": "Json file saved {filename}"
   },
   "YamlFile": {
     "ContentDeserializeFailed": "Failed to deserialize YAML file. Content:\n{yaml}",
+    "FileDeserializeSuccessfully": "YAML file deserialize successfully {filename}",
     "FileReadFailed": "Failed to read YAML Content Header file {filename}"
   }
 }

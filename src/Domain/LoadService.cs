@@ -3,7 +3,6 @@ using Kennis.Domain.Models;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
-using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 using Myce.Wrappers.Contracts;
 using System.Text.Json;
@@ -221,7 +220,9 @@ namespace Kennis.Domain
                string _filename = _pathWrapper.Combine(folder, filename);
                if (FileExists(_filename))
                {
-                  return _fileWrapper.ReadAllText(_filename);
+                  var content  = _fileWrapper.ReadAllText(_filename);
+                  _logService.LogTrace(LogCategory.File, LogAction.FileReadSuccessfully, filename);
+                  return content;
                }           
             }
             catch (Exception ex)
@@ -247,13 +248,16 @@ namespace Kennis.Domain
                   PropertyNameCaseInsensitive = true
                };
 
-               return JsonSerializer.Deserialize<T>(json, options)!;
+               var content = JsonSerializer.Deserialize<T>(json, options)!;
+               _logService.LogTrace(LogCategory.JsonFile, LogAction.FileDeserializeSuccessfully, filename);
+               return content;
             }
 
          }
          catch (Exception ex)
          {
             _logService.LogError(ex, LogCategory.JsonFile, LogAction.FileDeserializeFailed, json);
+            _logService.LogTrace(LogCategory.JsonFile, LogAction.ContentDeserializeFailed, json);
          }
 
          return default;
@@ -269,11 +273,13 @@ namespace Kennis.Domain
                                       .WithNamingConvention(LowerCaseNamingConvention.Instance)
                                       .Build();
 
-               return deserializer.Deserialize<T>(yaml);
+               var content = deserializer.Deserialize<T>(yaml);
+               
+               return content;
             }
             catch (Exception ex)
             {
-               _logService.LogError(ex, LogCategory.YamlFile, LogAction.ContentDeserializeFailed, yaml);
+               _logService.LogError(ex, LogCategory.YamlFile, LogAction.FileDeserializeFailed, yaml);
             }
          }
 
