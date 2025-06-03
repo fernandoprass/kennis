@@ -8,13 +8,17 @@ namespace Kennis.Domain
       void Build(string defaultLanguage, string projectFolder, ProjectSite projectSite, Template template);
    }
 
-   public class BuilderSiteService : IBuildSiteService
+   public class BuilderSiteService(ILogService logService,
+                                   IDataService dataService,
+                                   ISaveService saveService,
+                                   IBuildLoop loop,
+                                   IBuildTag tag) : IBuildSiteService
    {
-      private readonly ILogService _logService;
-      private readonly IDataService _dataService;
-      private readonly ISaveService _saveService;
-      private readonly IBuildLoop _loop;
-      private readonly IBuildTag _tag;
+      private readonly ILogService _logService = logService;
+      private readonly IDataService _dataService = dataService;
+      private readonly ISaveService _saveService = saveService;
+      private readonly IBuildLoop _loop = loop;
+      private readonly IBuildTag _tag = tag;
 
       private ProjectFolder ProjectFolder { get; set; }
       private Template Template { get; set; }
@@ -26,19 +30,7 @@ namespace Kennis.Domain
       private string BlogPostsLast5Parsed { get; set; } = string.Empty;
       private string BlogPostsLast3Parsed { get; set; } = string.Empty;
 
-      public BuilderSiteService(
-         ILogService logService,
-         IDataService dataService,
-         ISaveService saveService,
-         IBuildLoop loop,
-         IBuildTag tag)
-      {
-         _logService = logService;
-         _dataService = dataService;
-         _saveService = saveService;
-         _loop = loop;
-         _tag = tag;
-      }
+
 
       public void Build(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
       {

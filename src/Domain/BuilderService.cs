@@ -1,6 +1,4 @@
-﻿using Kennis.Builder.Constants;
-using Microsoft.Extensions.Logging;
-using Myce.Extensions;
+﻿using Myce.Extensions;
 
 namespace Kennis.Domain
 {
@@ -9,27 +7,17 @@ namespace Kennis.Domain
       void Build(string projectName, bool rebuildAll);
    }
 
-   internal class BuilderService : IBuilderService
+   internal class BuilderService(ILogService logService,
+                                 IBuildSiteService buildSiteService,
+                                 IProjectService projectService,
+                                 ITemplateService templateService,
+                                 ITranslationService translationService) : IBuilderService
    {
-      private readonly ILogService _logService;
-      private readonly IBuildSiteService _buildSiteService;
-      private readonly IProjectService _projectService;
-      private readonly ITemplateService _templateService;
-      private readonly ITranslationService _translationService;
-
-      public BuilderService(
-         ILogService logService,
-         IBuildSiteService site,
-         IProjectService projectService,
-         ITemplateService templateService,
-         ITranslationService translationService)
-      {
-         _logService = logService;
-         _buildSiteService = site;
-         _projectService = projectService;
-         _templateService = templateService;
-         _translationService = translationService;
-      }
+      private readonly ILogService _logService = logService;
+      private readonly IBuildSiteService _buildSiteService = buildSiteService;
+      private readonly IProjectService _projectService = projectService;
+      private readonly ITemplateService _templateService = templateService;
+      private readonly ITranslationService _translationService = translationService;
 
       public void Build(string projectName, bool rebuildAll)
       {

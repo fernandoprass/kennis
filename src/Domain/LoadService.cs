@@ -11,7 +11,8 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Kennis.Domain
 {
-   public interface ILoadService {
+   public interface ILoadService
+   {
       void Configure(ProjectFolder projectFolder);
       string[] ContentFiles(string contentBasePath);
       ContentHeader ContentHeader(string yaml);
@@ -23,24 +24,17 @@ namespace Kennis.Domain
       string YamlContentHeader(string filename);
    }
 
-   public class LoadService : ILoadService {
-      private readonly IDirectoryWrapper _directoryWrapper;
-      private readonly IFileWrapper _fileWrapper;
-      private readonly IPathWrapper _pathWrapper;
-      private readonly ILogService _logService;
+   public class LoadService(IDirectoryWrapper directoryWrapper,
+                            IFileWrapper fileWrapper,
+                            ILogService logService,
+                            IPathWrapper pathWrapper) : ILoadService
+   {
+      private readonly IDirectoryWrapper _directoryWrapper = directoryWrapper;
+      private readonly IFileWrapper _fileWrapper = fileWrapper;
+      private readonly IPathWrapper _pathWrapper = pathWrapper;
+      private readonly ILogService _logService = logService;
 
       private ProjectFolder? _projectFolder;
-
-      public LoadService(IDirectoryWrapper directoryWrapper,
-         IFileWrapper fileWrapper,
-         ILogService logService,
-         IPathWrapper pathWrapper)
-      {
-         _directoryWrapper = directoryWrapper;
-         _fileWrapper = fileWrapper;
-         _logService = logService;
-         _pathWrapper = pathWrapper; 
-      }
 
       public void Configure(ProjectFolder projectFolder)
       {
@@ -70,7 +64,7 @@ namespace Kennis.Domain
             _logService.LogWarning(LogCategory.Content, LogAction.FileNotFound, filename);
             return new List<Content>();
          }
-         
+
          return ReadJsonFile<List<Content>>(filename);
       }
 
@@ -194,7 +188,7 @@ namespace Kennis.Domain
                var document = Markdown.Parse(mdFile, pipeline);
                var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
                var yaml = yamlHeader.Lines.ToString();
-               return yaml; 
+               return yaml;
             }
 
             return null;
@@ -227,10 +221,10 @@ namespace Kennis.Domain
                string _filename = _pathWrapper.Combine(folder, filename);
                if (FileExists(_filename))
                {
-                  var content  = _fileWrapper.ReadAllText(_filename);
+                  var content = _fileWrapper.ReadAllText(_filename);
                   _logService.LogTrace(LogCategory.File, LogAction.FileReadSuccessfully, filename);
                   return content;
-               }           
+               }
             }
             catch (Exception ex)
             {
@@ -281,7 +275,7 @@ namespace Kennis.Domain
                                       .Build();
 
                var content = deserializer.Deserialize<T>(yaml);
-               
+
                return content;
             }
             catch (Exception ex)

@@ -18,11 +18,14 @@ namespace Kennis.Domain
       void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
 
-   public class DataService : IDataService
+   public class DataService(ILoadService loadService,
+                            ISaveService saveService,
+                            ILogService logService) : IDataService
    {
-      private readonly ILoadService _loadService;
-      private readonly ISaveService _saveService;
-      private readonly ILogService _logService;
+      private readonly ILoadService _loadService = loadService;
+      private readonly ISaveService _saveService = saveService;
+      private readonly ILogService _logService = logService;
+
       private string ContentBasePath { get; set; }
       private string ContentPagesPath { get; set; }
       private string ContentPostsPath { get; set; }
@@ -30,14 +33,6 @@ namespace Kennis.Domain
       private string HtmlPostsPath { get; set; }
       public List<Content> ContentList { get; set; }
 
-      public DataService(ILoadService loadService,
-         ISaveService saveService,
-         ILogService logService)
-      {
-         _loadService = loadService;
-         _saveService = saveService;
-         _logService = logService;
-      }
 
       #region Public methods
       public void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath)

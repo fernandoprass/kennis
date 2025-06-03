@@ -2,12 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Myce.Extensions;
 using Myce.Wrappers.Contracts;
-using Myce.Extensions;
 using System.Text.Json;
-using System;
-using YamlDotNet.Core.Tokens;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace Kennis.Domain
 {
@@ -25,15 +20,15 @@ namespace Kennis.Domain
 
    }
 
-   public class LogService(
-         ILogger<LogService> logger,
-         IFileWrapper fileWrapper,
-         IPathWrapper pathWrapper) : ILogService
+   public class LogService(ILogger<LogService> logger,
+                           IFileWrapper fileWrapper,
+                           IPathWrapper pathWrapper) : ILogService
    {
       private readonly ILogger<LogService> _logger = logger;
       private readonly IFileWrapper _fileWrapper = fileWrapper;
       private readonly IPathWrapper _pathWrapper = pathWrapper;
-      private Dictionary<string, Dictionary<string, string>> _logMessages;
+
+      private Dictionary<string, Dictionary<string, string>> _logMessages { get; set; }
 
       public bool IsMessagesLoaded => _logMessages.Count.EqualZero();
 

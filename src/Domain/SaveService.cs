@@ -1,5 +1,4 @@
-﻿using Kennis.Builder.Constants;
-using Myce.Wrappers.Contracts;
+﻿using Myce.Wrappers.Contracts;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
@@ -22,15 +21,6 @@ namespace Kennis.Domain
 
       private string HtmlFolder { get; set; } = string.Empty;
       private string JsonFolder { get; set; } = string.Empty;
-
-      //public SaveService(IFileWrapper fileWrapper,
-      //   IPathWrapper pathWrapper,
-      //   ILogService logService)
-      //{
-      //   _file = fileWrapper;
-      //   _path = pathWrapper;
-      //   _logService = logService;
-      //}
 
       public void Configure(string htmlFolder, string jsonFolder)
       {

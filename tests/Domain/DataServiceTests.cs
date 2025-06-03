@@ -1,7 +1,4 @@
-﻿using Kennis.Domain;
-using Kennis.Domain.Models;
-using Microsoft.Extensions.Logging;
-using Myce.Wrappers.Contracts;
+﻿using Myce.Wrappers.Contracts;
 
 namespace Kennis.Tests.Domain
 {
