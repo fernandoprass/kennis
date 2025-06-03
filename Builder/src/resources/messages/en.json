@@ -34,12 +34,12 @@
     "FileSaveSuccessfully": "HTML file saved {filename}"
   },
   "JsonFile": {
-    "DeserializeFailed": "Failed to deserialize JSON file. Content: {json}",
+    "ContentDeserializeFailed": "Failed to deserialize JSON file. Content:\n{json}",
     "FileSaveFailed": "Error when try to save to Json file {filename}",
     "FileSaveSuccessfully": "Json file saved {filename}"
   },
   "YamlFile": {
-    "DeserializeFailed": "Failed to deserialize YAML file. Content: {yaml}",
+    "ContentDeserializeFailed": "Failed to deserialize YAML file. Content:\n{yaml}",
     "FileReadFailed": "Failed to read YAML Content Header file {filename}"
   }
 }

@@ -18,6 +18,8 @@
       BuildStarting,
       BuildFinished,
       ContentNotFound,
+      ContentDeserializeFailed,
+      FileDeserializeFailed,
       FileNotFound,
       FileSaveFailed,
       FileSaveSuccessfully,
@@ -25,7 +27,6 @@
       LoadStarting,
       LoadFinishedFailed,
       LoadFinishedSuccessfully,
-      DeserializeFailed,
       ParseStarting,
       ParseFinished,
    }

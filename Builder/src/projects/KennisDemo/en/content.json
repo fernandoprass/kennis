@@ -1,0 +1,95 @@
+[
+  {
+    "Type": 0,
+    "Filename": "2025-05-02-first-page.md",
+    "Keywords": "kennis,demo",
+    "Published": null,
+    "Slug": null,
+    "Url": "en/pages/hello-world.html",
+    "Delete": false,
+    "Icon": null,
+    "Title": "Hello World",
+    "Description": "My first page",
+    "Reference": "hello-world",
+    "Menu": false,
+    "Categories": [
+      "kennis"
+    ],
+    "Tags": [
+      "kennis",
+      "demo"
+    ],
+    "Created": "2025-05-02T14:05:00+00:00",
+    "Updated": null,
+    "Draft": false
+  },
+  {
+    "Type": 1,
+    "Filename": "2025-05-02-hello-world.md",
+    "Keywords": "kennis",
+    "Published": null,
+    "Slug": null,
+    "Url": "en/blog/posts/kennis/hello-world.html",
+    "Delete": false,
+    "Icon": null,
+    "Title": "Hello World",
+    "Description": "My first post",
+    "Reference": "hello-world",
+    "Menu": false,
+    "Categories": [
+      "kennis"
+    ],
+    "Tags": null,
+    "Created": "2025-05-02T14:05:00+00:00",
+    "Updated": null,
+    "Draft": false
+  },
+  {
+    "Type": 1,
+    "Filename": "2025-05-03-second-post.md",
+    "Keywords": "kennis,post",
+    "Published": null,
+    "Slug": null,
+    "Url": "en/blog/posts/kennis/second-post.html",
+    "Delete": false,
+    "Icon": null,
+    "Title": "Second Post",
+    "Description": "My second post",
+    "Reference": "second-post",
+    "Menu": false,
+    "Categories": [
+      "kennis"
+    ],
+    "Tags": [
+      "kennis",
+      "post"
+    ],
+    "Created": "2025-05-02T14:05:00+00:00",
+    "Updated": null,
+    "Draft": false
+  },
+  {
+    "Type": 1,
+    "Filename": "subfolder\\2025-05-02-post-into-a-folder.md",
+    "Keywords": "kennis,subfolder",
+    "Published": null,
+    "Slug": null,
+    "Url": "en/blog/posts/kennis/post-inside-a-new-folder.html",
+    "Delete": false,
+    "Icon": null,
+    "Title": "Post inside a new folder",
+    "Description": "This post is not in the main folder",
+    "Reference": "subfolder-post",
+    "Menu": false,
+    "Categories": [
+      "kennis"
+    ],
+    "Tags": [
+      "kennis",
+      "subfolder"
+    ],
+    "Created": "025-05-02T11:02:30+00:00",
+    "Updated": null,
+    "Draft": false
+  }
+]

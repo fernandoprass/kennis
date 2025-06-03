@@ -253,7 +253,7 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, LogCategory.JsonFile, LogAction.DeserializeFailed, json);
+            _logService.LogError(ex, LogCategory.JsonFile, LogAction.FileDeserializeFailed, json);
          }
 
          return default;
@@ -273,7 +273,7 @@ namespace Kennis.Domain
             }
             catch (Exception ex)
             {
-               _logService.LogError(ex, LogCategory.YamlFile, LogAction.DeserializeFailed, yaml);
+               _logService.LogError(ex, LogCategory.YamlFile, LogAction.ContentDeserializeFailed, yaml);
             }
          }
 
