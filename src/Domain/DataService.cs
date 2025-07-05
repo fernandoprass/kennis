@@ -11,9 +11,9 @@ namespace Kennis.Domain
 
       void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath);
 
-      void SaveContentList();
+      void SaveContentList(string languageCode);
 
-      void UpdateContentList();
+      void UpdateContentListData();
 
       void UpdateProjectSiteModified(DateTime lastModified, ProjectSite projectSite);
    }
@@ -39,11 +39,11 @@ namespace Kennis.Domain
       {
          InitializeContentPaths(projectFolder, languageCode, htmlPagePath, htmlPostPath);
 
-         var files = _loadService.ContentFiles(ContentBasePath);
+         var contentFileList = _loadService.ContentFileList(ContentBasePath);
 
          InitializeContentList();
 
-         foreach (var file in files)
+         foreach (var file in contentFileList)
          {
             _logService.LogInfo(LogCategory.Content, LogAction.LoadStarting, file);
 
@@ -56,7 +56,8 @@ namespace Kennis.Domain
                //Draft contents should not be added
                if (header.IsNotNull() && !header.Draft)
                {
-                  var (filename, contentType) = GetFilenameAndContentType(file);
+                  var contentType = GetContentType(file);
+                  var filename = Path.GetFileName(file);
 
                   AddToContentList(contentType, filename, header);
                }
@@ -71,12 +72,12 @@ namespace Kennis.Domain
          SortContentList();
       }
 
-      public void SaveContentList()
+      public void SaveContentList(string languageCode)
       {
-         _saveService.ToJsonFile(Const.File.ContentList, ContentList);
+         _saveService.ToJsonFile(languageCode, Const.File.ContentList, ContentList);
       }
 
-      public void UpdateContentList()
+      public void UpdateContentListData()
       {
          foreach (var content in ContentList.Where(x => x.Published.IsNull() || x.Published < x.Updated))
          {
@@ -140,15 +141,9 @@ namespace Kennis.Domain
          ContentList.OrderBy(x => x.Type).OrderBy(x => x.Created);
       }
 
-      private (string, ContentType) GetFilenameAndContentType(string file)
+      private ContentType GetContentType(string file)
       {
-         var contentType = file.Contains(ContentPagesPath) ? ContentType.Page : ContentType.Post;
-
-         var filename = contentType == ContentType.Page
-            ? file.Replace(ContentPagesPath, string.Empty)
-            : file.Replace(ContentPostsPath, string.Empty);
-
-         return (filename, contentType);
+         return file.Contains(ContentPagesPath) ? ContentType.Page : ContentType.Post;
       }
 
       private void AddToContentList(ContentType contentType, string filename, ContentHeader contentHeader)

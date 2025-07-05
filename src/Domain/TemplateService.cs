@@ -7,20 +7,21 @@ namespace Kennis.Domain
       Template Load(string name, string projectDefaultLanguage);
    }
 
-   public class TemplateService : ITemplateService
+   public class TemplateService(ILogService logService, ILoadService loadService) : ITemplateService
    {
-      private readonly ILoadService _loadService;
-
-      public TemplateService(ILoadService loadService)
-      {
-         _loadService = loadService;
-      }
+      private readonly ILogService _logService = logService;
+      private readonly ILoadService _loadService = loadService;
 
       public Template Load(string name, string projectDefaultLanguage)
       {
          var template = _loadService.Template(name);
 
-         template.DefaultLanguage = template.Languages.Contains(projectDefaultLanguage) ? projectDefaultLanguage : template.Languages.First();
+         template.DefaultLanguage = template.Languages.Contains(projectDefaultLanguage) ? projectDefaultLanguage : template.DefaultLanguage;
+
+         if (!template.Languages.Contains(projectDefaultLanguage))
+         {
+            _logService.LogWarning(LogCategory.Template, LogAction.LanguageNotSupported, projectDefaultLanguage, template.DefaultLanguage);
+         }
 
          return template;
       }

@@ -35,15 +35,9 @@ namespace Kennis.Domain
       public void Build(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
       {
          DefaultLanguageCode = defaultLanguageCode;
+         Template = template;
 
-         _dataService.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
-         _dataService.UpdateContentList();
-
-         var lastModified = _dataService.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
-
-         _dataService.UpdateProjectSiteModified(lastModified, projectSite);
-
-         _dataService.SaveContentList();
+         GetContentList(projectFolder, projectSite);
 
          ParseLoopLayouts(projectSite, _dataService.ContentList);
          ParseIndexFile(projectSite);
@@ -54,6 +48,18 @@ namespace Kennis.Domain
          ParseContentFile(projectSite, ContentType.Post, _dataService.ContentList);
 
          projectSite.LastSuccessfulCreation = DateTime.UtcNow;
+      }
+
+      private void GetContentList(string projectFolder, ProjectSite projectSite)
+      {
+         _dataService.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
+         _dataService.UpdateContentListData();
+
+         var lastModified = _dataService.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
+
+         _dataService.UpdateProjectSiteModified(lastModified, projectSite);
+
+         _dataService.SaveContentList(projectSite.Language.Code);
       }
 
       private void ParseIndexFile(ProjectSite site)

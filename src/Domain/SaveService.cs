@@ -7,14 +7,16 @@ namespace Kennis.Domain
    public interface ISaveService
    {
       void Configure(string htmlFolder, string jsonFolder);
-      void ToJsonFile<T>(string filename, T contentList);
+      void ToJsonFile<T>(string languageCode,string filename, T contentList);
       void ToHtmlFile(string filename, string webPage);
    }
 
    public class SaveService(IFileWrapper fileWrapper,
+                            IDirectoryWrapper directoryWrapper,
                             IPathWrapper pathWrapper,
                             ILogService logService) : ISaveService {
 
+      private readonly IDirectoryWrapper _directory = directoryWrapper;
       private readonly IFileWrapper _file = fileWrapper;
       private readonly IPathWrapper _path = pathWrapper;
       private readonly ILogService _logService = logService;
@@ -28,48 +30,45 @@ namespace Kennis.Domain
          JsonFolder = jsonFolder;
       }
 
-      public void ToJsonFile<T>(string filename, T contentList)
+      public void ToJsonFile<T>(string languageCode, string filename, T contentList)
       {
-         try
+         var options = new JsonSerializerOptions
          {
-            var options = new JsonSerializerOptions
-            {
-               Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-               WriteIndented = true
-            };
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+         };
 
-            var json = JsonSerializer.Serialize(contentList, options)!;
+         var json = JsonSerializer.Serialize(contentList, options)!;
 
-            filename = _path.Combine(JsonFolder, filename);
+         filename = _path.Combine(JsonFolder, languageCode, filename);
 
-            ToHtmlFile(filename, json);
-
-            _logService.LogInfo(LogCategory.JsonFile, LogAction.FileSaveSuccessfully, filename);
-         }
-         catch(Exception ex)
-         { 
-            _logService.LogError(ex, LogCategory.JsonFile, LogAction.FileSaveFailed, filename);
-         }
+         SaveFile(LogCategory.JsonFile, filename, json);
       }
 
       public void ToHtmlFile(string filename, string webPage)
       {
          filename = _path.Combine(HtmlFolder, filename);
 
-         ToTxtFile(filename, webPage);
+         SaveFile(LogCategory.HtmlFile,filename, webPage);
       }
 
-      private void ToTxtFile(string filename, string content)
+      private void SaveFile(LogCategory logCategory, string filename, string content)
       {
          try
          {
+            var path = _path.GetDirectoryName(filename);
+            if (!_directory.Exists(path))
+            {
+               _directory.CreateDirectory(path);
+            }
+
             _file.WriteAllText(filename, content);
 
-            _logService.LogInfo(LogCategory.HtmlFile, LogAction.FileSaveSuccessfully, filename);
+            _logService.LogInfo(logCategory, LogAction.FileSaveSuccessfully, filename);
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, LogCategory.HtmlFile, LogAction.FileSaveFailed, filename);
+            _logService.LogError(ex, logCategory, LogAction.FileSaveFailed, filename);
          }
       }
    }

@@ -1,6 +1,5 @@
-﻿using Kennis.Domain.Models;
-using Kennis.Builder.Constants;
-using Microsoft.Extensions.Logging;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Models;
 using Myce.Extensions;
 
 namespace Kennis.Domain

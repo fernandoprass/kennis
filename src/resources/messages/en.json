@@ -3,7 +3,7 @@
     "ParseStarting": "Starting to parse {content}",
     "ParseFinished": "Parse finished {content} ",
     "LoadStarting": "Loading file {file}",
-    "FileNotFound": "Content file not found {file}",
+    "FileNotFound": "Content file not found. A new file will be created {filename}",
     "FileReadFailed": "Failed to read Content Header. Yaml {yaml}",
     "ContentNotFound": "File does not have a header {file}"
   },
@@ -24,6 +24,7 @@
     "BuildFinished": "Site build finished for {languageLabel}"
   },
   "Template": {
+    "LanguageNotSupported": "Template doesn't support project default language {defaultLanguage}, using {language}",
     "LoadStarting": "Starting to load templates {templateName}",
     "LoadFinishedSuccessfully": "Template loaded successfully",
     "LoadFinishedFailed": "Failed to load template {templateName}",

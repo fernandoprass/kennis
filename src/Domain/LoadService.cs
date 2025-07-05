@@ -14,7 +14,7 @@ namespace Kennis.Domain
    public interface ILoadService
    {
       void Configure(ProjectFolder projectFolder);
-      string[] ContentFiles(string contentBasePath);
+      string[] ContentFileList(string contentBasePath);
       ContentHeader ContentHeader(string yaml);
       List<Content> ContentList(string path);
       Dictionary<string, Dictionary<string, string>> LogMessages(string language);
@@ -68,11 +68,11 @@ namespace Kennis.Domain
          return ReadJsonFile<List<Content>>(filename);
       }
 
-      public string[] ContentFiles(string contentBasePath)
+      public string[] ContentFileList(string contentBasePath)
       {
          var criteria = "*" + Const.Extension.Content;
-         var files = _directoryWrapper.GetFiles(contentBasePath, criteria, SearchOption.AllDirectories);
-         return files;
+         var fileList = _directoryWrapper.GetFiles(contentBasePath, criteria, SearchOption.AllDirectories);
+         return fileList;
       }
 
       #region Load Template

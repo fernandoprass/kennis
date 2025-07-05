@@ -26,6 +26,7 @@
       FileSaveSuccessfully,
       FileReadFailed,
       FileReadSuccessfully,
+      LanguageNotSupported,
       LoadStarting,
       LoadFinishedFailed,
       LoadFinishedSuccessfully,
