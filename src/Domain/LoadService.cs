@@ -113,6 +113,7 @@ namespace Kennis.Domain
             BlogCategories = ReadTextFile(folder, template.BlogCategories),
             BlogPost = ReadTextFile(folder, template.BlogPost),
             BlogTags = ReadTextFile(folder, template.BlogTags),
+            Assets = template.Assets,
             Languages = template.Languages
          };
 

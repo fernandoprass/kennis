@@ -32,6 +32,7 @@ namespace Kennis.Domain
             BlogPost = Translate(template.BlogPost, i18nData),
             BlogTags = Translate(template.BlogTags, i18nData),
             Page = Translate(template.Page, i18nData),
+            Assets = template.Assets,
             Loops = new TemplateLoop
             {
                BlogArchive = Translate(template.Loops.BlogArchive, i18nData),

@@ -8,7 +8,7 @@ namespace Kennis
       static void Main(string[] args)
       {
          string projectName = "KennisDemo";
-         bool regenerateAllSite = true;
+         bool rebuildAllSite = true;
 
          var config = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
@@ -25,7 +25,7 @@ namespace Kennis
          {
             var builderService = serviceProvider.GetService<IBuilderService>();
 
-            builderService.Build(projectName, regenerateAllSite);
+            builderService.Build(projectName, rebuildAllSite);
          }
          else
          {

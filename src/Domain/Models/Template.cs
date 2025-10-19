@@ -11,6 +11,7 @@
         public string BlogPost { get; set; }
         public string BlogTags { get; set; }
         public string DefaultLanguage { get; set; }
+        public IEnumerable<string> Assets { get; set; }
         public TemplateLoop Loops { get; set; }
     }
 }

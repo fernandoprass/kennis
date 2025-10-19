@@ -1,13 +1,13 @@
-﻿using Kennis.Domain.Models;
-using Kennis.Builder.Constants;
-using Microsoft.Extensions.Logging;
+﻿using Kennis.Builder.Constants;
+using Kennis.Domain.Models;
 using Myce.Extensions;
 using Myce.Response;
 using Myce.Validation;
 using Myce.Validation.ErrorMessages;
 using Myce.Wrappers.Contracts;
 
-namespace Kennis.Domain {
+namespace Kennis.Domain
+{
    public interface IProjectService
    {
       Project? Load(string projectName);
@@ -44,10 +44,12 @@ namespace Kennis.Domain {
 
             ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
 
-            project.Folders = GetProjectFolders(project.Name, project.Template);
+            var languages = project.Sites.Select(s => s.Language.Code).Distinct().ToList();
+
+            project.Folders = GetProjectFolders(project.Name, project.Template, languages);
 
             _loadService.Configure(project.Folders);
-            _saveService.Configure(project.Folders.Destination, project.Folders.Project);
+            _saveService.Configure(project.Folders.SiteDestination[project.DefaultLanguageCode], project.Folders.Project);
 
             return project;
          }
@@ -113,11 +115,18 @@ namespace Kennis.Domain {
          return _path.Combine(applicationPath, Const.Folder.Projects, projectName, Const.File.Project);
       }
 
-      private ProjectFolder GetProjectFolders(string projectName, string templateName)
+      private ProjectFolder GetProjectFolders(string projectName, string templateName, List<string> languages)
       {
          var applicationPath = AppContext.BaseDirectory;
 
          string template = _path.Combine(applicationPath, Const.Folder.Templates, templateName);
+
+         string baseSiteDestination = _path.Combine(applicationPath, Const.Folder.Sites, projectName);
+         var siteDestination = new Dictionary<string, string>();
+
+         foreach(string language in languages) {
+            siteDestination.Add(language, _path.Combine(baseSiteDestination, language));
+         }
 
          return new ProjectFolder
          {
@@ -125,7 +134,7 @@ namespace Kennis.Domain {
             Project = _path.Combine(applicationPath, Const.Folder.Projects, projectName),
             Template = template,
             TemplateTranslations = _path.Combine(template, Const.Folder.TemplatesTranslations),
-            Destination = _path.Combine(applicationPath, Const.Folder.Sites, projectName)
+            SiteDestination = siteDestination
          };
       }
 

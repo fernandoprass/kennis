@@ -38,6 +38,8 @@ namespace Kennis.Domain
                   {
                      _logService.LogInfo(LogCategory.Site, LogAction.BuildStarting, projectSite.Language.Code);
 
+                     _templateService.CopyAssets(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
+
                      _buildSiteService.Build(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
 
                      _logService.LogInfo(LogCategory.Site, LogAction.BuildFinished, projectSite.Language.Code);
