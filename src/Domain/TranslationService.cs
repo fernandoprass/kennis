@@ -1,5 +1,6 @@
 ﻿using Kennis.Domain.Models;
 using Microsoft.Extensions.Logging;
+using Myce.Extensions;
 
 namespace Kennis.Domain
 {
@@ -17,7 +18,7 @@ namespace Kennis.Domain
       {
          if (!template.Languages.Contains(language))
          {
-            _logService.LogError(LogCategory.Template, LogAction.FileNotFound, language);
+            _logService.LogError(LogCategory.Template, LogAction.NotSupported, language);
             return null;
          }
 
@@ -47,6 +48,8 @@ namespace Kennis.Domain
                SocialMedia = Translate(template.Loops.SocialMedia, i18nData)
             }
          };
+         
+         _logService.LogInfo(LogCategory.Template, LogAction.TranslateSuccess, language);
 
          return translatedTemplate;
       }
@@ -59,9 +62,12 @@ namespace Kennis.Domain
             return null;
          }
 
-         foreach (var i18m in i18nData)
+         if (!i18nData.IsNullOrEmpty())
          {
-            template = template.Replace($"{{:{i18m.Key}}}", i18m.Value);
+            foreach (var i18m in i18nData)
+            {
+               template = template.Replace($"{{:{i18m.Key}}}", i18m.Value);
+            }         
          }
 
          return template;

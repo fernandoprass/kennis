@@ -64,11 +64,11 @@ namespace Kennis.Domain
 
             _file.WriteAllText(filename, content);
 
-            _logService.LogInfo(logCategory, LogAction.FileSaveSuccessfully, filename);
+            _logService.LogInfo(logCategory, LogAction.SaveSuccess, filename);
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, logCategory, LogAction.FileSaveFailed, filename);
+            _logService.LogError(ex, logCategory, LogAction.SaveFail, filename);
          }
       }
    }

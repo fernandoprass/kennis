@@ -1,56 +1,57 @@
 {
   "Content": {
-    "ParseStarting": "Starting to parse {content}",
-    "ParseFinished": "Parse finished {content} ",
-    "LoadStarting": "Loading file {file}",
-    "FileNotFound": "Content file not found. A new file will be created {filename}",
-    "FileReadFailed": "Failed to read Content Header. Yaml {yaml}",
-    "ContentNotFound": "File does not have a header {file}"
+    "ParseStart": "Starting content parsing: {content}",
+    "ParseSuccess": "Content parsing complete: {content}",
+    "LoadStart": "Starting file load: {file}",
+    "FileMissing": "Content file not found: {filename}. A new file will be created.",
+    "ReadHeaderFail": "Failed to read Content Header (YAML). Error details: {yaml}",
+    "DataMissing": "Header is missing in Content file: {file}"
   },
   "File": {
-    "FileNotFound": "File not found {filename}",
-    "FileReadFailed": "Failed to read file {filename} at {folder}",
-    "FileReadSuccessfully": "File read successfully {filename}"
+    "Missing": "File not found: {filename}",
+    "ReadFail": "Failed to read file {filename} in folder {folder}",
+    "ReadSuccess": "File read successfully: {filename}"
   },
   "Project": {
-    "BuildStarting": "Starting to build project {projectName}",
-    "BuildFinished": "Project build finished for {projectName}",
-    "LoadFinishedFailed": "Failed to load project {projectName}",
-    "LoadFinishedSuccessfully": "Project load successfully {projectName}",
-    "FileReadSuccessfully": "Project file read successfully {projectName}"
+    "BuildStart": "Starting project build: {projectName}",
+    "BuildSuccess": "Project build complete: {projectName}",
+    "LoadFail": "Failed to load project: {projectName}",
+    "LoadSuccess": "Project loaded successfully: {projectName}",
+    "ReadSuccess": "Project file read successfully: {projectName}"
   },
   "Site": {
-    "BuildStarting": "Starting to build site for {languageLabel}",
-    "BuildFinished": "Site build finished for {languageLabel}"
+    "BuildStart": "Starting site build for: {languageLabel}",
+    "BuildSuccess": "Site build complete for: {languageLabel}"
   },
   "Template": {
-    "LanguageNotSupported": "Template doesn't support project default language {defaultLanguage}, using {language}",
-    "LoadStarting": "Starting to load templates {templateName}",
-    "LoadFinishedSuccessfully": "Template loaded successfully",
-    "LoadFinishedFailed": "Failed to load template {templateName}",
-    "TranslateFinished": "Template translated {templateName}"
+    "FileCopy": "Copying template assets to destination: {siteDestination}",
+    "NotSupported": "Template does not support project's default language ({defaultLanguage}); using {language}",
+    "LoadStart": "Starting template load: {templateName}",
+    "LoadFinishedFail": "Failed to load template: {templateName}",
+    "LoadFinishedSuccess": "Template loaded successfully",
+    "TranslateSuccess": "Template translation complete: {templateName}"
   },
   "TranslationFile": {
-    "LoadStarting": "Loading i18n data for {language}",
-    "LoadFinishedFailed": "Failed to load i18n data for {language}",
-    "LoadFinishedSuccessfully": "I18n data loaded successfully for {language}",
-    "FileNotFound": "Language not supported by template {language}"
+    "LoadStart": "Loading i18n data for {language}",
+    "LoadFinishedFail": "Failed to load i18n data for {language}",
+    "LoadFinishedSuccess": "I18n data loaded successfully for {language}",
+    "NotSupported": "Language not supported by template {language}"
   },
   "HtmlFile": {
-    "FileParsed": "HTML {pageName} page parsed",
-    "FileSaveFailed": "Error when try to save to HTML file {filename}",
-    "FileSaveSuccessfully": "HTML file saved {filename}"
+    "ParseSuccess": "HTML page parsed: {pageName}",
+    "SaveFail": "Error saving HTML file: {filename}",
+    "SaveSuccess": "HTML file saved successfully: {filename}"
   },
   "JsonFile": {
-    "ContentDeserializeFailed": "JSON file Content:\n{json}",
-    "FileDeserializeFailed": "Failed to deserialize JSON file {filename}",
-    "FileDeserializeSuccessfully": "JSON file deserialize successfully {filename}",
-    "FileSaveFailed": "Error when try to save to Json file {filename}",
-    "FileSaveSuccessfully": "Json file saved {filename}"
+    "ContentDeserializeFail": "Failed to deserialize JSON content. Details: \n{json}",
+    "DeserializeFail": "Failed to deserialize JSON file: {filename}",
+    "DeserializeSuccess": "JSON file deserialized successfully: {filename}",
+    "SaveFail": "Error saving JSON file: {filename}",
+    "SaveSuccess": "JSON file saved successfully: {filename}"
   },
   "YamlFile": {
-    "ContentDeserializeFailed": "Failed to deserialize YAML file. Content:\n{yaml}",
-    "FileDeserializeSuccessfully": "YAML file deserialize successfully {filename}",
-    "FileReadFailed": "Failed to read YAML Content Header file {filename}"
+    "ContentDeserializeFail": "Failed to deserialize YAML content. Details: \n{yaml}",
+    "DeserializeSuccess": "YAML file deserialized successfully: {filename}",
+    "ReadFail": "Failed to read YAML Content Header file: {filename}"
   }
 }

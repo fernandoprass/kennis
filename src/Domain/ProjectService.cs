@@ -15,22 +15,15 @@ namespace Kennis.Domain
       void Save();
    }
 
-   public class ProjectService : IProjectService {
-      private readonly ILoadService _loadService;
-      private readonly ILogService _logService;
-      private readonly IPathWrapper _path;
-      private readonly ISaveService _saveService;
-
-      public ProjectService(ILoadService loadService,
+   public class ProjectService (ILoadService loadService,
          ILogService logService,
          IPathWrapper pathWrapper,
-         ISaveService saveService)
-      {
-         _loadService = loadService;
-         _logService = logService;
-         _path = pathWrapper;
-         _saveService = saveService;
-      }
+         ISaveService saveService) : IProjectService
+   {
+      private readonly ILoadService _loadService = loadService;
+      private readonly ILogService _logService = logService;
+      private readonly IPathWrapper _path = pathWrapper;
+      private readonly ISaveService _saveService = saveService;
 
       public Project? Load(string projectName)
       {
@@ -40,7 +33,7 @@ namespace Kennis.Domain
 
          if (project.IsNotNull())
          {
-            _logService.LogTrace(LogCategory.Project, LogAction.FileReadSuccessfully, projectName);
+            _logService.LogTrace(LogCategory.Project, LogAction.ReadSuccess, projectName);
 
             ProjectSiteUpdateLanguageData(project.DefaultLanguageCode, project.Sites);
 
@@ -54,7 +47,7 @@ namespace Kennis.Domain
             return project;
          }
          
-         _logService.LogCritical(LogCategory.Project, LogAction.LoadFinishedFailed, projectName);
+         _logService.LogCritical(LogCategory.Project, LogAction.LoadFinishedFail, projectName);
 
          return null;
       }

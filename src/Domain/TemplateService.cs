@@ -23,6 +23,7 @@ namespace Kennis.Domain
 
       public void CopyAssets(string templapeFolder, IEnumerable<string> assets, string siteDestination)
       {
+         _logService.LogInfo(LogCategory.Template, LogAction.FileCopy, siteDestination);
          foreach (string asset in assets)
          {
             string destination = _pathWrapper.Combine(siteDestination, asset);
@@ -51,14 +52,6 @@ namespace Kennis.Domain
 
                _fileWrapper.Copy(file, destFile, true);
             }
-
-            //else if (_fileWrapper.Exists(asset))
-            //{
-            //   // Single file asset
-            //   var fileName = _pathWrapper.GetFileName(asset);
-            //   var destFile = _pathWrapper.Combine(destination, fileName);
-            //   _fileWrapper.Copy(asset, destFile, true);
-            //}
          }
       }
 
@@ -70,7 +63,7 @@ namespace Kennis.Domain
 
          if (!template.Languages.Contains(projectDefaultLanguage))
          {
-            _logService.LogWarning(LogCategory.Template, LogAction.LanguageNotSupported, projectDefaultLanguage, template.DefaultLanguage);
+            _logService.LogWarning(LogCategory.Template, LogAction.NotSupported, projectDefaultLanguage, template.DefaultLanguage);
          }
 
          return template;

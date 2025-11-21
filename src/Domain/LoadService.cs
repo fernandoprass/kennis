@@ -49,7 +49,7 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, LogCategory.Content, LogAction.FileReadFailed, yaml);
+            _logService.LogError(ex, LogCategory.Content, LogAction.ReadFail, yaml);
          }
 
          return null;
@@ -61,7 +61,7 @@ namespace Kennis.Domain
 
          if (!_fileWrapper.Exists(filename))
          {
-            _logService.LogWarning(LogCategory.Content, LogAction.FileNotFound, filename);
+            _logService.LogWarning(LogCategory.Content, LogAction.FileMissing, filename);
             return new List<Content>();
          }
 
@@ -80,7 +80,7 @@ namespace Kennis.Domain
       {
          var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
-         _logService.LogInfo(LogCategory.Template, LogAction.LoadStarting, name);
+         _logService.LogInfo(LogCategory.Template, LogAction.LoadStart, name);
 
          var templateFile = ReadJsonFile<Template>(filename);
 
@@ -90,13 +90,13 @@ namespace Kennis.Domain
 
             template.Loops = LoadLoopTemplates(templateFile.Loops, _projectFolder.Template);
 
-            _logService.LogInfo(LogCategory.Template, LogAction.LoadFinishedSuccessfully);
+            _logService.LogInfo(LogCategory.Template, LogAction.LoadFinishedSuccess);
 
             return template;
          }
          else
          {
-            _logService.LogCritical(LogCategory.Template, LogAction.LoadFinishedFailed, name);
+            _logService.LogCritical(LogCategory.Template, LogAction.LoadFinishedFail, name);
          }
 
          return null;
@@ -146,18 +146,18 @@ namespace Kennis.Domain
 
       public Dictionary<string, string> TemplateTranslationData(string language)
       {
-         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadStarting, language);
+         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadStart, language);
          var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, $"{language}{Const.Extension.I18n}");
 
          var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
 
          if (i18nData.IsNull())
          {
-            _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedFailed, language);
+            _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedFail, language);
             return null;
          }
 
-         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedSuccessfully, language);
+         _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedSuccess, language);
 
          return i18nData;
       }
@@ -196,7 +196,7 @@ namespace Kennis.Domain
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, LogCategory.YamlFile, LogAction.FileReadFailed, filename);
+            _logService.LogError(ex, LogCategory.YamlFile, LogAction.ReadFail, filename);
             return null;
          }
       }
@@ -209,7 +209,7 @@ namespace Kennis.Domain
             return true;
          }
 
-         _logService.LogError(LogCategory.File, LogAction.FileNotFound, filename);
+         _logService.LogError(LogCategory.File, LogAction.FileMissing, filename);
          return false;
       }
 
@@ -223,13 +223,13 @@ namespace Kennis.Domain
                if (FileExists(_filename))
                {
                   var content = _fileWrapper.ReadAllText(_filename);
-                  _logService.LogTrace(LogCategory.File, LogAction.FileReadSuccessfully, filename);
+                  _logService.LogTrace(LogCategory.File, LogAction.ReadSuccess, filename);
                   return content;
                }
             }
             catch (Exception ex)
             {
-               _logService.LogError(ex, LogCategory.File, LogAction.FileReadFailed, filename, folder);
+               _logService.LogError(ex, LogCategory.File, LogAction.ReadFail, filename, folder);
             }
          }
 
@@ -251,15 +251,15 @@ namespace Kennis.Domain
                };
 
                var content = JsonSerializer.Deserialize<T>(json, options)!;
-               _logService.LogTrace(LogCategory.JsonFile, LogAction.FileDeserializeSuccessfully, filename);
+               _logService.LogTrace(LogCategory.JsonFile, LogAction.DeserializeSuccess, filename);
                return content;
             }
 
          }
          catch (Exception ex)
          {
-            _logService.LogError(ex, LogCategory.JsonFile, LogAction.FileDeserializeFailed, json);
-            _logService.LogTrace(LogCategory.JsonFile, LogAction.ContentDeserializeFailed, json);
+            _logService.LogError(ex, LogCategory.JsonFile, LogAction.DeserializeFail, json);
+            _logService.LogTrace(LogCategory.JsonFile, LogAction.ContentDeserializeFail, json);
          }
 
          return default;
@@ -281,7 +281,7 @@ namespace Kennis.Domain
             }
             catch (Exception ex)
             {
-               _logService.LogError(ex, LogCategory.YamlFile, LogAction.FileDeserializeFailed, yaml);
+               _logService.LogError(ex, LogCategory.YamlFile, LogAction.DeserializeFail, yaml);
             }
          }
 

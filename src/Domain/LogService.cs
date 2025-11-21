@@ -47,7 +47,7 @@ namespace Kennis.Domain
             }
             catch (Exception ex)
             {
-               LogError(ex, LogCategory.JsonFile, LogAction.FileDeserializeFailed, jsonContent);
+               LogError(ex, LogCategory.JsonFile, LogAction.DeserializeFail, jsonContent);
             }
          }
 

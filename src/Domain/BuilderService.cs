@@ -21,7 +21,7 @@ namespace Kennis.Domain
 
       public void Build(string projectName, bool rebuildAll)
       {
-         _logService.LogInfo(LogCategory.Project, LogAction.BuildStarting, projectName);
+         _logService.LogInfo(LogCategory.Project, LogAction.BuildStart, projectName);
          var project = _projectService.Load(projectName);
 
          if (project.IsNotNull())
@@ -36,7 +36,7 @@ namespace Kennis.Domain
 
                   if (template.IsNotNull())
                   {
-                     _logService.LogInfo(LogCategory.Site, LogAction.BuildStarting, projectSite.Language.Code);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildStart, projectSite.Language.Code);
 
                      _templateService.CopyAssets(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
 

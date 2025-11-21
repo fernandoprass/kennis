@@ -45,7 +45,7 @@ namespace Kennis.Domain
 
          foreach (var file in contentFileList)
          {
-            _logService.LogInfo(LogCategory.Content, LogAction.LoadStarting, file);
+            _logService.LogInfo(LogCategory.Content, LogAction.LoadStart, file);
 
             string yaml = _loadService.YamlContentHeader(file);
 
