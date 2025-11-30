@@ -1,0 +1,99 @@
+{
+	"Name": "KennisDemo",
+	"BaseUrl": "",
+	"DefaultLanguageCode": "en",
+	"Pagination": 10,
+	"Template": "black-and-white-template",
+	"Sites": [
+		{
+			"Language": {
+				"Code": "pt-br",
+				"Icon": "",
+				"Label": "PT"
+			},
+			"Title": "Kennis - gerador de sites multilínguas",
+			"Subtitle": "Generador de site",
+			"Description": "Kennis é um gerador de sites estáticos multilínguas",
+			"DateTimeFormat": "dd/MM/yyyy hh:mm:ss",
+			"Keywords": "software, site, gerador, multilínguas, estáticos, open source, website, blog, código aberto",
+			"GoogleAnalyticTrackingId": "",
+			"Author": {
+				"Name": "Fernando Prass",
+				"Avatar": "",
+				"Bio": "Desenvolvedor de Software.",
+				"Location": "Dublin - Irlanda",
+				"Email": "",
+				"SocialMedia": [
+					{
+						"Icon": "fab fa-fw fa-github",
+						"Name": "GitHub",
+						"Link": "https://github.com/fernandoprass"
+					},
+					{
+						"Icon": "fa fa-linkedin-square",
+						"Name": "LinkedIn",
+						"Link": "https://www.linkedin.com/in/fernandoprass"
+					},
+					{
+						"Icon": "fab fa-fw fa-twitter-square",
+						"Name": "Twitter",
+						"Link": "https://twitter.com/oFernandoPrass"
+					}
+				]
+			},
+			"Folders": {
+				"Blog": "pt-br/blog/",
+				"BlogArchive": "pt-br/blog/arquivo/",
+				"BlogCategories": "pt-br/blog/categorias/",
+				"BlogPosts": "pt-br/blog/posts/{category}/",
+				"BlogTags": "pt-br/blog/tags/",
+				"Pages": "pt-br/paginas/"
+			}
+		},
+		{
+			"Language": {
+				"Code": "en",
+				"Icon": "",
+				"Label": "EN"
+			},
+			"Title": "Kennis - multilingual site generator",
+			"Subtitle": "Site Generator",
+			"Description": "Kennis is a multilingual static website generator",
+			"DateTimeFormat": "yyyy-MM-dd hh:mm:ss",
+			"Keywords": "software, site, generator, multilingual, static, open source, website, blog",
+			"GoogleAnalyticTrackingId": "",
+			"Author": {
+				"Name": "Fernando Prass",
+				"Avatar": "",
+				"Bio": "Software Developer",
+				"Location": "Dublin - Ireland",
+				"Email": "",
+				"SocialMedia": [
+					{
+						"Icon": "fab fa-fw fa-github",
+						"Name": "GitHub",
+						"Link": "https://github.com/fernandoprass"
+					},
+					{
+						"Icon": "fa fa-linkedin-square",
+						"Name": "LinkedIn",
+						"Link": "https://www.linkedin.com/in/fernandoprass/?locale=en_US"
+					},
+					{
+						"Icon": "fab fa-fw fa-twitter-square",
+						"Name": "Twitter",
+						"Link": "https://twitter.com/oFernandoPrass"
+					}
+				]
+			},
+			"Folders": {
+				"Blog": "en/blog/",
+				"BlogArchive": "en/blog/archive/",
+				"BlogCategories": "en/blog/categories/",
+				"BlogPosts": "en/blog/posts/{category}/",
+				"BlogTags": "en/blog/tags/",
+				"Pages": "en/pages/"
+			}
+		}
+	]
+}
