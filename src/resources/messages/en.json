@@ -25,6 +25,7 @@
   },
   "Template": {
     "FileCopy": "Copying template assets to destination: {siteDestination}",
+    "FileCopyFailed": "Failed to copy template assets to destination: {error}",
     "NotSupported": "Template does not support project's default language ({defaultLanguage}); using {language}",
     "LoadStart": "Starting template load: {templateName}",
     "LoadFinishedFail": "Failed to load template: {templateName}",

@@ -20,7 +20,6 @@ namespace Kennis.Domain
       private readonly IBuildLoop _loop = loop;
       private readonly IBuildTag _tag = tag;
 
-      private ProjectFolder ProjectFolder { get; set; }
       private Template Template { get; set; }
       private string DefaultLanguageCode { get; set; } = string.Empty;
       private string LoopLanguagesParsed { get; set; } = string.Empty;
@@ -29,8 +28,6 @@ namespace Kennis.Domain
       private string BlogPostsLast10Parsed { get; set; } = string.Empty;
       private string BlogPostsLast5Parsed { get; set; } = string.Empty;
       private string BlogPostsLast3Parsed { get; set; } = string.Empty;
-
-
 
       public void Build(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
       {

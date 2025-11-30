@@ -42,11 +42,11 @@ namespace Kennis.Domain
 
                      _buildSiteService.Build(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
 
-                     _logService.LogInfo(LogCategory.Site, LogAction.BuildFinished, projectSite.Language.Code);
+                     _logService.LogInfo(LogCategory.Site, LogAction.BuildSuccess, projectSite.Language.Code);
                   }
                }
             }
-            _logService.LogInfo(LogCategory.Project, LogAction.BuildFinished, projectName);
+            _logService.LogInfo(LogCategory.Project, LogAction.BuildSuccess, projectName);
          }
       }
    }

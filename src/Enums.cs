@@ -16,13 +16,14 @@
    public enum LogAction
    {
       BuildStart,
-      BuildFinished,
+      BuildSuccess,
       ContentNotFound,
       ContentDeserializeFail,
       DataMissing,
       DeserializeFail,
       DeserializeSuccess,
       FileCopy,
+      FileCopyFail,
       FileMissing,
       LoadStart,
       LoadFinishedFail,
