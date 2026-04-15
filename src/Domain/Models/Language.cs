@@ -1,10 +1,9 @@
-﻿namespace Kennis.Domain.Models
+﻿namespace Kennis.Domain.Models;
+
+public class Language
 {
-   public class Language
-   {
-      public string Code { get; set; }
-      public string? Icon { get; set; }
-      public string Label { get; set; }
-      public string IndexFileName { get; set; }
-   }
+   public string Code { get; set; }
+   public string? Icon { get; set; }
+   public string Label { get; set; }
+   public string IndexFileName { get; set; }
 }

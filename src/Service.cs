@@ -1,4 +1,8 @@
-﻿using Kennis.Domain;
+﻿using Kennis.Application.Services;
+using Kennis.Domain;
+using Kennis.Domain.Interfaces;
+using Kennis.Infrastructure.Logging;
+using Kennis.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Myce.Wrappers;
 using Myce.Wrappers.Contracts;

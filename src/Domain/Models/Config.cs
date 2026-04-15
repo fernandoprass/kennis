@@ -1,3 +1,5 @@
+namespace Kennis.Domain.Models;
+
 public class Config
 {
     public string Language { get; set; }

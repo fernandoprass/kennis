@@ -1,8 +1,7 @@
-﻿namespace Kennis.Domain.Models
+﻿namespace Kennis.Domain.Models;
+
+public enum ContentType
 {
-   public enum ContentType
-   {
-      Page, 
-      Post
-   }
+   Page, 
+   Post
 }

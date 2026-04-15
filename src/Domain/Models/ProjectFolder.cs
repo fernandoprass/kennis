@@ -1,11 +1,10 @@
-﻿namespace Kennis.Domain.Models
+﻿namespace Kennis.Domain.Models;
+
+public class ProjectFolder
 {
-   public class ProjectFolder
-   {
-      public string Application { get; set; }
-      public string Project { get; set; }
-      public string Template { get; set; }
-      public string TemplateTranslations { get; set; }
-      public Dictionary<string, string> SiteDestination { get; set; }
-   }
+   public string Application { get; set; }
+   public string Project { get; set; }
+   public string Template { get; set; }
+   public string TemplateTranslations { get; set; }
+   public Dictionary<string, string> SiteDestination { get; set; }
 }
