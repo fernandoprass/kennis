@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Kennis.csproj" />
+  <Project Path="tests/Kennis.Tests.csproj" />
+</Solution>
