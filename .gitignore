@@ -350,5 +350,4 @@ MigrationBackup/
 .ionide/
 
 #projects, templates, and sites folders
-templates/
 sites/
