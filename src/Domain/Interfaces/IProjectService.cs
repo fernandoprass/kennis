@@ -5,7 +5,7 @@ namespace Kennis.Domain.Interfaces;
 
 public interface IProjectService
 {
-   Project? Load(string projectName);
+   Task<Project?> LoadAsync(string projectName);
    Result Validate(Project project);
-   void Save();
+   Task SaveAsync();
 }

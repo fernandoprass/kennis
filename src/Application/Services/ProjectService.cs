@@ -1,11 +1,12 @@
-﻿using Kennis.Domain.Interfaces;
-using Kennis.Domain.Models;
+using Myce.Wrappers.Contracts;
+using Kennis.Domain;
+using Kennis.Domain.Interfaces;
 using Myce.FluentValidator;
+using Kennis.Domain.Models;
 using Myce.Response;
 using Myce.Response.Messages;
-using Myce.Wrappers.Contracts;
 
-namespace Kennis.Domain;
+namespace Kennis.Application.Services;
 
 public class ProjectService (ILoadService loadService,
       ILogService logService,
@@ -17,11 +18,11 @@ public class ProjectService (ILoadService loadService,
    private readonly IPathWrapper _path = pathWrapper;
    private readonly ISaveService _saveService = saveService;
 
-   public Project? Load(string projectName)
+   public async Task<Project?> LoadAsync(string projectName)
    {
       var filename = GetProjectFilename(projectName);
 
-      var project = _loadService.Project(filename);
+      var project = await _loadService.ProjectAsync(filename);
 
       if (project != null )
       {
@@ -130,8 +131,8 @@ public class ProjectService (ILoadService loadService,
       };
    }
 
-   public void Save()
+   public async Task SaveAsync()
    {
-     // _saveService.ToJsonFile<Project>(_project)
+     // await _saveService.ToJsonFileAsync<Project>(_project)
    }
 }

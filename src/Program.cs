@@ -1,11 +1,11 @@
-﻿using Kennis.Domain.Interfaces;
+using Kennis.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kennis;
 
 public class Kennis {
-   static void Main(string[] args)
+   static async Task Main(string[] args)
    {
       string projectName = "KennisDemo";
       bool rebuildAllSite = true;
@@ -19,13 +19,13 @@ public class Kennis {
 
       var serviceProvider = Service.Configure(projectName, logLevel);
 
-      var logService = serviceProvider.GetService<ILogService>();
+      var logService = serviceProvider.GetService<ILogService>()!;
 
-      if (logService.LoadMessages(language))
+      if (await logService.LoadMessagesAsync(language))
       {
-         var builderService = serviceProvider.GetService<IBuilderService>();
+         var builderService = serviceProvider.GetService<IBuilderService>()!;
 
-         builderService.Build(projectName, rebuildAllSite);
+         await builderService.BuildAsync(projectName, rebuildAllSite);
       }
       else
       {

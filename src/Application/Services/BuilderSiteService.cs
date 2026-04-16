@@ -25,48 +25,48 @@ public class BuilderSiteService(ILogService logService,
    private string BlogPostsLast5Parsed { get; set; } = string.Empty;
    private string BlogPostsLast3Parsed { get; set; } = string.Empty;
 
-   public void Build(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
+   public async Task BuildAsync(string defaultLanguageCode, string projectFolder, ProjectSite projectSite, Template template)
    {
       DefaultLanguageCode = defaultLanguageCode;
       Template = template;
 
-      GetContentList(projectFolder, projectSite);
+      await GetContentListAsync(projectFolder, projectSite);
 
       ParseLoopLayouts(projectSite, _dataService.ContentList);
-      ParseIndexFile(projectSite);
+      await ParseIndexFileAsync(projectSite);
 
-      ParseBlogIndexFile(projectSite);
-      ParseContentFile(projectSite, ContentType.Page, _dataService.ContentList);
+      await ParseBlogIndexFileAsync(projectSite);
+      await ParseContentFileAsync(projectSite, ContentType.Page, _dataService.ContentList);
 
-      ParseContentFile(projectSite, ContentType.Post, _dataService.ContentList);
+      await ParseContentFileAsync(projectSite, ContentType.Post, _dataService.ContentList);
 
       projectSite.LastSuccessfulCreation = DateTime.UtcNow;
    }
 
-   private void GetContentList(string projectFolder, ProjectSite projectSite)
+   private async Task GetContentListAsync(string projectFolder, ProjectSite projectSite)
    {
-      _dataService.GetContentList(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
+      await _dataService.GetContentListAsync(projectFolder, projectSite.Language.Code, projectSite.Folders.Pages, projectSite.Folders.BlogPosts);
       _dataService.UpdateContentListData();
 
       var lastModified = _dataService.ContentList.Max(x => x.Updated.HasValue ? x.Updated.Value : x.Created);
 
       _dataService.UpdateProjectSiteModified(lastModified, projectSite);
 
-      _dataService.SaveContentList(projectSite.Language.Code);
+      await _dataService.SaveContentListAsync(projectSite.Language.Code);
    }
 
-   private void ParseIndexFile(ProjectSite site)
+   private async Task ParseIndexFileAsync(ProjectSite site)
    {
       string template = ParseHtmlFile(Template.Index);
 
       template = _tag.Index(template, site);
 
-      _logService.LogInfo(LogCategory.HtmlFile, LogAction.ParseSuccess,"index");
+      _logService.LogInfo(LogCategory.HtmlFile, LogAction.ParseSuccess, "index");
 
-      _saveService.ToHtmlFile(site.Language.IndexFileName, template);
+      await _saveService.ToHtmlFileAsync(site.Language.IndexFileName, template);
    }
 
-   private void ParseBlogIndexFile(ProjectSite site)
+   private async Task ParseBlogIndexFileAsync(ProjectSite site)
    {
       string template = ParseHtmlFile(Template.Blog);
 
@@ -74,10 +74,10 @@ public class BuilderSiteService(ILogService logService,
 
       _logService.LogInfo(LogCategory.HtmlFile, LogAction.ParseSuccess, "blog index");
 
-      _saveService.ToHtmlFile(site.Folders.Blog + Const.File.Index, template);
+      await _saveService.ToHtmlFileAsync(site.Folders.Blog + Const.File.Index, template);
    }
 
-   private void ParseContentFile(ProjectSite site, ContentType contentType, IEnumerable<Content> contentList)
+   private async Task ParseContentFileAsync(ProjectSite site, ContentType contentType, IEnumerable<Content> contentList)
    {
       var type = contentType == ContentType.Page ? "pages" : "posts";
 
@@ -89,20 +89,20 @@ public class BuilderSiteService(ILogService logService,
                       ? ParseHtmlFile(Template.Page)
                       : ParseHtmlFile(Template.BlogPost);
 
-      //template = _translate.To(site.Language.Code, ProjectFolder.Template, template);
-
       var folder = contentType == ContentType.Page
                       ? site.Folders.Pages
                       : site.Folders.BlogPosts;
 
       _logService.LogInfo(LogCategory.Content, LogAction.ParseStart, type);
 
-      foreach (var content in contents)
+      var tasks = contents.Select(async content =>
       {
          string post = _tag.Content(template, content, site.DateTimeFormat);
          _logService.LogInfo(LogCategory.Content, LogAction.ParseSuccess, content.Title);
-         _saveService.ToHtmlFile(folder + content.Filename, post);
-      }
+         await _saveService.ToHtmlFileAsync(folder + content.Filename, post);
+      });
+
+      await Task.WhenAll(tasks);
 
       _logService.LogInfo(LogCategory.Content, LogAction.ParseSuccess, type);
    }

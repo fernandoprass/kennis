@@ -19,16 +19,16 @@ public class LogService(ILogger<LogService> logger,
 
    public bool IsMessagesLoaded => _logMessages.Count.EqualZero();
 
-   public bool LoadMessages(string language)
+   public async Task<bool> LoadMessagesAsync(string language)
    {
       string filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
       string jsonContent = string.Empty;
 
-      if (_fileWrapper.Exists(filename))
+      if (await _fileWrapper.ExistsAsync(filename))
       {
          try
          {
-            jsonContent = _fileWrapper.ReadAllText(filename);
+            jsonContent = await _fileWrapper.ReadAllTextAsync(filename);
 
             _logMessages = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(jsonContent);
          }

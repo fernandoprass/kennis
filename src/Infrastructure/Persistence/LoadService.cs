@@ -43,40 +43,40 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       return null;
    }
 
-   public List<Content> ContentList(string path)
+   public async Task<List<Content>> ContentListAsync(string path)
    {
       var filename = _pathWrapper.Combine(path, Const.File.ContentList);
 
-      if (!_fileWrapper.Exists(filename))
+      if (!await FileExistsAsync(filename))
       {
          _logService.LogWarning(LogCategory.Content, LogAction.FileMissing, filename);
          return new List<Content>();
       }
 
-      return ReadJsonFile<List<Content>>(filename);
+      return await ReadJsonFileAsync<List<Content>>(filename);
    }
 
-   public string[] ContentFileList(string contentBasePath)
+   public async Task<string[]> ContentFileListAsync(string contentBasePath)
    {
       var criteria = "*" + Const.Extension.Content;
-      var fileList = _directoryWrapper.GetFiles(contentBasePath, criteria, SearchOption.AllDirectories);
+      var fileList = await Task.Run(() => _directoryWrapper.GetFiles(contentBasePath, criteria, SearchOption.AllDirectories));
       return fileList;
    }
 
    #region Load Template
-   public Template Template(string name)
+   public async Task<Template> TemplateAsync(string name)
    {
       var filename = _pathWrapper.Combine(_projectFolder.Template, Const.File.Template);
 
       _logService.LogInfo(LogCategory.Template, LogAction.LoadStart, name);
 
-      var templateFile = ReadJsonFile<Template>(filename);
+      var templateFile = await ReadJsonFileAsync<Template>(filename);
 
       if (templateFile != null )
       {
-         var template = LoadMainTemplates(templateFile, _projectFolder.Template);
+         var template = await LoadMainTemplatesAsync(templateFile, _projectFolder.Template);
 
-         template.Loops = LoadLoopTemplates(templateFile.Loops, _projectFolder.Template);
+         template.Loops = await LoadLoopTemplatesAsync(templateFile.Loops, _projectFolder.Template);
 
          _logService.LogInfo(LogCategory.Template, LogAction.LoadFinishedSuccess);
 
@@ -90,17 +90,17 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       return null;
    }
 
-   private Template LoadMainTemplates(Template template, string folder)
+   private async Task<Template> LoadMainTemplatesAsync(Template template, string folder)
    {
       var layout = new Template
       {
-         Index = ReadTextFile(folder, template.Index),
-         Page = ReadTextFile(folder, template.Page),
-         Blog = ReadTextFile(folder, template.Blog),
-         BlogArchive = ReadTextFile(folder, template.BlogArchive),
-         BlogCategories = ReadTextFile(folder, template.BlogCategories),
-         BlogPost = ReadTextFile(folder, template.BlogPost),
-         BlogTags = ReadTextFile(folder, template.BlogTags),
+         Index = await ReadTextFileAsync(folder, template.Index),
+         Page = await ReadTextFileAsync(folder, template.Page),
+         Blog = await ReadTextFileAsync(folder, template.Blog),
+         BlogArchive = await ReadTextFileAsync(folder, template.BlogArchive),
+         BlogCategories = await ReadTextFileAsync(folder, template.BlogCategories),
+         BlogPost = await ReadTextFileAsync(folder, template.BlogPost),
+         BlogTags = await ReadTextFileAsync(folder, template.BlogTags),
          Assets = template.Assets,
          Languages = template.Languages
       };
@@ -108,7 +108,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       return layout;
    }
 
-   private TemplateLoop LoadLoopTemplates(TemplateLoop loops, string folder)
+   private async Task<TemplateLoop> LoadLoopTemplatesAsync(TemplateLoop loops, string folder)
    {
       if (loops == null )
       {
@@ -117,27 +117,27 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
       var templateLoop = new TemplateLoop
       {
-         BlogArchive = ReadTextFile(folder, loops.BlogArchive),
-         BlogCategories = ReadTextFile(folder, loops.BlogCategories),
-         BlogPostLast10 = ReadTextFile(folder, loops.BlogPostLast10),
-         BlogPostLast5 = ReadTextFile(folder, loops.BlogPostLast5),
-         BlogPostLast3 = ReadTextFile(folder, loops.BlogPostLast3),
-         BlogPosts = ReadTextFile(folder, loops.BlogPosts),
-         BlogTags = ReadTextFile(folder, loops.BlogTags),
-         Languages = ReadTextFile(folder, loops.Languages),
-         Menu = ReadTextFile(folder, loops.Menu),
-         SocialMedia = ReadTextFile(folder, loops.SocialMedia)
+         BlogArchive = await ReadTextFileAsync(folder, loops.BlogArchive),
+         BlogCategories = await ReadTextFileAsync(folder, loops.BlogCategories),
+         BlogPostLast10 = await ReadTextFileAsync(folder, loops.BlogPostLast10),
+         BlogPostLast5 = await ReadTextFileAsync(folder, loops.BlogPostLast5),
+         BlogPostLast3 = await ReadTextFileAsync(folder, loops.BlogPostLast3),
+         BlogPosts = await ReadTextFileAsync(folder, loops.BlogPosts),
+         BlogTags = await ReadTextFileAsync(folder, loops.BlogTags),
+         Languages = await ReadTextFileAsync(folder, loops.Languages),
+         Menu = await ReadTextFileAsync(folder, loops.Menu),
+         SocialMedia = await ReadTextFileAsync(folder, loops.SocialMedia)
       };
 
       return templateLoop;
    }
 
-   public Dictionary<string, string> TemplateTranslationData(string language)
+   public async Task<Dictionary<string, string>> TemplateTranslationDataAsync(string language)
    {
       _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadStart, language);
       var filename = _pathWrapper.Combine(_projectFolder.TemplateTranslations, $"{language}{Const.Extension.I18n}");
 
-      var i18nData = ReadJsonFile<Dictionary<string, string>>(filename)!;
+      var i18nData = await ReadJsonFileAsync<Dictionary<string, string>>(filename)!;
 
       if (i18nData == null )
       {
@@ -152,18 +152,18 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    #endregion
 
 
-   public Dictionary<string, Dictionary<string, string>> LogMessages(string language)
+   public async Task<Dictionary<string, Dictionary<string, string>>> LogMessagesAsync(string language)
    {
       var filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
-      return ReadJsonFile<Dictionary<string, Dictionary<string, string>>>(filename);
+      return await ReadJsonFileAsync<Dictionary<string, Dictionary<string, string>>>(filename);
    }
 
-   public Project Project(string filename)
+   public async Task<Project> ProjectAsync(string filename)
    {
-      return ReadJsonFile<Project>(filename);
+      return await ReadJsonFileAsync<Project>(filename);
    }
 
-   public string YamlContentHeader(string filename)
+   public async Task<string> YamlContentHeaderAsync(string filename)
    {
       try
       {
@@ -171,7 +171,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
              .UseYamlFrontMatter()
              .Build();
 
-         var mdFile = ReadTextFile(string.Empty, filename);
+         var mdFile = await ReadTextFileAsync(string.Empty, filename);
          if (mdFile != null )
          {
             var document = Markdown.Parse(mdFile, pipeline);
@@ -190,9 +190,9 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    }
 
    #region File Read
-   private bool FileExists(string filename)
+   private async Task<bool> FileExistsAsync(string filename)
    {
-      if (_fileWrapper.Exists(filename))
+      if (await _fileWrapper.ExistsAsync(filename))
       {
          return true;
       }
@@ -201,16 +201,16 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       return false;
    }
 
-   private string ReadTextFile(string folder, string filename)
+   private async Task<string> ReadTextFileAsync(string folder, string filename)
    {
       if (!string.IsNullOrEmpty(filename))
       {
          try
          {
             string _filename = _pathWrapper.Combine(folder, filename);
-            if (FileExists(_filename))
+            if (await FileExistsAsync(_filename))
             {
-               var content = _fileWrapper.ReadAllText(_filename);
+               var content = await _fileWrapper.ReadAllTextAsync(_filename);
                _logService.LogTrace(LogCategory.File, LogAction.ReadSuccess, filename);
                return content;
             }
@@ -224,12 +224,12 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       return null;
    }
 
-   private T ReadJsonFile<T>(string filename)
+   private async Task<T> ReadJsonFileAsync<T>(string filename)
    {
       string json = string.Empty;
       try
       {
-         json = ReadTextFile(string.Empty, filename);
+         json = await ReadTextFileAsync(string.Empty, filename);
 
          if (!json.IsNullOrEmpty())
          {

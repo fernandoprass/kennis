@@ -1,4 +1,4 @@
-﻿using Kennis.Domain;
+using Kennis.Domain;
 using Kennis.Domain.Interfaces;
 using Kennis.Domain.Models;
 using Myce.Wrappers.Contracts;
@@ -17,7 +17,7 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
    private readonly ILogService _logService = logService;
    private readonly ILoadService _loadService = loadService;
 
-   public void CopyAssets(string templapeFolder, IEnumerable<string> assets, string siteDestination)
+   public async Task CopyAssetsAsync(string templapeFolder, IEnumerable<string> assets, string siteDestination)
    {
       _logService.LogInfo(LogCategory.Template, LogAction.FileCopy, siteDestination);
       try
@@ -26,15 +26,15 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
          {
             string destination = _pathWrapper.Combine(siteDestination, asset);
 
-            if (!_directoryWrapper.Exists(destination))
+            if (!await _directoryWrapper.ExistsAsync(destination))
             {
-               _directoryWrapper.CreateDirectory(destination);
+               await _directoryWrapper.CreateDirectoryAsync(destination);
             }
 
             string source = _pathWrapper.Combine(templapeFolder, asset);
 
             // Copy all files and subfolders
-            var files = _directoryWrapper.GetFiles(source, "*.*", SearchOption.AllDirectories);
+            var files = await _directoryWrapper.GetFilesAsync(source, "*.*", SearchOption.AllDirectories);
 
             foreach (string file in files)
             {
@@ -44,12 +44,12 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
 
                var fileDestinationFolder = _pathWrapper.GetDirectoryName(destFile);
 
-               if (!_directoryWrapper.Exists(fileDestinationFolder))
+               if (!await _directoryWrapper.ExistsAsync(fileDestinationFolder))
                {
-                  _directoryWrapper.CreateDirectory(fileDestinationFolder);
+                  await _directoryWrapper.CreateDirectoryAsync(fileDestinationFolder);
                }
 
-               _fileWrapper.Copy(file, destFile, true);
+               await _fileWrapper.CopyAsync(file, destFile, true);
             }
          }
       }
@@ -60,9 +60,9 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
       
    }
 
-   public Template Load(string name, string projectDefaultLanguage)
+   public async Task<Template> LoadAsync(string name, string projectDefaultLanguage)
    {
-      var template = _loadService.Template(name);
+      var template = await _loadService.TemplateAsync(name);
 
       template.DefaultLanguage = template.Languages.Contains(projectDefaultLanguage) ? projectDefaultLanguage : template.DefaultLanguage;
 

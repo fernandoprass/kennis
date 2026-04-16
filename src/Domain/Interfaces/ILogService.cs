@@ -2,7 +2,7 @@ namespace Kennis.Domain.Interfaces;
 
 public interface ILogService
 {
-   bool LoadMessages(string language);
+   Task<bool> LoadMessagesAsync(string language);
 
    void LogCritical(string message, params object[] args);
    void LogCritical(LogCategory category, LogAction action, params object[] args);

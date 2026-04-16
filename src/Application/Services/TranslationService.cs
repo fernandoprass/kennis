@@ -1,4 +1,4 @@
-﻿using Kennis.Domain;
+using Kennis.Domain;
 using Kennis.Domain.Interfaces;
 using Kennis.Domain.Models;
 using Myce.Extensions;
@@ -12,7 +12,7 @@ public class TranslationService(
    private readonly ILoadService _loadService = loadService;
    private readonly ILogService _logService = logService;
 
-   public Template Translate(Template template, string language)
+   public async Task<Template> TranslateAsync(Template template, string language)
    {
       if (!template.Languages.Contains(language))
       {
@@ -20,7 +20,7 @@ public class TranslationService(
          return null;
       }
 
-      var i18nData = _loadService.TemplateTranslationData(language);
+      var i18nData = await _loadService.TemplateTranslationDataAsync(language);
 
       var translatedTemplate = new Template
       {

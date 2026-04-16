@@ -15,32 +15,34 @@ internal class BuilderService(ILogService logService,
    private readonly ITemplateService _templateService = templateService;
    private readonly ITranslationService _translationService = translationService;
 
-   public void Build(string projectName, bool rebuildAll)
+   public async Task BuildAsync(string projectName, bool rebuildAll)
    {
       _logService.LogInfo(LogCategory.Project, LogAction.BuildStart, projectName);
-      var project = _projectService.Load(projectName);
+      var project = await _projectService.LoadAsync(projectName);
 
       if (project != null )
       {
-         var baseTemplate = _templateService.Load(project.Template, project.DefaultLanguageCode);
+         var baseTemplate = await _templateService.LoadAsync(project.Template, project.DefaultLanguageCode);
 
          if (baseTemplate != null )
          {
-            foreach (var projectSite in project.Sites)
+            var tasks = project.Sites.Select(async projectSite =>
             {
-               var template = _translationService.Translate(baseTemplate, projectSite.Language.Code);
+               var template = await _translationService.TranslateAsync(baseTemplate, projectSite.Language.Code);
 
                if (template != null )
                {
                   _logService.LogInfo(LogCategory.Site, LogAction.BuildStart, projectSite.Language.Code);
 
-                  _templateService.CopyAssets(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
+                  await _templateService.CopyAssetsAsync(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
 
-                  _buildSiteService.Build(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
+                  await _buildSiteService.BuildAsync(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
 
                   _logService.LogInfo(LogCategory.Site, LogAction.BuildSuccess, projectSite.Language.Code);
                }
-            }
+            });
+
+            await Task.WhenAll(tasks);
          }
          _logService.LogInfo(LogCategory.Project, LogAction.BuildSuccess, projectName);
       }

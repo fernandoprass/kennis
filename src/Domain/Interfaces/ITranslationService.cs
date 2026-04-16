@@ -4,6 +4,6 @@ namespace Kennis.Domain.Interfaces
 {
    public interface ITranslationService
    {
-      Template Translate(Template template, string language);
+      Task<Template> TranslateAsync(Template template, string language);
    }
 }

@@ -25,7 +25,7 @@ public class SaveService(IFileWrapper fileWrapper,
       JsonFolder = jsonFolder;
    }
 
-   public void ToJsonFile<T>(string languageCode, string filename, T contentList)
+   public async Task ToJsonFileAsync<T>(string languageCode, string filename, T contentList)
    {
       var options = new JsonSerializerOptions
       {
@@ -37,27 +37,27 @@ public class SaveService(IFileWrapper fileWrapper,
 
       filename = _path.Combine(JsonFolder, languageCode, filename);
 
-      SaveFile(LogCategory.JsonFile, filename, json);
+      await SaveFileAsync(LogCategory.JsonFile, filename, json);
    }
 
-   public void ToHtmlFile(string filename, string webPage)
+   public async Task ToHtmlFileAsync(string filename, string webPage)
    {
       filename = _path.Combine(HtmlFolder, filename);
 
-      SaveFile(LogCategory.HtmlFile,filename, webPage);
+      await SaveFileAsync(LogCategory.HtmlFile, filename, webPage);
    }
 
-   private void SaveFile(LogCategory logCategory, string filename, string content)
+   private async Task SaveFileAsync(LogCategory logCategory, string filename, string content)
    {
       try
       {
          var path = _path.GetDirectoryName(filename);
-         if (!_directory.Exists(path))
+         if (!await _directory.ExistsAsync(path))
          {
-            _directory.CreateDirectory(path);
+            await _directory.CreateDirectoryAsync(path);
          }
 
-         _file.WriteAllText(filename, content);
+         await _file.WriteAllTextAsync(filename, content);
 
          _logService.LogInfo(logCategory, LogAction.SaveSuccess, filename);
       }

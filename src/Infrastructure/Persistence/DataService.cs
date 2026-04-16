@@ -23,19 +23,19 @@ public class DataService(ILoadService loadService,
 
 
    #region Public methods
-   public void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath)
+   public async Task GetContentListAsync(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath)
    {
       InitializeContentPaths(projectFolder, languageCode, htmlPagePath, htmlPostPath);
 
-      var contentFileList = _loadService.ContentFileList(ContentBasePath);
+      var contentFileList = await _loadService.ContentFileListAsync(ContentBasePath);
 
-      InitializeContentList();
+      await InitializeContentListAsync();
 
       foreach (var file in contentFileList)
       {
          _logService.LogInfo(LogCategory.Content, LogAction.LoadStart, file);
 
-         string yaml = _loadService.YamlContentHeader(file);
+         string yaml = await _loadService.YamlContentHeaderAsync(file);
 
          if (yaml != null )
          {
@@ -60,9 +60,9 @@ public class DataService(ILoadService loadService,
       SortContentList();
    }
 
-   public void SaveContentList(string languageCode)
+   public async Task SaveContentListAsync(string languageCode)
    {
-      _saveService.ToJsonFile(languageCode, Const.File.ContentList, ContentList);
+      await _saveService.ToJsonFileAsync(languageCode, Const.File.ContentList, ContentList);
    }
 
    public void UpdateContentListData()
@@ -153,9 +153,9 @@ public class DataService(ILoadService loadService,
       }
    }
 
-   private void InitializeContentList()
+   private async Task InitializeContentListAsync()
    {
-      ContentList = _loadService.ContentList(ContentBasePath);
+      ContentList = await _loadService.ContentListAsync(ContentBasePath);
       ContentList.ForEach(page => { page.Delete = true; });
    }
    #endregion

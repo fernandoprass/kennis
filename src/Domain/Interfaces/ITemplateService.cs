@@ -4,7 +4,7 @@ namespace Kennis.Domain.Interfaces
 {
    public interface ITemplateService
    {
-      void CopyAssets(string templapeFolder, IEnumerable<string> assets, string siteDestination);
-      Template Load(string name, string projectDefaultLanguage);
+      Task CopyAssetsAsync(string templapeFolder, IEnumerable<string> assets, string siteDestination);
+      Task<Template> LoadAsync(string name, string projectDefaultLanguage);
    }
 }

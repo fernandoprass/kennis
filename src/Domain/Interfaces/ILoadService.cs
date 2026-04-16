@@ -1,16 +1,16 @@
-﻿using Kennis.Domain.Models;
+using Kennis.Domain.Models;
 
 namespace Kennis.Domain.Interfaces;
 
 public interface ILoadService
 {
    void Configure(ProjectFolder projectFolder);
-   string[] ContentFileList(string contentBasePath);
+   Task<string[]> ContentFileListAsync(string contentBasePath);
    ContentHeader ContentHeader(string yaml);
-   List<Content> ContentList(string path);
-   Dictionary<string, Dictionary<string, string>> LogMessages(string language);
-   Template Template(string name);
-   Dictionary<string, string> TemplateTranslationData(string language);
-   Project Project(string filename);
-   string YamlContentHeader(string filename);
+   Task<List<Content>> ContentListAsync(string path);
+   Task<Dictionary<string, Dictionary<string, string>>> LogMessagesAsync(string language);
+   Task<Template> TemplateAsync(string name);
+   Task<Dictionary<string, string>> TemplateTranslationDataAsync(string language);
+   Task<Project> ProjectAsync(string filename);
+   Task<string> YamlContentHeaderAsync(string filename);
 }

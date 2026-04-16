@@ -6,9 +6,9 @@ public interface IDataService
 {
    List<Content> ContentList { get; set; }
 
-   void GetContentList(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath);
+   Task GetContentListAsync(string projectFolder, string languageCode, string htmlPagePath, string htmlPostPath);
 
-   void SaveContentList(string languageCode);
+   Task SaveContentListAsync(string languageCode);
 
    void UpdateContentListData();
 

@@ -4,5 +4,5 @@ namespace Kennis.Domain.Interfaces;
 
 public interface IBuildSiteService
 {
-   void Build(string defaultLanguage, string projectFolder, ProjectSite projectSite, Template template);
+   Task BuildAsync(string defaultLanguage, string projectFolder, ProjectSite projectSite, Template template);
 }
