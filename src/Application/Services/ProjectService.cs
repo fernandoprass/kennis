@@ -59,7 +59,7 @@ public class ProjectService (ILoadService loadService,
    {
       var result = ValidateProject(project);
 
-      if (result.IsValid)
+      if (result.IsSuccess)
       {
 
       }
@@ -79,7 +79,8 @@ public class ProjectService (ILoadService loadService,
       {
          return Result.Success();
       }
-      return Result.Failure(validator.Messages);
+      //todo fix it after update Myce.FluentValidator to return all messages in case of failure
+      return default;//Result.Failure(validator.Messages);
    }
 
    private static Result ValidateProjectSites(IEnumerable<ProjectSite> projectSites)

@@ -1,23 +1,34 @@
 {
-	"Languages": [ "en", "pt-br" ],
-	"Index": "index.html",
-	"Page": "page.html",
-	"Blog": "blog.html",
-	"BlogArchive": null,
-	"BlogCategories": null,
-	"BlogPost": "blog.post.html",
-	"BlogTags": null,
-	"Folders": [ "assets" ],
-	"Loops": {
-		"BlogArchive": "loop.blog.archive.html",
-		"BlogCategories": "loop.blog.categories.html",
-		"BlogPostLast10": "loop.blog.posts.last10.html",
-		"BlogPostLast5": null,
-		"BlogPostLast3": null,
-		"BlogPosts": null,
-		"BlogTags": "loop.blog.tags.html",
-		"Languages": "loop.languages.html",
-		"Menu": "loop.menu.html",
-		"SocialMedia": "loop.socialMedia.html"
+	"Languages": [
+		"en",
+		"pt-br"
+	],
+	"TemplateEngine": "scriban",
+	"Folders": [
+		"assets"
+	],
+	"Pages": {
+		"Index": "index.html",
+		"Page": "page.html",
+		"Blog": "blog.html",
+		"BlogPost": "blog-post.html",
+		"BlogArchive": "blog-archive.html",
+		"BlogCategories": "blog-categories.html",
+		"BlogTags": "blog-tags.html",
+		"Partials": {
+			"Head": "partials/head.html",
+			"Header": "partials/header.html",
+			"Footer": "partials/footer.html",
+			"Sidebar": "partials/sidebar.html"
+		},
+		"Loops": {
+			"BlogPosts": "loops/blog-posts.html",
+			"BlogCategories": "loops/blog-categories.html",
+			"BlogTags": "loops/blog-tags.html",
+			"BlogArchive": "loops/blog-archive.html",
+			"Languages": "loops/languages.html",
+			"Menu": "loops/menu.html",
+			"SocialMedia": "loops/social-media.html"
+		}
 	}
 }

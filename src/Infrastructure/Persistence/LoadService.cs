@@ -47,7 +47,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    {
       var filename = _pathWrapper.Combine(path, Const.File.ContentList);
 
-      if (!await FileExistsAsync(filename))
+      if (!FileExists(filename))
       {
          _logService.LogWarning(LogCategory.Content, LogAction.FileMissing, filename);
          return new List<Content>();
@@ -76,7 +76,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       {
          var template = await LoadMainTemplatesAsync(templateFile, _projectFolder.Template);
 
-         template.Loops = await LoadLoopTemplatesAsync(templateFile.Loops, _projectFolder.Template);
+         template.Pages.Loops = await LoadLoopTemplatesAsync(templateFile.Pages.Loops, _projectFolder.Template);
 
          _logService.LogInfo(LogCategory.Template, LogAction.LoadFinishedSuccess);
 
@@ -94,34 +94,34 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    {
       var layout = new Template
       {
-         Index = await ReadTextFileAsync(folder, template.Index),
-         Page = await ReadTextFileAsync(folder, template.Page),
-         Blog = await ReadTextFileAsync(folder, template.Blog),
-         BlogArchive = await ReadTextFileAsync(folder, template.BlogArchive),
-         BlogCategories = await ReadTextFileAsync(folder, template.BlogCategories),
-         BlogPost = await ReadTextFileAsync(folder, template.BlogPost),
-         BlogTags = await ReadTextFileAsync(folder, template.BlogTags),
          Assets = template.Assets,
-         Languages = template.Languages
+         Languages = template.Languages,
+         Pages = new TemplatePages
+         {
+            Index = await ReadTextFileAsync(folder, template.Pages.Index),
+            Page = await ReadTextFileAsync(folder, template.Pages.Page),
+            Blog = await ReadTextFileAsync(folder, template.Pages.Blog),
+            //BlogArchive = await ReadTextFileAsync(folder, template.Pages.BlogArchive),
+            //BlogCategories = await ReadTextFileAsync(folder, template.Pages.BlogCategories),
+            BlogPost = await ReadTextFileAsync(folder, template.Pages.BlogPost),
+            //BlogTags = await ReadTextFileAsync(folder, template.BlogTags),
+         }
       };
 
       return layout;
    }
 
-   private async Task<TemplateLoop> LoadLoopTemplatesAsync(TemplateLoop loops, string folder)
+   private async Task<TemplatePagesLoops> LoadLoopTemplatesAsync(TemplatePagesLoops loops, string folder)
    {
       if (loops == null )
       {
          return null;
       }
 
-      var templateLoop = new TemplateLoop
+      var templateLoop = new TemplatePagesLoops
       {
          BlogArchive = await ReadTextFileAsync(folder, loops.BlogArchive),
          BlogCategories = await ReadTextFileAsync(folder, loops.BlogCategories),
-         BlogPostLast10 = await ReadTextFileAsync(folder, loops.BlogPostLast10),
-         BlogPostLast5 = await ReadTextFileAsync(folder, loops.BlogPostLast5),
-         BlogPostLast3 = await ReadTextFileAsync(folder, loops.BlogPostLast3),
          BlogPosts = await ReadTextFileAsync(folder, loops.BlogPosts),
          BlogTags = await ReadTextFileAsync(folder, loops.BlogTags),
          Languages = await ReadTextFileAsync(folder, loops.Languages),
@@ -190,9 +190,9 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    }
 
    #region File Read
-   private async Task<bool> FileExistsAsync(string filename)
+   private bool FileExists(string filename)
    {
-      if (await _fileWrapper.ExistsAsync(filename))
+      if (_fileWrapper.Exists(filename))
       {
          return true;
       }
@@ -208,7 +208,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
          try
          {
             string _filename = _pathWrapper.Combine(folder, filename);
-            if (await FileExistsAsync(_filename))
+            if (FileExists(_filename))
             {
                var content = await _fileWrapper.ReadAllTextAsync(_filename);
                _logService.LogTrace(LogCategory.File, LogAction.ReadSuccess, filename);

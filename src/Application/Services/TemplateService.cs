@@ -17,7 +17,7 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
    private readonly ILogService _logService = logService;
    private readonly ILoadService _loadService = loadService;
 
-   public async Task CopyAssetsAsync(string templapeFolder, IEnumerable<string> assets, string siteDestination)
+   public Task CopyAssets(string templapeFolder, IEnumerable<string> assets, string siteDestination)
    {
       _logService.LogInfo(LogCategory.Template, LogAction.FileCopy, siteDestination);
       try
@@ -26,15 +26,15 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
          {
             string destination = _pathWrapper.Combine(siteDestination, asset);
 
-            if (!await _directoryWrapper.ExistsAsync(destination))
+            if (!_directoryWrapper.Exists(destination))
             {
-               await _directoryWrapper.CreateDirectoryAsync(destination);
+               _directoryWrapper.CreateDirectory(destination);
             }
 
             string source = _pathWrapper.Combine(templapeFolder, asset);
 
             // Copy all files and subfolders
-            var files = await _directoryWrapper.GetFilesAsync(source, "*.*", SearchOption.AllDirectories);
+            var files = _directoryWrapper.GetFiles(source, "*.*", SearchOption.AllDirectories);
 
             foreach (string file in files)
             {
@@ -44,12 +44,12 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
 
                var fileDestinationFolder = _pathWrapper.GetDirectoryName(destFile);
 
-               if (!await _directoryWrapper.ExistsAsync(fileDestinationFolder))
+               if (!_directoryWrapper.Exists(fileDestinationFolder))
                {
-                  await _directoryWrapper.CreateDirectoryAsync(fileDestinationFolder);
+                  _directoryWrapper.CreateDirectory(fileDestinationFolder);
                }
 
-               await _fileWrapper.CopyAsync(file, destFile, true);
+               _fileWrapper.Copy(file, destFile, true);
             }
          }
       }
@@ -58,6 +58,7 @@ public class TemplateService(IDirectoryWrapper directoryWrapper,
          _logService.LogError(LogCategory.Template, LogAction.FileCopyFail, ex.Message);
       }
       
+      return Task.CompletedTask;
    }
 
    public async Task<Template> LoadAsync(string name, string projectDefaultLanguage)

@@ -24,27 +24,33 @@ public class TranslationService(
 
       var translatedTemplate = new Template
       {
-         Index = Translate(template.Index, i18nData),
-         Blog = Translate(template.Blog, i18nData),
-         BlogArchive = Translate(template.BlogArchive, i18nData),
-         BlogCategories = Translate(template.BlogCategories, i18nData),
-         BlogPost = Translate(template.BlogPost, i18nData),
-         BlogTags = Translate(template.BlogTags, i18nData),
-         Page = Translate(template.Page, i18nData),
          Assets = template.Assets,
-         Loops = new TemplateLoop
+         Pages = new TemplatePages
          {
-            BlogArchive = Translate(template.Loops.BlogArchive, i18nData),
-            BlogCategories = Translate(template.Loops.BlogCategories, i18nData),
-            BlogPostLast3 = Translate(template.Loops.BlogPostLast3, i18nData),
-            BlogPostLast5 = Translate(template.Loops.BlogPostLast5, i18nData),
-            BlogPostLast10 = Translate(template.Loops.BlogPostLast10, i18nData),
-            BlogPosts = Translate(template.Loops.BlogPosts, i18nData),
-            BlogTags = Translate(template.Loops.BlogTags, i18nData),
-            Languages = Translate(template.Loops.Languages, i18nData),
-            Menu = Translate(template.Loops.Menu, i18nData),
-            SocialMedia = Translate(template.Loops.SocialMedia, i18nData)
-         }
+            Index = Translate(template.Pages.Index, i18nData),
+            Blog = Translate(template.Pages.Blog, i18nData),
+            BlogArchive = Translate(template.Pages.BlogArchive, i18nData),
+            BlogCategories = Translate(template.Pages.BlogCategories, i18nData),
+            BlogTags = Translate(template.Pages.BlogTags, i18nData),
+            BlogPost = Translate(template.Pages.BlogPost, i18nData),
+            Page = Translate(template.Pages.Page, i18nData), 
+            Partials = new TemplatePagesPartials
+            {
+               Footer = Translate(template.Pages.Partials.Footer, i18nData),
+               Header = Translate(template.Pages.Partials.Header, i18nData),
+               Sidebar = Translate(template.Pages.Partials.Sidebar, i18nData)
+            },
+            Loops = new TemplatePagesLoops
+            {
+               BlogArchive = Translate(template.Pages.Loops.BlogArchive, i18nData),
+               BlogCategories = Translate(template.Pages.Loops.BlogCategories, i18nData),
+               BlogPosts = Translate(template.Pages.Loops.BlogPosts, i18nData),
+               BlogTags = Translate(template.Pages.Loops.BlogTags, i18nData),
+               Languages = Translate(template.Pages.Loops.Languages, i18nData),
+               Menu = Translate(template.Pages.Loops.Menu, i18nData),
+               SocialMedia = Translate(template.Pages.Loops.SocialMedia, i18nData)
+            }
+         },
       };
       
       _logService.LogInfo(LogCategory.Template, LogAction.TranslateSuccess, language);

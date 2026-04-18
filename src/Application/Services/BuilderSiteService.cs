@@ -57,7 +57,7 @@ public class BuilderSiteService(ILogService logService,
 
    private async Task ParseIndexFileAsync(ProjectSite site)
    {
-      string template = ParseHtmlFile(Template.Index);
+      string template = ParseHtmlFile(Template.Pages.Index);
 
       template = _tag.Index(template, site);
 
@@ -68,7 +68,7 @@ public class BuilderSiteService(ILogService logService,
 
    private async Task ParseBlogIndexFileAsync(ProjectSite site)
    {
-      string template = ParseHtmlFile(Template.Blog);
+      string template = ParseHtmlFile(Template.Pages.Blog);
 
       template = _tag.Index(template, site);
 
@@ -86,8 +86,8 @@ public class BuilderSiteService(ILogService logService,
                      : contentList.Where(x => x.Type.Equals(ContentType.Post));
 
       string template = contentType == ContentType.Page
-                      ? ParseHtmlFile(Template.Page)
-                      : ParseHtmlFile(Template.BlogPost);
+                      ? ParseHtmlFile(Template.Pages.Page)
+                      : ParseHtmlFile(Template.Pages.BlogPost);
 
       var folder = contentType == ContentType.Page
                       ? site.Folders.Pages
@@ -117,17 +117,17 @@ public class BuilderSiteService(ILogService logService,
          site.Language
       };
 
-      LoopLanguagesParsed = _loop.Languages(languages, DefaultLanguageCode, Template.Loops.Languages);
+      LoopLanguagesParsed = _loop.Languages(languages, DefaultLanguageCode, Template.Pages.Loops.Languages);
 
-      LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, Template.Loops.SocialMedia);
+      LoopSocialMediaParsed = _loop.SocialMedia(site.Author.SocialMedia, Template.Pages.Loops.SocialMedia);
 
       var menuList = contentList.Where(content => content.Type == ContentType.Page && content.Menu);
-      LoopMenuParsed = _loop.Menu(menuList, Template.Loops.Menu);
+      LoopMenuParsed = _loop.Menu(menuList, Template.Pages.Loops.Menu);
 
       var posts = contentList.Where(content => content.Type == ContentType.Post);
-      BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast10, 10);
-      BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast5, 5);
-      BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, Template.Loops.BlogPostLast3, 3);
+      BlogPostsLast10Parsed = _loop.BlogPostsLastX(posts, Template.Pages.Loops.BlogPosts, 10);
+      BlogPostsLast5Parsed = _loop.BlogPostsLastX(posts, Template.Pages.Loops.BlogPosts, 5);
+      BlogPostsLast3Parsed = _loop.BlogPostsLastX(posts, Template.Pages.Loops.BlogPosts, 3);
    }
 
    private string ParseHtmlFile(string template)

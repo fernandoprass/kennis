@@ -37,3 +37,9 @@ public enum LogAction
    SaveSuccess,
    TranslateSuccess,
 }
+
+enum TemplateEngine
+{
+   Liquid,
+   Scriban
+}

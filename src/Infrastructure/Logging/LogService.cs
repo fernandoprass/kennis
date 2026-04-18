@@ -24,7 +24,7 @@ public class LogService(ILogger<LogService> logger,
       string filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
       string jsonContent = string.Empty;
 
-      if (await _fileWrapper.ExistsAsync(filename))
+      if (_fileWrapper.Exists(filename))
       {
          try
          {

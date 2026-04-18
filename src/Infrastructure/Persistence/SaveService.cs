@@ -52,9 +52,9 @@ public class SaveService(IFileWrapper fileWrapper,
       try
       {
          var path = _path.GetDirectoryName(filename);
-         if (!await _directory.ExistsAsync(path))
+         if (! _directory.Exists(path))
          {
-            await _directory.CreateDirectoryAsync(path);
+            _directory.CreateDirectory(path);
          }
 
          await _file.WriteAllTextAsync(filename, content);

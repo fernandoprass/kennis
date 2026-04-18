@@ -34,7 +34,7 @@ internal class BuilderService(ILogService logService,
                {
                   _logService.LogInfo(LogCategory.Site, LogAction.BuildStart, projectSite.Language.Code);
 
-                  await _templateService.CopyAssetsAsync(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
+                  await _templateService.CopyAssets(project.Folders.Template, template.Assets, project.Folders.SiteDestination[projectSite.Language.Code]);
 
                   await _buildSiteService.BuildAsync(project.DefaultLanguageCode, project.Folders.Project, projectSite, template);
 
