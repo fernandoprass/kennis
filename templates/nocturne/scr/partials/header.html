@@ -1,0 +1,25 @@
+<header class="header">
+    <div class="header-inner">
+        <div class="header-left">
+            <nav class="header-nav">
+                <i class="fas fa-home"></i><a href="index.html">Home</a>
+                <i class="fa-solid fa-code"></i><a href="blog.html">Blog</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="social-links">
+                {{ for social in social_media }}
+                <a href="{{ social.link }}" title="{{ social.name }}" target="_blank">
+                    <i class="{{ social.icon }}"></i>
+                </a>
+                {{ end }}
+            </div>
+
+            <div class="lang-links">
+                {{ for language in languages }}
+                <a href="{{ language.link }}" class="lang-link active">{{ language.label }}</a>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</header>

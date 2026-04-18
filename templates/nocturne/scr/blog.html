@@ -1,49 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Nocturne Premium Template</title>
-    <meta name="description"
-        content="Read the latest articles on the Nocturne blog. A modern, fast, and multilingual blogging experience.">
-    <meta name="keywords" content="Blog, Kennis, Multilingual, Nocturne, Articles">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="Blog - Nocturne Premium Template">
-    <meta property="og:description" content="Read the latest articles on the Nocturne blog.">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
-</head>
+{{ include 'partials/head.html' }}
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-inner">
-            <div class="header-left">
-                <nav class="header-nav">
-                    <i class="fas fa-home"></i><a href="index.html">Home</a>
-                    <i class="fa-solid fa-code"></i><a href="blog.html">Blog</a>
-                </nav>
-            </div>
-            <div class="header-right">
-                <div class="social-links">
-                    <a href="#" title="X"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="https://github.com/fernandoprass/nocturne" title="GitHub" target="_blank"><i
-                            class="fab fa-github"></i></a>
-                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                </div>
-                <div class="lang-links">
-                    <a href="#en" class="lang-link active">EN</a>
-                    <a href="#pt" class="lang-link">PT</a>
-                </div>
-            </div>
-        </div>
-    </header>
+    {{ include 'partials/header.html' }}
+
 
     <!-- Main Container -->
     <div class="blog-container">
@@ -103,13 +62,13 @@
                     </p>
 
                     <pre>
-public int Factorial(int f)
-{
-    if(f == 0)
-        return 1;
-    else
-        return f * Factorial(f-1); 
-}
+                        public int Factorial(int f)
+                        {
+                            if(f == 0)
+                                return 1;
+                            else
+                                return f * Factorial(f-1); 
+                        }
                     </pre>
 
                     <p><a href="blog-post.html">Continue Reading →</a></p>
@@ -160,30 +119,7 @@ public int Factorial(int f)
                 </article>
             </section>
 
-            <!-- Footer -->
-            <footer class="content-footer">
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <p>Nocturne is a sleek, modern multilingual blog template for the Kennis Static Site Generator.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Links</h4>
-                    <ul>
-                        <li><a href="#">Kennis</a></li>
-                        <li><a href="#">Nocturne</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Contact</h4>
-                    <p>Keep in touch with us.</p>
-                    <div class="social-links">
-                        <a href="#" title="X"><i class="fa-brands fa-twitter"></i></a>
-                        <a href="https://github.com/fernandoprass/nocturne" title="GitHub" target="_blank"><i
-                                class="fab fa-github"></i></a>
-                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                </div>
-            </footer>
+            {{ include 'partials/footer.html' }}
         </main>
     </div>
 </body>

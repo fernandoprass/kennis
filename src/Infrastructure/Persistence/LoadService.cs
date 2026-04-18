@@ -70,7 +70,8 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
       _logService.LogInfo(LogCategory.Template, LogAction.LoadStart, name);
 
-      var templateFile = await ReadJsonFileAsync<Template>(filename);
+      var yaml = await ReadTextFileAsync(string.Empty, filename);
+      var templateFile =  ReadYamlFile<Template>(yaml);
 
       if (templateFile != null )
       {
@@ -160,7 +161,8 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
    public async Task<Project> ProjectAsync(string filename)
    {
-      return await ReadJsonFileAsync<Project>(filename);
+      var yaml = await ReadTextFileAsync(string.Empty, filename);
+      return ReadYamlFile<Project>(yaml);
    }
 
    public async Task<string> YamlContentHeaderAsync(string filename)
@@ -260,7 +262,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
          try
          {
             var deserializer = new DeserializerBuilder()
-                                   .WithNamingConvention(LowerCaseNamingConvention.Instance)
+                                 //  .WithNamingConvention(CamelCaseNamingConvention.Instance)
                                    .Build();
 
             var content = deserializer.Deserialize<T>(yaml);

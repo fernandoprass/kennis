@@ -4,7 +4,7 @@
  {
      public static void Do()
      {
-         //todo validate Project
+         //todo validate ProjectAsync
          /*
           * Template file exists
           */

@@ -1,0 +1,24 @@
+<footer class="content-footer">
+    <div class="footer-col">
+        <h4>{{ i18n "footer.about.title" }}</h4>
+        <p>{{ i18n "footer.about.description" }}</p>
+    </div>
+    <div class="footer-col">
+        <h4>{{ i18n "footer.links.title" }}</h4>
+        <ul>
+            <li><a href="#">Kennis</a></li>
+            <li><a href="#">Nocturne</a></li>
+        </ul>
+    </div>
+    <div class="footer-col">
+        <h4>{{ i18n "footer.contact.title" }}</h4>
+        <p>{{ i18n "footer.contact.description" }}</p>
+        <div class="social-links">
+            {{ for social in social_media }}
+            <a href="{{ social.link }}" title="{{ social.name }}" target="_blank">
+                <i class="{{ social.icon }}"></i>
+            </a>
+            {{ end }}
+        </div>
+    </div>
+</footer>

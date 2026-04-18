@@ -1,0 +1,37 @@
+{{ include 'partials/head.html' }}
+
+<body>
+    {{ include 'partials/header.html' }}
+
+    <div class="blog-container">
+        {{ include 'partials/sidebar.html' }}
+
+        <main class="content">
+            <section class="post">
+                <article>
+                    <h1>{{ content.title }}</h1>
+                    <p class="date"><i class="fa-regular fa-calendar"></i>
+                        <span class="post-meta">{{ i18n "content.createdAt" }} {{ content.createdAt }}</span>
+                    </p>
+                    <span class="categories">|
+                        {{ for category in categories }}
+                        {{ category.label }} |
+                        {{ end }}
+                    </span>
+
+                    {{ content.text }}
+
+                    <ul class="tags">
+                        {{ for tag in tags }}
+                        <li><a href="{{ tag.link }}" rel="tag">{{ language.label }}</a></li>
+                        {{ end }}
+                    </ul>
+                </article>
+            </section>
+
+            {{ include 'partials/footer.html' }}
+        </main>
+    </div>
+</body>
+
+</html>

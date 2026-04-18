@@ -111,7 +111,7 @@ public class BuilderSiteService(ILogService logService,
    {
       //todo => this methods should be async
 
-      //todo two options here: 1 add Project as a parameter; 2 move loop languages out side of build site
+      //todo two options here: 1 add ProjectAsync as a parameter; 2 move loop languages out side of build site
       var languages = new List<Language>
       {
          site.Language

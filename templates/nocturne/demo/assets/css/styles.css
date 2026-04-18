@@ -405,6 +405,10 @@ pre {
     min-width: 160px;
 }
 
+.content-footer a {
+    font-size: 14px;
+}
+
 .content-footer h4 {
     margin-bottom: 10px;
     font-size: 14px;

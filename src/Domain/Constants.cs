@@ -11,10 +11,10 @@ public static class Const
 
    public static class File
    {
-      public const string Project = "project.json";
+      public const string Project = "project.yaml";
       public const string ContentList = "content.json";
       public const string Index = "index.html";
-      public const string Template = "template.json";
+      public const string Template = "template.yaml";
    }
 
    public static class Folder
