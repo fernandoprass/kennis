@@ -3,7 +3,7 @@
 	"BaseUrl": "",
 	"DefaultLanguageCode": "en",
 	"Pagination": 10,
-	"Template": "black-and-white-template",
+	"Template": "nocturne",
 	"Sites": [
 		{
 			"Language": {

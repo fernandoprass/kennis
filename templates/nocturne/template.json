@@ -1,0 +1,23 @@
+{
+	"Languages": [ "en", "pt-br" ],
+	"Index": "index.html",
+	"Page": "page.html",
+	"Blog": "blog.html",
+	"BlogArchive": null,
+	"BlogCategories": null,
+	"BlogPost": "blog.post.html",
+	"BlogTags": null,
+	"Folders": [ "assets" ],
+	"Loops": {
+		"BlogArchive": "loop.blog.archive.html",
+		"BlogCategories": "loop.blog.categories.html",
+		"BlogPostLast10": "loop.blog.posts.last10.html",
+		"BlogPostLast5": null,
+		"BlogPostLast3": null,
+		"BlogPosts": null,
+		"BlogTags": "loop.blog.tags.html",
+		"Languages": "loop.languages.html",
+		"Menu": "loop.menu.html",
+		"SocialMedia": "loop.socialMedia.html"
+	}
+}
