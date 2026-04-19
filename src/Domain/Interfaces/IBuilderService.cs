@@ -1,6 +1,8 @@
+using Kennis.Domain.Models;
+
 namespace Kennis.Domain.Interfaces;
 
 public interface IBuilderService
 {
-   Task BuildAsync(string projectName, bool rebuildAll);
+   Task BuildAsync(AppSettings appSettings);
 }

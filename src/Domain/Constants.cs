@@ -2,15 +2,18 @@ namespace Kennis.Domain;
 
 public static class Const
 {
+   public const string LogMessageError = "Log message file not found for {language}. Reinstall the application";
    public static class Extension
    {
-      public const string I18n = ".json";
+      public const string I18n = ".yaml";
       public const string Content = ".md";
+      public const string Log = ".log";
       public const string WebPages = ".html";
    }
 
    public static class File
    {
+      public const string AppSettings = "appsettings.yaml";
       public const string Project = "project.yaml";
       public const string ContentList = "content.json";
       public const string Index = "index.html";

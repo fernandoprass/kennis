@@ -1,5 +1,6 @@
 using Kennis.Domain;
 using Kennis.Domain.Interfaces;
+using Kennis.Domain.Models;
 
 namespace Kennis.Application.Services;
 
@@ -15,10 +16,10 @@ internal class BuilderService(ILogService logService,
    private readonly ITemplateService _templateService = templateService;
    private readonly ITranslationService _translationService = translationService;
 
-   public async Task BuildAsync(string projectName, bool rebuildAll)
+   public async Task BuildAsync(AppSettings appSettings)
    {
-      _logService.LogInfo(LogCategory.Project, LogAction.BuildStart, projectName);
-      var project = await _projectService.LoadAsync(projectName);
+      _logService.LogInfo(LogCategory.Project, LogAction.BuildStart, appSettings.ProjectName);
+      var project = await _projectService.LoadAsync(appSettings.ProjectName);
 
       if (project != null )
       {
@@ -44,7 +45,7 @@ internal class BuilderService(ILogService logService,
 
             await Task.WhenAll(tasks);
          }
-         _logService.LogInfo(LogCategory.Project, LogAction.BuildSuccess, projectName);
+         _logService.LogInfo(LogCategory.Project, LogAction.BuildSuccess, appSettings.ProjectName);
       }
    }
 }

@@ -8,7 +8,7 @@ public interface ILoadService
    Task<string[]> ContentFileListAsync(string contentBasePath);
    ContentHeader ContentHeader(string yaml);
    Task<List<Content>> ContentListAsync(string path);
-   Task<Dictionary<string, Dictionary<string, string>>> LogMessagesAsync(string language);
+   Task<AppSettings> AppSettingsAsync();
    Task<Template> TemplateAsync(string name);
    Task<Dictionary<string, string>> TemplateTranslationDataAsync(string language);
    Task<Project> ProjectAsync(string filename);

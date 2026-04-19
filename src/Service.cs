@@ -12,26 +12,22 @@ namespace Kennis
 {
     public static class Service
    {
-      public static ServiceProvider Configure(string projectName, string logLevel)
+      public static ServiceProvider Configure(string projectName)
       {
          var services = new ServiceCollection();
 
-         ConfigureSerilogService(services, projectName, logLevel);
+         ConfigureSerilogService(services, projectName);
 
          ConfigureBusinessServices(services);
 
          return services.BuildServiceProvider();
       }
 
-      private static void ConfigureSerilogService(IServiceCollection services, string projectName, string logLevel)
+      private static void ConfigureSerilogService(IServiceCollection services, string projectName)
       {
-         var logEventLevel = logLevel.Equals("verbose")
-            ? Serilog.Events.LogEventLevel.Verbose
-            : Serilog.Events.LogEventLevel.Information;
-
          var log = new LoggerConfiguration()
-           .WriteTo.Console(logEventLevel)
-            .WriteTo.File($"{projectName}.log")
+           .WriteTo.Console(Serilog.Events.LogEventLevel.Verbose)
+            .WriteTo.File($"{projectName}{Const.Extension.Log}")
             .CreateLogger();
 
          services.AddLogging(builder =>

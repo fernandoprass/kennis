@@ -1,0 +1,6 @@
+Language: en
+LogLevel: verbose
+RebuildAllSite: true
+Folders:
+  Projects: project
+  Templates: templates

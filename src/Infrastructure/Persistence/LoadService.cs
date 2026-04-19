@@ -8,7 +8,6 @@ using Myce.Extensions;
 using Myce.Wrappers.Contracts;
 using System.Text.Json;
 using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Kennis.Infrastructure.Persistence;
 
@@ -70,10 +69,9 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
       _logService.LogInfo(LogCategory.Template, LogAction.LoadStart, name);
 
-      var yaml = await ReadTextFileAsync(string.Empty, filename);
-      var templateFile =  ReadYamlFile<Template>(yaml);
+      var templateFile = await ReadYamlFileAsync<Template>(filename);
 
-      if (templateFile != null )
+      if (templateFile != null)
       {
          var template = await LoadMainTemplatesAsync(templateFile, _projectFolder.Template);
 
@@ -114,7 +112,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
    private async Task<TemplatePagesLoops> LoadLoopTemplatesAsync(TemplatePagesLoops loops, string folder)
    {
-      if (loops == null )
+      if (loops == null)
       {
          return null;
       }
@@ -140,7 +138,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
       var i18nData = await ReadJsonFileAsync<Dictionary<string, string>>(filename)!;
 
-      if (i18nData == null )
+      if (i18nData == null)
       {
          _logService.LogInfo(LogCategory.TranslationFile, LogAction.LoadFinishedFail, language);
          return null;
@@ -153,16 +151,9 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
    #endregion
 
 
-   public async Task<Dictionary<string, Dictionary<string, string>>> LogMessagesAsync(string language)
-   {
-      var filename = _pathWrapper.Combine(Const.Folder.LogMessages, $"{language}{Const.Extension.I18n}");
-      return await ReadJsonFileAsync<Dictionary<string, Dictionary<string, string>>>(filename);
-   }
-
    public async Task<Project> ProjectAsync(string filename)
    {
-      var yaml = await ReadTextFileAsync(string.Empty, filename);
-      return ReadYamlFile<Project>(yaml);
+      return await ReadYamlFileAsync<Project>(filename);
    }
 
    public async Task<string> YamlContentHeaderAsync(string filename)
@@ -174,7 +165,7 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
              .Build();
 
          var mdFile = await ReadTextFileAsync(string.Empty, filename);
-         if (mdFile != null )
+         if (mdFile != null)
          {
             var document = Markdown.Parse(mdFile, pipeline);
             var yamlHeader = document.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
@@ -257,12 +248,13 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
 
    private T? ReadYamlFile<T>(string yaml)
    {
-      if (yaml != null )
+      if (yaml != null)
       {
          try
          {
+
             var deserializer = new DeserializerBuilder()
-                                 //  .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                                   //  .WithNamingConvention(CamelCaseNamingConvention.Instance)
                                    .Build();
 
             var content = deserializer.Deserialize<T>(yaml);
@@ -276,6 +268,34 @@ public class LoadService(IDirectoryWrapper directoryWrapper,
       }
 
       return default;
+   }
+
+   private async Task<T?> ReadYamlFileAsync<T>(string filename)
+   {
+      string yaml = string.Empty;
+      try
+      {
+         yaml = await ReadTextFileAsync(string.Empty, filename);
+         if (!yaml.IsNullOrEmpty())
+         {
+            var deserializer = new DeserializerBuilder().Build();
+
+            var content = deserializer.Deserialize<T>(yaml);
+
+            return content;
+         }
+      }
+      catch (Exception ex)
+      {
+         _logService.LogError(ex, LogCategory.YamlFile, LogAction.DeserializeFail, yaml);
+      }
+      return default;
+   }
+
+   public async Task<AppSettings> AppSettingsAsync()
+   {
+      string filename = Const.File.AppSettings;
+      return await ReadYamlFileAsync<AppSettings>(filename);
    }
    #endregion
 }

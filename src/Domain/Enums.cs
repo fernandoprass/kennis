@@ -2,6 +2,7 @@ namespace Kennis.Domain;
 
 public enum LogCategory
 {
+   AppSettings,
    Content,
    File,
    Project,
@@ -10,7 +11,8 @@ public enum LogCategory
    HtmlFile,
    JsonFile,
    YamlFile,
-   TranslationFile
+   TranslationFile,
+   Validator
 }
 
 public enum LogAction
@@ -28,11 +30,13 @@ public enum LogAction
    LoadStart,
    LoadFinishedFail,
    LoadFinishedSuccess,
+   Message,
    NotSupported,
    ParseStart,
    ParseSuccess,
    ReadFail,
    ReadSuccess,
+   RuleBroken,
    SaveFail,
    SaveSuccess,
    TranslateSuccess,

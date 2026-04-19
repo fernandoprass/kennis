@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/docs/" />
+  <Folder Name="/projects/" />
+  <Folder Name="/projects/KennisDemo/">
+    <File Path="projects/KennisDemo/project.yaml" />
+  </Folder>
+  <Folder Name="/templates/" />
   <Project Path="src/Kennis.csproj" />
   <Project Path="tests/Kennis.Tests.csproj" />
 </Solution>

@@ -1,35 +1,44 @@
+using Kennis.Application.Validators;
+using Kennis.Domain;
 using Kennis.Domain.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kennis;
 
-public class Kennis {
+public class Kennis
+{
    static async Task Main(string[] args)
    {
       string projectName = "KennisDemo";
-      bool rebuildAllSite = true;
 
-      var config = new ConfigurationBuilder()
-                         .SetBasePath(Directory.GetCurrentDirectory())
-                         .AddJsonFile("config.json").Build();
+      var serviceProvider = Service.Configure(projectName);
 
-      string language = config["language"];
-      string logLevel = config["logLevel"];
-
-      var serviceProvider = Service.Configure(projectName, logLevel);
-
+      var loadService = serviceProvider.GetService<ILoadService>()!;
       var logService = serviceProvider.GetService<ILogService>()!;
 
-      if (await logService.LoadMessagesAsync(language))
-      {
-         var builderService = serviceProvider.GetService<IBuilderService>()!;
+      var appSettings = await loadService.AppSettingsAsync();
 
-         await builderService.BuildAsync(projectName, rebuildAllSite);
+      appSettings.ProjectName = projectName;
+
+      var result = appSettings.Validate();
+
+      if (await logService.LoadMessagesAsync(appSettings.Language))
+      {
+         logService.LogInfo(LogCategory.AppSettings, LogAction.LoadFinishedSuccess);
+         if (result.IsSuccess)
+         {
+            var builderService = serviceProvider.GetService<IBuilderService>()!;
+
+            await builderService.BuildAsync(appSettings);
+         }
+         else
+         {
+            logService.LogMessagesFromValidator(nameof(appSettings), result.Messages);
+         }
       }
       else
       {
-         logService.LogCritical("Log message file not found for {language}. Reinstall the application", [language]);
+         logService.LogCritical(Const.LogMessageError, [appSettings.Language]);
       }
    }
 }
